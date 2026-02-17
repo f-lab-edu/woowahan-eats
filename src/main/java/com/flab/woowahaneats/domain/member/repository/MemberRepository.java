@@ -12,4 +12,7 @@ public class MemberRepository {
     public void save(Member member) {
         memberRepository.put(member.getId(), member);
     }
+    public Member findById(Long id) {
+        return memberRepository.get(id);
+    }
 }
