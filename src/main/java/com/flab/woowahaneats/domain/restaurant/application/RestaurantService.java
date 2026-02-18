@@ -6,8 +6,6 @@ import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-
 @Service
 @RequiredArgsConstructor
 public class RestaurantService {
@@ -26,7 +24,7 @@ public class RestaurantService {
                 .deliveryFee(restaurantRequest.deliveryFee())
                 .region(restaurantRequest.region())
                 .open(false)
-                .avgRating(BigDecimal.ZERO)
+                .avgRating(0.0)
                 .build();
 
         restaurantRepository.save(restaurant);
