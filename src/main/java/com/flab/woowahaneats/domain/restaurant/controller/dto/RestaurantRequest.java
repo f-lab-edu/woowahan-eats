@@ -21,7 +21,7 @@ public record RestaurantRequest(
         @NotBlank
         String address,
 
-        @NotNull @Min(0)
+        @Min(0)
         int minOrderAmt,
 
         @NotNull
