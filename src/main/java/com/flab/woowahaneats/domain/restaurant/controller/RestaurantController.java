@@ -2,14 +2,12 @@ package com.flab.woowahaneats.domain.restaurant.controller;
 
 import com.flab.woowahaneats.domain.restaurant.application.RestaurantService;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
+import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,4 +22,10 @@ public class RestaurantController {
         restaurantService.restaurantRegister(restaurantRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @GetMapping("/{restaurantId}")
+    public ResponseEntity<Restaurant> getRestaurant(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(restaurantService.getRestaurant(restaurantId));
+    }
+
 }

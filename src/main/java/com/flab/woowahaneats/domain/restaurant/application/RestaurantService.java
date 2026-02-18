@@ -30,4 +30,7 @@ public class RestaurantService {
         restaurantRepository.save(restaurant);
     }
 
+    public Restaurant getRestaurant(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId);
+    }
 }

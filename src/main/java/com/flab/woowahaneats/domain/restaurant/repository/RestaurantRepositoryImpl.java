@@ -12,4 +12,8 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     public void save(Restaurant restaurant) {
         restaurantRepositoryImpl.put(restaurant.getId(), restaurant);
     }
+
+    public Restaurant findById(Long id) {
+        return restaurantRepositoryImpl.get(id);
+    }
 }
