@@ -28,4 +28,11 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurantService.getRestaurant(restaurantId));
     }
 
+    @PostMapping("/open/{restaurantId}")
+    public ResponseEntity<Void> restaurantOpen(@PathVariable Long restaurantId) {
+        restaurantService.restaurantOpen(restaurantId);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

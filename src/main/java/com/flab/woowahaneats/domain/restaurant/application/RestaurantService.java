@@ -33,4 +33,12 @@ public class RestaurantService {
     public Restaurant getRestaurant(Long restaurantId) {
         return restaurantRepository.findById(restaurantId);
     }
+
+    public void restaurantOpen(Long restaurantId) {
+        Restaurant restaurant = getRestaurant(restaurantId).toBuilder()
+                .open(!getRestaurant(restaurantId).isOpen())
+                .build();
+
+        restaurantRepository.save(restaurant);
+    }
 }
