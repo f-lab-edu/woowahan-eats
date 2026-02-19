@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/restaurant")
@@ -32,6 +34,11 @@ public class RestaurantController {
     public ResponseEntity<Void> restaurantOpen(@PathVariable Long restaurantId) {
         restaurantService.restaurantOpen(restaurantId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Restaurant>> getAllRestaurant() {
+        return ResponseEntity.ok(restaurantService.getAllRestaurants());
     }
 
 

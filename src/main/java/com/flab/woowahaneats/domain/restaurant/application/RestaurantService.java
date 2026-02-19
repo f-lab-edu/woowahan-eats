@@ -3,8 +3,11 @@ package com.flab.woowahaneats.domain.restaurant.application;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
+import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,5 +43,9 @@ public class RestaurantService {
                 .build();
 
         restaurantRepository.save(restaurant);
+    }
+
+    public List<Restaurant> getAllRestaurants() {
+        return restaurantRepository.findAll();
     }
 }
