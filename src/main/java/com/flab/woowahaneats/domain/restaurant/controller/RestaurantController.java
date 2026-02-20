@@ -42,5 +42,8 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurantService.getAllRestaurants());
     }
 
-
+    @GetMapping("/search")
+    public ResponseEntity<RestaurantResponse> searchRestaurant(@RequestParam String name) {
+        return ResponseEntity.ok(restaurantService.searchRestaurant(name));
+    }
 }

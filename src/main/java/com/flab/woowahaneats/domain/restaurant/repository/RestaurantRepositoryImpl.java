@@ -23,4 +23,10 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     public List<Restaurant> findAll() {
         return new ArrayList<>(restaurantRepositoryImpl.values());
     }
+
+    public Optional<Restaurant> findByName(String name) {
+        return restaurantRepositoryImpl.values().stream()
+                .filter(restaurant -> restaurant.getName().contains(name))
+                .findFirst();
+    }
 }

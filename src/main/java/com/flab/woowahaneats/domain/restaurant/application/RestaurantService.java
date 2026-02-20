@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +76,14 @@ public class RestaurantService {
 
         }
         return restaurantResponses;
+    }
+
+    public RestaurantResponse searchRestaurant(String name) {
+        Restaurant restaurant = restaurantRepository.findByName(name).orElseThrow();
+
+        RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository
+                .findById(restaurant.getId()).orElseThrow();
+
+        return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 }

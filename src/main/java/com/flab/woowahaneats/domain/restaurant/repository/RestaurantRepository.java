@@ -9,5 +9,5 @@ public interface RestaurantRepository {
    void save(Restaurant restaurant);
    Optional<Restaurant> findById(Long id);
    List<Restaurant> findAll();
-
+   Optional<Restaurant> findByName(String name);
 }
