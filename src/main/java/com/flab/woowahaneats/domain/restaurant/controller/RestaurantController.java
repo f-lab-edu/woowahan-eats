@@ -19,9 +19,9 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> restaurantRegister(@Valid @RequestBody RestaurantRequest restaurantRequest) {
+    public ResponseEntity<Void> registerRestaurant(@Valid @RequestBody RestaurantRequest restaurantRequest) {
 
-        restaurantService.restaurantRegister(restaurantRequest);
+        restaurantService.registerRestaurant(restaurantRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -31,13 +31,13 @@ public class RestaurantController {
     }
 
     @PostMapping("/open/{restaurantId}")
-    public ResponseEntity<Void> restaurantOpen(@PathVariable Long restaurantId) {
-        restaurantService.restaurantOpen(restaurantId);
+    public ResponseEntity<Void> openRestaurant(@PathVariable Long restaurantId) {
+        restaurantService.openRestaurant(restaurantId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping
-    public ResponseEntity<List<Restaurant>> getAllRestaurant() {
+    public ResponseEntity<List<Restaurant>> getAllRestaurants() {
         return ResponseEntity.ok(restaurantService.getAllRestaurants());
     }
 

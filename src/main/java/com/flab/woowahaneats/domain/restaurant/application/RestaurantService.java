@@ -15,7 +15,7 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
 
-    public void restaurantRegister(RestaurantRequest restaurantRequest) {
+    public void registerRestaurant(RestaurantRequest restaurantRequest) {
 
         Restaurant restaurant = Restaurant.builder()
                 .id(restaurantRequest.id())
@@ -37,7 +37,7 @@ public class RestaurantService {
         return restaurantRepository.findById(restaurantId);
     }
 
-    public void restaurantOpen(Long restaurantId) {
+    public void openRestaurant(Long restaurantId) {
         Restaurant restaurant = getRestaurant(restaurantId).toBuilder()
                 .open(!getRestaurant(restaurantId).isOpen())
                 .build();
