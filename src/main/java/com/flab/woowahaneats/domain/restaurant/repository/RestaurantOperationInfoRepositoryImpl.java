@@ -4,6 +4,7 @@ import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @Repository
 public class RestaurantOperationInfoRepositoryImpl implements RestaurantOperationInfoRepository {
@@ -14,8 +15,8 @@ public class RestaurantOperationInfoRepositoryImpl implements RestaurantOperatio
         restaurantOperationInfoRepository.put(restaurantOperationInfo.getRestaurantId(), restaurantOperationInfo);
     }
 
-    public RestaurantOperationInfo findById(Long id) {
-        return restaurantOperationInfoRepository.get(id);
+    public Optional<RestaurantOperationInfo> findById(Long id) {
+        return Optional.ofNullable(restaurantOperationInfoRepository.get(id));
     }
 
 }

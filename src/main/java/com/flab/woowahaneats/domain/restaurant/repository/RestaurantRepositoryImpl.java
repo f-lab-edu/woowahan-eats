@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class RestaurantRepositoryImpl implements RestaurantRepository {
@@ -15,8 +16,8 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
         restaurantRepositoryImpl.put(restaurant.getId(), restaurant);
     }
 
-    public Restaurant findById(Long id) {
-        return restaurantRepositoryImpl.get(id);
+    public Optional<Restaurant> findById(Long id) {
+        return Optional.ofNullable(restaurantRepositoryImpl.get(id));
     }
 
     public List<Restaurant> findAll() {

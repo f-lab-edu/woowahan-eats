@@ -2,7 +2,9 @@ package com.flab.woowahaneats.domain.restaurant.repository;
 
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 
+import java.util.Optional;
+
 public interface RestaurantOperationInfoRepository {
     void save(RestaurantOperationInfo restaurantOperationInfo);
-    RestaurantOperationInfo findById(Long id);
+    Optional<RestaurantOperationInfo> findById(Long id);
 }

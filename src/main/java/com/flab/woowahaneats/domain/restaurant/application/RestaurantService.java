@@ -45,15 +45,15 @@ public class RestaurantService {
 
     public RestaurantResponse getRestaurant(Long restaurantId) {
 
-        Restaurant restaurant = restaurantRepository.findById(restaurantId);
-        RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId);
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+        RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId).orElseThrow();
 
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 
     public void openRestaurant(Long restaurantId) {
 
-        RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId);
+        RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId).orElseThrow();
 
         RestaurantOperationInfo updateRestaurantOperationInfo = restaurantOperationInfo.toBuilder()
                 .open(!restaurantOperationInfo.isOpen())
@@ -69,7 +69,7 @@ public class RestaurantService {
 
         for (Restaurant restaurant : restaurants) {
 
-            RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurant.getId());
+            RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurant.getId()).orElseThrow();
 
             restaurantResponses.add(RestaurantResponse.of(restaurant, restaurantOperationInfo));
 
