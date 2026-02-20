@@ -2,6 +2,7 @@ package com.flab.woowahaneats.domain.restaurant.controller;
 
 import com.flab.woowahaneats.domain.restaurant.application.RestaurantService;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
+import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/{restaurantId}")
-    public ResponseEntity<Restaurant> getRestaurant(@PathVariable Long restaurantId) {
+    public ResponseEntity<RestaurantResponse> getRestaurant(@PathVariable Long restaurantId) {
         return ResponseEntity.ok(restaurantService.getRestaurant(restaurantId));
     }
 
@@ -37,7 +38,7 @@ public class RestaurantController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Restaurant>> getAllRestaurants() {
+    public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {
         return ResponseEntity.ok(restaurantService.getAllRestaurants());
     }
 
