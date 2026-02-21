@@ -16,4 +16,12 @@ public class OwnerRepository {
     public Owner findById(Long id) {
         return ownerRepository.get(id);
     }
+    public Owner findByEmail(String email) {
+        for (Owner owner : ownerRepository.values()) {
+            if (owner.getEmail().equals(email)) {
+                return owner;
+            }
+        }
+        return null;
+    }
 }
