@@ -1,18 +1,14 @@
 package com.flab.woowahaneats.domain.member.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
-@AllArgsConstructor
-public class Member {
+@SuperBuilder
+public abstract class Member {
     private Long id;
     private String name;
-    private String businessNumber;
-    private String bankName;
-    private String accountNumber;
     private String password;
     private String email;
     private String phoneNumber;
-    private String address;
 }
