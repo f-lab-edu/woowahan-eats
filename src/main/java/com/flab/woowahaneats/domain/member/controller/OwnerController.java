@@ -25,10 +25,16 @@ public class OwnerController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<Void> loginOwner(@Valid @RequestBody OwnerLoginRequest ownerLoginRequest, HttpSession httpSession) {
         Owner owner = ownerService.loginOwner(ownerLoginRequest);
         httpSession.setAttribute("ownerId", owner.getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logoutOwner(HttpSession httpSession) {
+        httpSession.invalidate();
         return ResponseEntity.ok().build();
     }
 }
