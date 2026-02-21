@@ -26,7 +26,8 @@ public class OwnerService {
                 .email(ownerSignUpRequest.email())
                 .phoneNumber(ownerSignUpRequest.phoneNumber())
                 .address(ownerSignUpRequest.address())
-                .businessNumber(ownerSignUpRequest.businessNumber())
+                .businessNotificationCertUrl(ownerSignUpRequest.businessNotificationCertUrl())
+                .businessRegistrationCertUrl(ownerSignUpRequest.businessRegistrationCertUrl())
                 .accountNumber(ownerSignUpRequest.accountNumber())
                 .bankName(ownerSignUpRequest.bankName())
                 .build();

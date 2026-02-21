@@ -16,7 +16,8 @@ public class MemberRepositoryTest {
             .email("hong@example.com")
             .phoneNumber("010-1234-5678")
             .address("서울특별시 강남구 테헤란로 123")
-            .businessNumber("123-45-67890")
+            .businessNotificationCertUrl("aklsdfjkalsjdfl")
+            .businessRegistrationCertUrl("aklsdfjkalsjdfl")
             .accountNumber("123456-01-123456")
             .bankName("국민은행")
             .build();

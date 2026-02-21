@@ -26,7 +26,10 @@ public record OwnerSignUpRequest (
         String address,
 
         @NotBlank
-        String businessNumber,
+        String businessRegistrationCertUrl,
+
+        @NotBlank
+        String businessNotificationCertUrl,
 
         @NotBlank
         String accountNumber,

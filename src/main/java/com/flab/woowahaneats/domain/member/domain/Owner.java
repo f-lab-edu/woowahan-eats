@@ -7,7 +7,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Owner extends Member {
     private String address;
-    private String businessNumber;
+    private String businessRegistrationCertUrl;
+    private String businessNotificationCertUrl;
     private String accountNumber;
     private String bankName;
 }
