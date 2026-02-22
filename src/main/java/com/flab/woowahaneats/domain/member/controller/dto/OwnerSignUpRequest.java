@@ -1,5 +1,7 @@
 package com.flab.woowahaneats.domain.member.controller.dto;
 
+import com.flab.woowahaneats.domain.common.vo.Address;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,8 +24,9 @@ public record OwnerSignUpRequest (
         @NotBlank
         String phoneNumber,
 
-        @NotBlank
-        String address,
+        @Valid
+        @NotNull
+        Address address,
 
         @NotBlank
         String businessRegistrationCertUrl,

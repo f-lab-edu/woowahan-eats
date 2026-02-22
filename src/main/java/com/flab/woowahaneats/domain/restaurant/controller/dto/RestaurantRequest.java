@@ -1,5 +1,7 @@
 package com.flab.woowahaneats.domain.restaurant.controller.dto;
 
+import com.flab.woowahaneats.domain.common.vo.Address;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,8 +20,9 @@ public record RestaurantRequest(
         @NotBlank
         String description,
 
-        @NotBlank
-        String address,
+        @Valid
+        @NotNull
+        Address address,
 
         @Min(0)
         int minOrderAmt,

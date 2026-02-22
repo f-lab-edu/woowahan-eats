@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.restaurant.controller.dto;
 
+import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 
@@ -8,7 +9,7 @@ public record RestaurantResponse (
         Long memberId,
         String name,
         String description,
-        String address,
+        Address address,
         String region,
         double avgRating,
         int minOrderAmt,
