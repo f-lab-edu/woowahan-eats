@@ -3,14 +3,12 @@ package com.flab.woowahaneats.domain.auth.controller;
 import com.flab.woowahaneats.domain.auth.application.AuthService;
 import com.flab.woowahaneats.domain.auth.controller.dto.AuthLoginRequest;
 import com.flab.woowahaneats.domain.member.domain.Owner;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,15 +17,29 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody AuthLoginRequest authLoginRequest, HttpSession httpSession) {
+    public ResponseEntity<Void> login(@Valid @RequestBody AuthLoginRequest authLoginRequest, HttpServletRequest request) {
         Owner owner = authService.login(authLoginRequest);
-        httpSession.setAttribute("ownerId", owner.getId());
+
+        HttpSession oldSession = request.getSession(false);
+        if(oldSession != null) {
+            oldSession.invalidate();
+        }
+
+        HttpSession session = request.getSession(true);
+        session.setAttribute("ownerId", owner.getId());
+
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpSession httpSession) {
-        httpSession.invalidate();
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+
+        if(session != null) {
+            session.invalidate();
+        }
+
         return ResponseEntity.ok().build();
     }
 }
+
