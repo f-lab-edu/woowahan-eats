@@ -1,6 +1,7 @@
 package com.flab.woowahaneats.domain.member.controller.dto;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
+import com.flab.woowahaneats.domain.common.vo.BankAccount;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -34,9 +35,7 @@ public record OwnerSignUpRequest (
         @NotBlank
         String businessNotificationCertUrl,
 
-        @NotBlank
-        String accountNumber,
-
-        @NotBlank
-        String bankName
+        @Valid
+        @NotNull
+        BankAccount bankAccount
 ){}

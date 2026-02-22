@@ -29,8 +29,7 @@ public class OwnerService {
                 .address(ownerSignUpRequest.address())
                 .businessNotificationCertUrl(ownerSignUpRequest.businessNotificationCertUrl())
                 .businessRegistrationCertUrl(ownerSignUpRequest.businessRegistrationCertUrl())
-                .accountNumber(ownerSignUpRequest.accountNumber())
-                .bankName(ownerSignUpRequest.bankName())
+                .bankAccount(ownerSignUpRequest.bankAccount())
                 .build();
 
         ownerRepository.save(owner);
