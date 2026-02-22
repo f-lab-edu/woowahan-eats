@@ -1,10 +1,9 @@
-package com.flab.woowahaneats.domain.member.controller.dto;
+package com.flab.woowahaneats.domain.auth.controller.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record OwnerLoginRequest(
-
+public record AuthLoginRequest(
         @NotBlank
         String password,
 
