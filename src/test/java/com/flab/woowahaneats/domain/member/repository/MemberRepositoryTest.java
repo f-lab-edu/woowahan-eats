@@ -1,13 +1,12 @@
 package com.flab.woowahaneats.domain.member.repository;
 
-import com.flab.woowahaneats.domain.member.domain.Member;
 import com.flab.woowahaneats.domain.member.domain.Owner;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class MemberRepositoryTest {
 
-    OwnerRepository ownerRepository = new OwnerRepository();
+    OwnerRepository ownerRepository = new OwnerRepositoryImpl();
 
     Owner owner = Owner.builder()
             .id(1L)
