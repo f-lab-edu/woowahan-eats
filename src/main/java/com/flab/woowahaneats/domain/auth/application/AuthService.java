@@ -1,6 +1,8 @@
 package com.flab.woowahaneats.domain.auth.application;
 
 import com.flab.woowahaneats.domain.auth.controller.dto.AuthLoginRequest;
+import com.flab.woowahaneats.domain.member.application.exception.AccountNotFoundException;
+import com.flab.woowahaneats.domain.member.application.exception.InvalidPasswordException;
 import com.flab.woowahaneats.domain.member.domain.Account;
 import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.member.repository.AccountRepository;
@@ -21,14 +23,13 @@ public class AuthService {
         Account account = accountRepository.findByEmail(authLoginRequest.email());
 
         if (account == null) {
-            throw new IllegalArgumentException("해당 email의 계정이 없습니다.");
-
+            throw new AccountNotFoundException();
         }
 
         if (!passwordEncoder.matches(authLoginRequest.password(), account.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new InvalidPasswordException();
         }
 
-      return account;
+        return account;
     }
 }

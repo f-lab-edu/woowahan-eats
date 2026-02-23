@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.global.interceptor;
 
+import com.flab.woowahaneats.domain.member.application.exception.OwnerNotFoundException;
 import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.member.repository.OwnerRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,8 +19,7 @@ public class OwnerAuthInterceptor extends AuthInterceptor {
         Owner owner = ownerRepository.findByAccountId(accountId);
 
         if (owner == null) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return false;
+            throw new OwnerNotFoundException();
         }
 
         request.setAttribute("owner", owner);

@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.member.application;
 
+import com.flab.woowahaneats.domain.member.application.exception.DuplicateEmailException;
 import com.flab.woowahaneats.domain.member.controller.dto.OwnerSignUpRequest;
 import com.flab.woowahaneats.domain.member.domain.Account;
 import com.flab.woowahaneats.domain.member.domain.Owner;
@@ -18,6 +19,11 @@ public class OwnerService {
     private final PasswordEncoder passwordEncoder;
 
     public void signUpOwner(OwnerSignUpRequest ownerSignUpRequest) {
+
+        Account existingAccount = accountRepository.findByEmail(ownerSignUpRequest.email());
+        if (existingAccount != null) {
+            throw new DuplicateEmailException();
+        }
 
         String encodedPassword = passwordEncoder.encode(ownerSignUpRequest.password());
 
