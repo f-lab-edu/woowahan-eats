@@ -31,6 +31,7 @@ public class OwnerService {
                 .id(ownerSignUpRequest.id())
                 .accountId(account.getId())
                 .address(ownerSignUpRequest.address())
+                .location(ownerSignUpRequest.location())
                 .businessNotificationCertUrl(ownerSignUpRequest.businessNotificationCertUrl())
                 .businessRegistrationCertUrl(ownerSignUpRequest.businessRegistrationCertUrl())
                 .bankAccount(ownerSignUpRequest.bankAccount())

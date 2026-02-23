@@ -1,6 +1,7 @@
 package com.flab.woowahaneats.domain.restaurant.domain;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
+import com.flab.woowahaneats.domain.common.vo.Location;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,6 +13,7 @@ public class Restaurant {
     private String name;
     private String description;
     private Address address;
+    private Location location;
     private String region;
     private double avgRating;
 }
