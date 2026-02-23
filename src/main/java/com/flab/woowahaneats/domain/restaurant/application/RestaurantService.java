@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.restaurant.application;
 
-import com.flab.woowahaneats.domain.member.repository.OwnerRepository;
+import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
@@ -18,18 +18,13 @@ import java.util.List;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
-    private final OwnerRepository ownerRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
 
-    public void registerRestaurant(RestaurantRequest restaurantRequest) {
-
-        if (ownerRepository.findById(restaurantRequest.memberId()) == null) {
-            throw new IllegalArgumentException("음식점은 Owner만 등록할 수 있습니다");
-        }
+    public void registerRestaurant(RestaurantRequest restaurantRequest, Owner owner) {
 
         Restaurant restaurant = Restaurant.builder()
                 .id(restaurantRequest.id())
-                .memberId(restaurantRequest.memberId())
+                .ownerId(owner.getId())
                 .name(restaurantRequest.name())
                 .description(restaurantRequest.description())
                 .address(restaurantRequest.address())

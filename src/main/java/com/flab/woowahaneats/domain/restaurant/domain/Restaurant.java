@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 public class Restaurant {
     private Long id;
-    private Long memberId;
+    private Long ownerId;
     private String name;
     private String description;
     private Address address;

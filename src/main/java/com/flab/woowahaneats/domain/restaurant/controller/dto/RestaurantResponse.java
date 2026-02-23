@@ -7,7 +7,7 @@ import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 
 public record RestaurantResponse (
         Long id,
-        Long memberId,
+        Long ownerId,
         String name,
         String description,
         Address address,
@@ -20,7 +20,7 @@ public record RestaurantResponse (
     public static RestaurantResponse of(Restaurant restaurant, RestaurantOperationInfo restaurantOperationInfo) {
         return new RestaurantResponse(
                 restaurant.getId(),
-                restaurant.getMemberId(),
+                restaurant.getOwnerId(),
                 restaurant.getName(),
                 restaurant.getDescription(),
                 restaurant.getAddress(),

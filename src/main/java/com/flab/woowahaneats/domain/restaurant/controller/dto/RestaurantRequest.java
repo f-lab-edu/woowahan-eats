@@ -12,9 +12,6 @@ public record RestaurantRequest(
         @NotNull
         Long id,
 
-        @NotNull
-        Long memberId,
-
         @NotBlank
         String name,
 
