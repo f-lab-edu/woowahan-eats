@@ -1,18 +1,17 @@
 package com.flab.woowahaneats.domain.restaurant.application;
 
+import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
-import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,15 +20,15 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
 
-    public void registerRestaurant(RestaurantRequest restaurantRequest) {
+    public void registerRestaurant(RestaurantRequest restaurantRequest, Owner owner) {
 
         Restaurant restaurant = Restaurant.builder()
                 .id(restaurantRequest.id())
-                .memberId(restaurantRequest.memberId())
+                .ownerId(owner.getId())
                 .name(restaurantRequest.name())
                 .description(restaurantRequest.description())
                 .address(restaurantRequest.address())
-                .region(restaurantRequest.region())
+                .location(restaurantRequest.location())
                 .avgRating(0.0)
                 .build();
 
@@ -52,7 +51,13 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 
-    public void openRestaurant(Long restaurantId) {
+    public void openRestaurant(Long restaurantId, Owner owner) {
+
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+
+        if (!restaurant.getOwnerId().equals(owner.getId())) {
+            throw new IllegalArgumentException("본인 소유의 음식점만 영업 상태를 변경할 수 있습니다.");
+        }
 
         RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId).orElseThrow();
 

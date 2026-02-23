@@ -9,23 +9,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class RestaurantRepositoryImpl implements RestaurantRepository {
-    HashMap<Long, Restaurant> restaurantRepositoryImpl = new HashMap<>();
+public class HashMapRestaurantRepository implements RestaurantRepository {
+    HashMap<Long, Restaurant> HashMapRestaurantRepository = new HashMap<>();
 
     public void save(Restaurant restaurant) {
-        restaurantRepositoryImpl.put(restaurant.getId(), restaurant);
+        HashMapRestaurantRepository.put(restaurant.getId(), restaurant);
     }
 
     public Optional<Restaurant> findById(Long id) {
-        return Optional.ofNullable(restaurantRepositoryImpl.get(id));
+        return Optional.ofNullable(HashMapRestaurantRepository.get(id));
     }
 
     public List<Restaurant> findAll() {
-        return new ArrayList<>(restaurantRepositoryImpl.values());
+        return new ArrayList<>(HashMapRestaurantRepository.values());
     }
 
     public Optional<Restaurant> findByName(String name) {
-        return restaurantRepositoryImpl.values().stream()
+        return HashMapRestaurantRepository.values().stream()
                 .filter(restaurant -> restaurant.getName().contains(name))
                 .findFirst();
     }

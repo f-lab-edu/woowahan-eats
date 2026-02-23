@@ -1,9 +1,11 @@
 package com.flab.woowahaneats.domain.restaurant.controller;
 
+import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.restaurant.application.RestaurantService;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,9 +22,11 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> registerRestaurant(@Valid @RequestBody RestaurantRequest restaurantRequest) {
+    public ResponseEntity<Void> registerRestaurant(@Valid @RequestBody RestaurantRequest restaurantRequest, HttpServletRequest request) {
 
-        restaurantService.registerRestaurant(restaurantRequest);
+        Owner owner = (Owner) request.getAttribute("owner");
+
+        restaurantService.registerRestaurant(restaurantRequest, owner);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -32,8 +36,11 @@ public class RestaurantController {
     }
 
     @PostMapping("/open/{restaurantId}")
-    public ResponseEntity<Void> openRestaurant(@PathVariable Long restaurantId) {
-        restaurantService.openRestaurant(restaurantId);
+    public ResponseEntity<Void> openRestaurant(@PathVariable Long restaurantId, HttpServletRequest request) {
+
+        Owner owner = (Owner) request.getAttribute("owner");
+
+        restaurantService.openRestaurant(restaurantId, owner);
         return ResponseEntity.ok().build();
     }
 
