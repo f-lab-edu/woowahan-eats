@@ -33,9 +33,6 @@ public record RestaurantRequest(
         int minOrderAmt,
 
         @NotNull
-        int deliveryFee,
-
-        @NotBlank
-        String region
+        int deliveryFee
  ) {
 }

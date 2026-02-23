@@ -1,6 +1,7 @@
 package com.flab.woowahaneats.domain.restaurant.controller.dto;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
+import com.flab.woowahaneats.domain.common.vo.Location;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 
@@ -10,7 +11,7 @@ public record RestaurantResponse (
         String name,
         String description,
         Address address,
-        String region,
+        Location location,
         double avgRating,
         int minOrderAmt,
         int deliveryFee,
@@ -23,7 +24,7 @@ public record RestaurantResponse (
                 restaurant.getName(),
                 restaurant.getDescription(),
                 restaurant.getAddress(),
-                restaurant.getRegion(),
+                restaurant.getLocation(),
                 restaurant.getAvgRating(),
                 restaurantOperationInfo.getMinOrderAmt(),
                 restaurantOperationInfo.getDeliveryFee(),

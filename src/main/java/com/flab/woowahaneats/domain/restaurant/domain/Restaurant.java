@@ -14,6 +14,5 @@ public class Restaurant {
     private String description;
     private Address address;
     private Location location;
-    private String region;
     private double avgRating;
 }

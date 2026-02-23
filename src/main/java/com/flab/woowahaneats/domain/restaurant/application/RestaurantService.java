@@ -34,7 +34,6 @@ public class RestaurantService {
                 .description(restaurantRequest.description())
                 .address(restaurantRequest.address())
                 .location(restaurantRequest.location())
-                .region(restaurantRequest.region())
                 .avgRating(0.0)
                 .build();
 
