@@ -16,9 +16,9 @@ public class HashMapOwnerRepository implements OwnerRepository{
     public Owner findById(Long id) {
         return ownerRepository.get(id);
     }
-    public Owner findByEmail(String email) {
+    public Owner findByAccountId(Long accountId) {
         for (Owner owner : ownerRepository.values()) {
-            if (owner.getEmail().equals(email)) {
+            if (owner.getAccountId().equals(accountId)) {
                 return owner;
             }
         }

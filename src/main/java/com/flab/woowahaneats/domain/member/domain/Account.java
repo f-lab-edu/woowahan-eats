@@ -1,11 +1,11 @@
 package com.flab.woowahaneats.domain.member.domain;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 @Getter
-@SuperBuilder
-public abstract class Member {
+@Builder
+public class Account {
     private Long id;
     private String name;
     private String password;
