@@ -7,17 +7,13 @@ import java.util.HashMap;
 
 @Repository
 public class HashMapAccountRepository implements AccountRepository {
-    HashMap<Long, Account> accountRepository = new HashMap<>();
+    HashMap<Long, Account> HashMapAccountRepository = new HashMap<>();
     public void save(Account account) {
-        accountRepository.put(account.getId(), account);
-    }
-
-    public Account findById(Long id) {
-        return accountRepository.get(id);
+        HashMapAccountRepository.put(account.getId(), account);
     }
 
     public Account findByEmail(String email) {
-        for (Account account : accountRepository.values()) {
+        for (Account account : HashMapAccountRepository.values()) {
             if (account.getEmail().equals(email)) {
                 return account;
             }

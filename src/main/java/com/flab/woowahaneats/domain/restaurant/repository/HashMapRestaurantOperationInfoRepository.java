@@ -9,14 +9,14 @@ import java.util.Optional;
 @Repository
 public class HashMapRestaurantOperationInfoRepository implements RestaurantOperationInfoRepository {
 
-    HashMap<Long, RestaurantOperationInfo> restaurantOperationInfoRepository = new HashMap<>();
+    HashMap<Long, RestaurantOperationInfo> HashMapRestaurantOperationInfoRepository = new HashMap<>();
 
     public void save(RestaurantOperationInfo restaurantOperationInfo) {
-        restaurantOperationInfoRepository.put(restaurantOperationInfo.getRestaurantId(), restaurantOperationInfo);
+        HashMapRestaurantOperationInfoRepository.put(restaurantOperationInfo.getRestaurantId(), restaurantOperationInfo);
     }
 
     public Optional<RestaurantOperationInfo> findById(Long id) {
-        return Optional.ofNullable(restaurantOperationInfoRepository.get(id));
+        return Optional.ofNullable(HashMapRestaurantOperationInfoRepository.get(id));
     }
 
 }
