@@ -1,8 +1,8 @@
-package com.flab.woowahaneats.domain.member.application.exception;
+package com.flab.woowahaneats.domain.auth.application.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class InvalidPasswordException extends MemberException {
+public class InvalidPasswordException extends AuthException {
     public InvalidPasswordException() {
         super(
                 "비밀번호가 일치하지 않습니다.",
