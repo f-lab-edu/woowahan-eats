@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 public class MemberRepositoryTest {
 
-    OwnerRepository ownerRepository = new OwnerRepositoryImpl();
+    OwnerRepository ownerRepository = new HashMapOwnerRepository();
 
     Owner owner = Owner.builder()
             .id(1L)

@@ -1,7 +1,6 @@
 package com.flab.woowahaneats.domain.restaurant.application;
 
 import com.flab.woowahaneats.domain.member.repository.OwnerRepository;
-import com.flab.woowahaneats.domain.member.repository.OwnerRepositoryImpl;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;

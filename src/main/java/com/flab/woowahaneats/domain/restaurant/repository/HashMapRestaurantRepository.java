@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class RestaurantRepositoryImpl implements RestaurantRepository {
+public class HashMapRestaurantRepository implements RestaurantRepository {
     HashMap<Long, Restaurant> restaurantRepositoryImpl = new HashMap<>();
 
     public void save(Restaurant restaurant) {

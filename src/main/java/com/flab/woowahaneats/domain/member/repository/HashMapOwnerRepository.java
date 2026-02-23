@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 
 @Repository
-public class OwnerRepositoryImpl implements OwnerRepository{
+public class HashMapOwnerRepository implements OwnerRepository{
     HashMap<Long, Owner> ownerRepository = new HashMap<>();
 
     public void save(Owner owner) {

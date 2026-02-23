@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 @Repository
-public class RestaurantOperationInfoRepositoryImpl implements RestaurantOperationInfoRepository {
+public class HashMapRestaurantOperationInfoRepository implements RestaurantOperationInfoRepository {
 
     HashMap<Long, RestaurantOperationInfo> restaurantOperationInfoRepository = new HashMap<>();
 
