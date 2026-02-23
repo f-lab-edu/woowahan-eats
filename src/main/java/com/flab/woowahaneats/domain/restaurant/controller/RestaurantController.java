@@ -36,8 +36,11 @@ public class RestaurantController {
     }
 
     @PostMapping("/open/{restaurantId}")
-    public ResponseEntity<Void> openRestaurant(@PathVariable Long restaurantId) {
-        restaurantService.openRestaurant(restaurantId);
+    public ResponseEntity<Void> openRestaurant(@PathVariable Long restaurantId, HttpServletRequest request) {
+
+        Owner owner = (Owner) request.getAttribute("owner");
+
+        restaurantService.openRestaurant(restaurantId, owner);
         return ResponseEntity.ok().build();
     }
 

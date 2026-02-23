@@ -51,7 +51,13 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 
-    public void openRestaurant(Long restaurantId) {
+    public void openRestaurant(Long restaurantId, Owner owner) {
+
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+
+        if (!restaurant.getOwnerId().equals(owner.getId())) {
+            throw new IllegalArgumentException("본인 소유의 음식점만 영업 상태를 변경할 수 있습니다.");
+        }
 
         RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId).orElseThrow();
 
