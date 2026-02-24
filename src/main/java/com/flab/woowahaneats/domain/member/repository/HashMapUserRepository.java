@@ -12,4 +12,14 @@ public class HashMapUserRepository implements UserRepository {
     public void save(User user) {
         HashMapUserRepository.put(user.getId(), user);
     }
+
+    @Override
+    public User findByAccountId(Long accountId) {
+        for (User user : HashMapUserRepository.values()) {
+            if (user.getAccountId().equals(accountId)) {
+                return user;
+            }
+        }
+        return null;
+    }
 }

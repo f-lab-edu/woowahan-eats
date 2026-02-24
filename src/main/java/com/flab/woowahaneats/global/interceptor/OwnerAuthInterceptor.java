@@ -4,6 +4,8 @@ import com.flab.woowahaneats.domain.auth.OwnerAuthContext;
 import com.flab.woowahaneats.domain.member.application.exception.OwnerNotFoundException;
 import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.member.repository.OwnerRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -23,5 +25,11 @@ public class OwnerAuthInterceptor extends AuthInterceptor {
 
         OwnerAuthContext.setOwner(owner);
         return true;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request,
+                                HttpServletResponse response, Object handler, Exception ex){
+        OwnerAuthContext.clear();
     }
 }

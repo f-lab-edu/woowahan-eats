@@ -27,9 +27,4 @@ public abstract class AuthInterceptor implements HandlerInterceptor {
 
     protected abstract boolean checkPermission(Long accountId);
 
-    @Override
-    public void afterCompletion(HttpServletRequest request,
-                                HttpServletResponse response, Object handler, Exception ex){
-        OwnerAuthContext.clear();
-    }
 }
