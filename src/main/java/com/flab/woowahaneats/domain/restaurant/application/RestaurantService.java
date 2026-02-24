@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.restaurant.application;
 
+import com.flab.woowahaneats.domain.auth.OwnerAuthContext;
 import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotOwnedException;
@@ -23,7 +24,9 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
 
-    public void registerRestaurant(RestaurantRequest restaurantRequest, Owner owner) {
+    public void registerRestaurant(RestaurantRequest restaurantRequest) {
+
+        Owner owner = OwnerAuthContext.getOwner();
 
         Restaurant restaurant = Restaurant.builder()
                 .id(restaurantRequest.id())
@@ -56,7 +59,9 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 
-    public void openRestaurant(Long restaurantId, Owner owner) {
+    public void openRestaurant(Long restaurantId) {
+
+        Owner owner = OwnerAuthContext.getOwner();
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);

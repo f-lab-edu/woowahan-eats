@@ -22,11 +22,9 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> registerRestaurant(@Valid @RequestBody RestaurantRequest restaurantRequest, HttpServletRequest request) {
+    public ResponseEntity<Void> registerRestaurant(@Valid @RequestBody RestaurantRequest restaurantRequest) {
 
-        Owner owner = (Owner) request.getAttribute("owner");
-
-        restaurantService.registerRestaurant(restaurantRequest, owner);
+        restaurantService.registerRestaurant(restaurantRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -36,11 +34,9 @@ public class RestaurantController {
     }
 
     @PostMapping("/open/{restaurantId}")
-    public ResponseEntity<Void> openRestaurant(@PathVariable Long restaurantId, HttpServletRequest request) {
+    public ResponseEntity<Void> openRestaurant(@PathVariable Long restaurantId) {
 
-        Owner owner = (Owner) request.getAttribute("owner");
-
-        restaurantService.openRestaurant(restaurantId, owner);
+        restaurantService.openRestaurant(restaurantId);
         return ResponseEntity.ok().build();
     }
 
