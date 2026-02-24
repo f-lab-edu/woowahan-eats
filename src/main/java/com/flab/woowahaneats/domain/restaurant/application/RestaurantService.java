@@ -1,6 +1,10 @@
 package com.flab.woowahaneats.domain.restaurant.application;
 
+import com.flab.woowahaneats.domain.auth.OwnerAuthContext;
 import com.flab.woowahaneats.domain.member.domain.Owner;
+import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotFoundException;
+import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotOwnedException;
+import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantOperationInfoNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
@@ -20,7 +24,9 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
 
-    public void registerRestaurant(RestaurantRequest restaurantRequest, Owner owner) {
+    public void registerRestaurant(RestaurantRequest restaurantRequest) {
+
+        Owner owner = OwnerAuthContext.getOwner();
 
         Restaurant restaurant = Restaurant.builder()
                 .id(restaurantRequest.id())
@@ -45,21 +51,27 @@ public class RestaurantService {
 
     public RestaurantResponse getRestaurant(Long restaurantId) {
 
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
-        RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId).orElseThrow();
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(RestaurantNotFoundException::new);
+        RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId)
+                .orElseThrow(RestaurantOperationInfoNotFoundException::new);
 
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 
-    public void openRestaurant(Long restaurantId, Owner owner) {
+    public void openRestaurant(Long restaurantId) {
 
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+        Owner owner = OwnerAuthContext.getOwner();
+
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(RestaurantNotFoundException::new);
 
         if (!restaurant.getOwnerId().equals(owner.getId())) {
-            throw new IllegalArgumentException("본인 소유의 음식점만 영업 상태를 변경할 수 있습니다.");
+            throw new RestaurantNotOwnedException();
         }
 
-        RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId).orElseThrow();
+        RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId)
+                .orElseThrow(RestaurantOperationInfoNotFoundException::new);
 
         RestaurantOperationInfo updateRestaurantOperationInfo = restaurantOperationInfo.toBuilder()
                 .open(!restaurantOperationInfo.isOpen())
@@ -75,7 +87,8 @@ public class RestaurantService {
 
         for (Restaurant restaurant : restaurants) {
 
-            RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurant.getId()).orElseThrow();
+            RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurant.getId())
+                    .orElseThrow(RestaurantOperationInfoNotFoundException::new);
 
             restaurantResponses.add(RestaurantResponse.of(restaurant, restaurantOperationInfo));
 
@@ -84,10 +97,12 @@ public class RestaurantService {
     }
 
     public RestaurantResponse searchRestaurant(String name) {
-        Restaurant restaurant = restaurantRepository.findByName(name).orElseThrow();
+        Restaurant restaurant = restaurantRepository.findByName(name)
+                .orElseThrow(RestaurantNotFoundException::new);
 
         RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository
-                .findById(restaurant.getId()).orElseThrow();
+                .findById(restaurant.getId())
+                .orElseThrow(RestaurantOperationInfoNotFoundException::new);
 
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
