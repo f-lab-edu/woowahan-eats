@@ -15,6 +15,13 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
+        return ResponseEntity
+                .status(e.getHttpStatus())
+                .body(ErrorResponse.of(e.getErrorCode(), e.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
         String message = e.getBindingResult()
