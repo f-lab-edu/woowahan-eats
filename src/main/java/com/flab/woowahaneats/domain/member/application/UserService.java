@@ -1,6 +1,8 @@
 package com.flab.woowahaneats.domain.member.application;
 
+import com.flab.woowahaneats.domain.auth.UserAuthContext;
 import com.flab.woowahaneats.domain.member.application.exception.DuplicateEmailException;
+import com.flab.woowahaneats.domain.member.controller.dto.UserResponse;
 import com.flab.woowahaneats.domain.member.controller.dto.UserSignUpRequest;
 import com.flab.woowahaneats.domain.member.domain.Account;
 import com.flab.woowahaneats.domain.member.domain.User;
@@ -47,5 +49,13 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+    }
+
+    public UserResponse getUserProfile(){
+
+        User user = UserAuthContext.getUser();
+        Account account = accountRepository.findById(user.getAccountId());
+
+        return UserResponse.from(user, account);
     }
 }
