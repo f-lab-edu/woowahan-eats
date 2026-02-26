@@ -1,6 +1,5 @@
 package com.flab.woowahaneats.global.interceptor;
 
-import com.flab.woowahaneats.domain.auth.OwnerAuthContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -27,9 +26,4 @@ public abstract class AuthInterceptor implements HandlerInterceptor {
 
     protected abstract boolean checkPermission(Long accountId);
 
-    @Override
-    public void afterCompletion(HttpServletRequest request,
-                                HttpServletResponse response, Object handler, Exception ex){
-        OwnerAuthContext.clear();
-    }
 }

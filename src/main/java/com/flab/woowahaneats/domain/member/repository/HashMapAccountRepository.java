@@ -20,4 +20,8 @@ public class HashMapAccountRepository implements AccountRepository {
         }
         return null;
     }
+
+    public Account findById(Long id) {
+        return HashMapAccountRepository.get(id);
+    }
 }
