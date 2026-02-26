@@ -1,6 +1,5 @@
 package com.flab.woowahaneats.global.interceptor;
 
-import com.flab.woowahaneats.domain.auth.OwnerAuthContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;

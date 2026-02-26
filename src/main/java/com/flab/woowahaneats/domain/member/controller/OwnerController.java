@@ -2,8 +2,7 @@ package com.flab.woowahaneats.domain.member.controller;
 
 import com.flab.woowahaneats.domain.member.application.OwnerService;
 import com.flab.woowahaneats.domain.member.controller.dto.OwnerSignUpRequest;
-import com.flab.woowahaneats.domain.member.domain.Owner;
-import jakarta.servlet.http.HttpSession;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

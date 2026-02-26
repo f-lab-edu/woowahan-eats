@@ -4,9 +4,7 @@ import com.flab.woowahaneats.domain.auth.application.exception.AccountNotFoundEx
 import com.flab.woowahaneats.domain.auth.application.exception.InvalidPasswordException;
 import com.flab.woowahaneats.domain.auth.controller.dto.AuthLoginRequest;
 import com.flab.woowahaneats.domain.member.domain.Account;
-import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.member.repository.AccountRepository;
-import com.flab.woowahaneats.domain.member.repository.OwnerRepository;
 import com.flab.woowahaneats.global.util.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
