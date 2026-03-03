@@ -2,7 +2,7 @@ package com.flab.woowahaneats.domain.member.application;
 
 import com.flab.woowahaneats.domain.member.application.exception.DuplicateEmailException;
 import com.flab.woowahaneats.domain.member.controller.dto.OwnerSignUpRequest;
-import com.flab.woowahaneats.domain.member.domain.Account;
+import com.flab.woowahaneats.domain.auth.domain.Account;
 import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.member.repository.AccountRepository;
 import com.flab.woowahaneats.domain.member.repository.OwnerRepository;
@@ -29,10 +29,8 @@ public class OwnerService {
 
         Account account = Account.builder()
                 .id(ownerSignUpRequest.id())
-                .name(ownerSignUpRequest.name())
                 .password(encodedPassword)
                 .email(ownerSignUpRequest.email())
-                .phoneNumber(ownerSignUpRequest.phoneNumber())
                 .build();
 
         accountRepository.save(account);
@@ -45,6 +43,8 @@ public class OwnerService {
                 .businessNotificationCertUrl(ownerSignUpRequest.businessNotificationCertUrl())
                 .businessRegistrationCertUrl(ownerSignUpRequest.businessRegistrationCertUrl())
                 .bankAccount(ownerSignUpRequest.bankAccount())
+                .name(ownerSignUpRequest.name())
+                .phoneNumber(ownerSignUpRequest.phoneNumber())
                 .build();
 
         ownerRepository.save(owner);

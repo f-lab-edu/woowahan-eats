@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.member.domain;
+package com.flab.woowahaneats.domain.auth.domain;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,8 +7,6 @@ import lombok.Getter;
 @Builder
 public class Account {
     private Long id;
-    private String name;
     private String password;
     private String email;
-    private String phoneNumber;
 }

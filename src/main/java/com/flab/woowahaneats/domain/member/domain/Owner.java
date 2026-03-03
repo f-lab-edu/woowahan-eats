@@ -16,4 +16,6 @@ public class Owner {
     private String businessRegistrationCertUrl;
     private String businessNotificationCertUrl;
     private BankAccount bankAccount;
+    private String name;
+    private String phoneNumber;
 }
