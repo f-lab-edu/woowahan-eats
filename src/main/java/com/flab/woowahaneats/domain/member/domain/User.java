@@ -14,4 +14,6 @@ public class User {
     private Location location;
     private String profileImageUrl;
     private String nickName;
+    private String name;
+    private String phoneNumber;
 }

@@ -2,7 +2,7 @@ package com.flab.woowahaneats.domain.auth.controller;
 
 import com.flab.woowahaneats.domain.auth.application.AuthService;
 import com.flab.woowahaneats.domain.auth.controller.dto.AuthLoginRequest;
-import com.flab.woowahaneats.domain.member.domain.Account;
+import com.flab.woowahaneats.domain.auth.domain.Account;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;

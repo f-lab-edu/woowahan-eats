@@ -1,7 +1,7 @@
 package com.flab.woowahaneats.domain.member.controller.dto;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
-import com.flab.woowahaneats.domain.member.domain.Account;
+import com.flab.woowahaneats.domain.auth.domain.Account;
 import com.flab.woowahaneats.domain.member.domain.User;
 
 public record UserResponse (
@@ -19,9 +19,9 @@ public record UserResponse (
 ){
     public static UserResponse from(User user, Account account) {
         return new UserResponse(
-                account.getName(),
+                user.getName(),
                 account.getEmail(),
-                account.getPhoneNumber(),
+                user.getPhoneNumber(),
                 user.getAddress(),
                 user.getProfileImageUrl(),
                 user.getNickName()

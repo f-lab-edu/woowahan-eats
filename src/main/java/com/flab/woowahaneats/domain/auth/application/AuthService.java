@@ -3,7 +3,7 @@ package com.flab.woowahaneats.domain.auth.application;
 import com.flab.woowahaneats.domain.auth.application.exception.AccountNotFoundException;
 import com.flab.woowahaneats.domain.auth.application.exception.InvalidPasswordException;
 import com.flab.woowahaneats.domain.auth.controller.dto.AuthLoginRequest;
-import com.flab.woowahaneats.domain.member.domain.Account;
+import com.flab.woowahaneats.domain.auth.domain.Account;
 import com.flab.woowahaneats.domain.member.repository.AccountRepository;
 import com.flab.woowahaneats.global.util.PasswordEncoder;
 import lombok.RequiredArgsConstructor;

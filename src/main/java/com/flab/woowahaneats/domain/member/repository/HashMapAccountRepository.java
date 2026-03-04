@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.member.repository;
 
-import com.flab.woowahaneats.domain.member.domain.Account;
+import com.flab.woowahaneats.domain.auth.domain.Account;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;

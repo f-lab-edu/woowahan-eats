@@ -4,7 +4,7 @@ import com.flab.woowahaneats.domain.auth.UserAuthContext;
 import com.flab.woowahaneats.domain.member.application.exception.DuplicateEmailException;
 import com.flab.woowahaneats.domain.member.controller.dto.UserResponse;
 import com.flab.woowahaneats.domain.member.controller.dto.UserSignUpRequest;
-import com.flab.woowahaneats.domain.member.domain.Account;
+import com.flab.woowahaneats.domain.auth.domain.Account;
 import com.flab.woowahaneats.domain.member.domain.User;
 import com.flab.woowahaneats.domain.member.repository.AccountRepository;
 import com.flab.woowahaneats.domain.member.repository.UserRepository;
@@ -31,10 +31,8 @@ public class UserService {
 
         Account account = Account.builder()
                 .id(userSignUpRequest.id())
-                .name(userSignUpRequest.name())
                 .password(encodedPassword)
                 .email(userSignUpRequest.email())
-                .phoneNumber(userSignUpRequest.phoneNumber())
                 .build();
 
         accountRepository.save(account);
@@ -46,6 +44,8 @@ public class UserService {
                 .address(userSignUpRequest.address())
                 .location(userSignUpRequest.location())
                 .profileImageUrl(userSignUpRequest.profileImageUrl())
+                .name(userSignUpRequest.name())
+                .phoneNumber(userSignUpRequest.phoneNumber())
                 .build();
 
         userRepository.save(user);
