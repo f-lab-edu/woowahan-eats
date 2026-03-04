@@ -1,0 +1,24 @@
+package com.flab.woowahaneats.domain.menu.controller.dto;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record MenuRequest (
+
+        @NotNull
+        Long id,
+
+        @NotBlank
+        String name,
+
+        String description,
+
+        String ImageUrl,
+
+        @Min(0)
+        int price,
+
+        boolean isAvailable
+){
+}
