@@ -19,4 +19,9 @@ public class HashMapMenuRepository implements MenuRepository {
     public Optional<Menu> findById(Long id) {
         return Optional.ofNullable(hashMapMenuRepository.get(id));
     }
+
+    @Override
+    public void delete(Long id) {
+        hashMapMenuRepository.remove(id);
+    }
 }

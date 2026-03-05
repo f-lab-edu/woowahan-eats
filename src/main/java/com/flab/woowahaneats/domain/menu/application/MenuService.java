@@ -63,6 +63,20 @@ public class MenuService {
         menuRepository.save(updatedMenu);
     }
 
+    public void deleteMenu(Long restaurantId, Long menuId) {
+
+        validateRestaurantOwnership(restaurantId);
+
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(MenuNotFoundException::new);
+
+        if (!menu.getRestaurantId().equals(restaurantId)) {
+            throw new MenuNotBelongToRestaurantException();
+        }
+
+        menuRepository.delete(menuId);
+    }
+
     private void validateRestaurantOwnership(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
