@@ -10,7 +10,7 @@ public class Menu {
     private Long restaurantId;
     private String name;
     private String description;
-    private String ImageUrl;
+    private String imageUrl;
     private int price;
-    private boolean isAvailable;
+    private boolean available;
 }

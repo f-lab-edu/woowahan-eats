@@ -14,11 +14,11 @@ public record MenuRequest (
 
         String description,
 
-        String ImageUrl,
+        String imageUrl,
 
         @Min(0)
         int price,
 
-        boolean isAvailable
+        boolean available
 ){
 }

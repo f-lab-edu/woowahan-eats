@@ -36,8 +36,8 @@ public class MenuService {
                 .name(menuRequest.name())
                 .description(menuRequest.description())
                 .price(menuRequest.price())
-                .ImageUrl(menuRequest.ImageUrl())
-                .isAvailable(menuRequest.isAvailable())
+                .imageUrl(menuRequest.imageUrl())
+                .available(menuRequest.available())
                 .build();
 
         menuRepository.save(menu);
