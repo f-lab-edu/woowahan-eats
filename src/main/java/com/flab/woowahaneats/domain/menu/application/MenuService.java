@@ -2,7 +2,10 @@ package com.flab.woowahaneats.domain.menu.application;
 
 import com.flab.woowahaneats.domain.auth.OwnerAuthContext;
 import com.flab.woowahaneats.domain.member.domain.Owner;
+import com.flab.woowahaneats.domain.menu.application.exception.MenuNotBelongToRestaurantException;
+import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.controller.dto.MenuRequest;
+import com.flab.woowahaneats.domain.menu.controller.dto.MenuUpdateRequest;
 import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
 import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotFoundException;
@@ -41,5 +44,34 @@ public class MenuService {
                 .build();
 
         menuRepository.save(menu);
+    }
+
+    public void updateMenu(Long restaurantId, Long menuId, MenuUpdateRequest request) {
+
+        Owner owner = OwnerAuthContext.getOwner();
+
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(RestaurantNotFoundException::new);
+
+        if (!restaurant.getOwnerId().equals(owner.getId())) {
+            throw new RestaurantNotOwnedException();
+        }
+
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(MenuNotFoundException::new);
+
+        if (!menu.getRestaurantId().equals(restaurantId)) {
+            throw new MenuNotBelongToRestaurantException();
+        }
+
+        Menu updatedMenu = menu.toBuilder()
+                .name(request.name() != null ? request.name() : menu.getName())
+                .description(request.description() != null ? request.description() : menu.getDescription())
+                .imageUrl(request.imageUrl() != null ? request.imageUrl() : menu.getImageUrl())
+                .price(request.price() != null ? request.price() : menu.getPrice())
+                .available(request.available() != null ? request.available() : menu.isAvailable())
+                .build();
+
+        menuRepository.save(updatedMenu);
     }
 }

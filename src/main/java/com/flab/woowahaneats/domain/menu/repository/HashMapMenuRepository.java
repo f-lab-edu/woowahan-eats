@@ -4,6 +4,7 @@ import com.flab.woowahaneats.domain.menu.domain.Menu;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @Repository
 public class HashMapMenuRepository implements MenuRepository {
@@ -12,5 +13,10 @@ public class HashMapMenuRepository implements MenuRepository {
     @Override
     public void save(Menu menu) {
         hashMapMenuRepository.put(menu.getId(), menu);
+    }
+
+    @Override
+    public Optional<Menu> findById(Long id) {
+        return Optional.ofNullable(hashMapMenuRepository.get(id));
     }
 }
