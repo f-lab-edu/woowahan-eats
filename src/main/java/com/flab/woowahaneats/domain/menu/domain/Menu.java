@@ -8,7 +8,8 @@ import lombok.Getter;
 public class Menu {
     private Long id;
     private Long restaurantId;
-    private String name;
+    private String internalName;
+    private String displayName;
     private String description;
     private String imageUrl;
     private int price;

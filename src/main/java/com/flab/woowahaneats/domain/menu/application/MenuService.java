@@ -36,7 +36,8 @@ public class MenuService {
         Menu menu = Menu.builder()
                 .id(menuRequest.id())
                 .restaurantId(restaurantId)
-                .name(menuRequest.name())
+                .internalName(menuRequest.internalName())
+                .displayName(menuRequest.displayName())
                 .description(menuRequest.description())
                 .price(menuRequest.price())
                 .imageUrl(menuRequest.imageUrl())
@@ -65,7 +66,8 @@ public class MenuService {
         }
 
         Menu updatedMenu = menu.toBuilder()
-                .name(request.name() != null ? request.name() : menu.getName())
+                .internalName(request.internalName() != null ? request.internalName() : menu.getInternalName())
+                .displayName(request.displayName() != null ? request.displayName() : menu.getDisplayName())
                 .description(request.description() != null ? request.description() : menu.getDescription())
                 .imageUrl(request.imageUrl() != null ? request.imageUrl() : menu.getImageUrl())
                 .price(request.price() != null ? request.price() : menu.getPrice())

@@ -10,7 +10,10 @@ public record MenuRequest (
         Long id,
 
         @NotBlank
-        String name,
+        String internalName,
+
+        @NotBlank
+        String displayName,
 
         String description,
 
