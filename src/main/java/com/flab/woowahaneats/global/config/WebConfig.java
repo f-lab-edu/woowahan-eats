@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.global.config;
 
+import com.flab.woowahaneats.global.interceptor.AdminAuthInterceptor;
 import com.flab.woowahaneats.global.interceptor.OwnerAuthInterceptor;
 import com.flab.woowahaneats.global.interceptor.RiderAuthInterceptor;
 import com.flab.woowahaneats.global.interceptor.UserAuthInterceptor;
@@ -12,11 +13,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
+    private final AdminAuthInterceptor adminAuthInterceptor;
     private final OwnerAuthInterceptor ownerAuthInterceptor;
     private final UserAuthInterceptor userAuthInterceptor;
     private final RiderAuthInterceptor riderAuthInterceptor;
 
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(adminAuthInterceptor)
+                .addPathPatterns("/admin/**")
+                .excludePathPatterns("/admin/sign-up");
+
         registry.addInterceptor(ownerAuthInterceptor)
                 .addPathPatterns(
                         "/restaurant/register",
@@ -30,6 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "/user/sign-up",
                 "/owner/sign-up",
                 "/rider/sign-up",
+                "/admin/sign-up",
                 "/restaurant/register",
                 "/restaurant/open/{restaurantId}"
         );
