@@ -24,14 +24,7 @@ public class MenuService {
 
     public void registerMenu(Long restaurantId, MenuRequest menuRequest) {
 
-        Owner owner = OwnerAuthContext.getOwner();
-
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(RestaurantNotFoundException::new);
-
-        if(!restaurant.getOwnerId().equals(owner.getId())) {
-            throw new RestaurantNotOwnedException();
-        }
+        validateRestaurantOwnership(restaurantId);
 
         Menu menu = Menu.builder()
                 .id(menuRequest.id())
@@ -49,14 +42,7 @@ public class MenuService {
 
     public void updateMenu(Long restaurantId, Long menuId, MenuUpdateRequest request) {
 
-        Owner owner = OwnerAuthContext.getOwner();
-
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(RestaurantNotFoundException::new);
-
-        if (!restaurant.getOwnerId().equals(owner.getId())) {
-            throw new RestaurantNotOwnedException();
-        }
+        validateRestaurantOwnership(restaurantId);
 
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(MenuNotFoundException::new);
@@ -75,5 +61,16 @@ public class MenuService {
                 .build();
 
         menuRepository.save(updatedMenu);
+    }
+
+    private void validateRestaurantOwnership(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(RestaurantNotFoundException::new);
+
+        Owner owner = OwnerAuthContext.getOwner();
+
+        if (!restaurant.getOwnerId().equals(owner.getId())) {
+            throw new RestaurantNotOwnedException();
+        }
     }
 }
