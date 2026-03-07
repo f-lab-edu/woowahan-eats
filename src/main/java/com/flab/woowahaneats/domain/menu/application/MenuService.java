@@ -51,14 +51,14 @@ public class MenuService {
             throw new MenuNotBelongToRestaurantException();
         }
 
-        Menu updatedMenu = menu.toBuilder()
-                .internalName(request.internalName() != null ? request.internalName() : menu.getInternalName())
-                .displayName(request.displayName() != null ? request.displayName() : menu.getDisplayName())
-                .description(request.description() != null ? request.description() : menu.getDescription())
-                .imageUrl(request.imageUrl() != null ? request.imageUrl() : menu.getImageUrl())
-                .price(request.price() != null ? request.price() : menu.getPrice())
-                .available(request.available() != null ? request.available() : menu.isAvailable())
-                .build();
+        Menu updatedMenu = menu.update(
+                request.internalName(),
+                request.displayName(),
+                request.description(),
+                request.imageUrl(),
+                request.price(),
+                request.available()
+        );
 
         menuRepository.save(updatedMenu);
     }
