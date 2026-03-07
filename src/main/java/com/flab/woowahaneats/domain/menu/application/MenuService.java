@@ -26,16 +26,16 @@ public class MenuService {
 
         validateRestaurantOwnership(restaurantId);
 
-        Menu menu = Menu.builder()
-                .id(menuRequest.id())
-                .restaurantId(restaurantId)
-                .internalName(menuRequest.internalName())
-                .displayName(menuRequest.displayName())
-                .description(menuRequest.description())
-                .price(menuRequest.price())
-                .imageUrl(menuRequest.imageUrl())
-                .available(menuRequest.available())
-                .build();
+        Menu menu = Menu.create(
+                menuRequest.id(),
+                restaurantId,
+                menuRequest.internalName(),
+                menuRequest.displayName(),
+                menuRequest.description(),
+                menuRequest.imageUrl(),
+                menuRequest.price(),
+                menuRequest.available()
+        );
 
         menuRepository.save(menu);
     }
