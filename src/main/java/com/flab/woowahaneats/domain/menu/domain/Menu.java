@@ -4,6 +4,8 @@ import com.flab.woowahaneats.domain.menu.application.exception.InvalidMenuExcept
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @Builder(toBuilder = true)
 public class Menu {
@@ -12,29 +14,30 @@ public class Menu {
     private String internalName;
     private String displayName;
     private String description;
-    private String imageUrl;
+    private List<MenuImage> images;
     private int price;
     private boolean available;
 
     public Menu update(String internalName, String displayName, String description,
-                       String imageUrl, Integer price, Boolean available) {
+                       List<MenuImage> images, Integer price, Boolean available) {
         return this.toBuilder()
                 .internalName(internalName != null ? internalName : this.internalName)
                 .displayName(displayName != null ? displayName : this.displayName)
                 .description(description != null ? description : this.description)
-                .imageUrl(imageUrl != null ? imageUrl : this.imageUrl)
+                .images(images != null ? images : this.images)
                 .price(price != null ? price : this.price)
                 .available(available != null ? available : this.available)
                 .build();
     }
 
     public static Menu create(Long id, Long restaurantId, String internalName, String displayName,
-                              String description, String imageUrl, int price, boolean available){
+                              String description, List<MenuImage> images, int price, boolean available){
 
         validateInternalName(internalName);
         validateDisplayName(displayName);
         validatePrice(price);
         validateDescription(description);
+        validateImages(images);
 
         return Menu.builder()
                 .id(id)
@@ -42,7 +45,7 @@ public class Menu {
                 .internalName(internalName)
                 .displayName(displayName)
                 .description(description)
-                .imageUrl(imageUrl)
+                .images(images)
                 .price(price)
                 .available(available)
                 .build();
@@ -72,6 +75,20 @@ public class Menu {
     private static void validateDescription(String description) {
         if (description != null && description.length() > 500) {
             throw new InvalidMenuException("메뉴 설명은 500자를 초과할 수 없습니다");
+        }
+    }
+
+    private static void validateImages(List<MenuImage> images) {
+        if (images == null || images.isEmpty()) {
+            return;
+        }
+
+        long mainImageCount = images.stream()
+                .filter(MenuImage::main)
+                .count();
+
+        if (mainImageCount != 1) {
+            throw new InvalidMenuException("대표 이미지는 1개여야 합니다");
         }
     }
 }

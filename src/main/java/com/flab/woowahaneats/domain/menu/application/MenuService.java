@@ -32,7 +32,7 @@ public class MenuService {
                 menuRequest.internalName(),
                 menuRequest.displayName(),
                 menuRequest.description(),
-                menuRequest.imageUrl(),
+                menuRequest.images(),
                 menuRequest.price(),
                 menuRequest.available()
         );
@@ -55,7 +55,7 @@ public class MenuService {
                 request.internalName(),
                 request.displayName(),
                 request.description(),
-                request.imageUrl(),
+                request.images(),
                 request.price(),
                 request.available()
         );
