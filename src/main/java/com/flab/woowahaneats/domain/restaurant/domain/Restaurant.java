@@ -15,4 +15,5 @@ public class Restaurant {
     private Address address;
     private Location location;
     private double avgRating;
+    private RestaurantApprovalStatus ApprovalStatus;
 }
