@@ -1,7 +1,6 @@
 package com.flab.woowahaneats.global.interceptor;
 
 import com.flab.woowahaneats.domain.auth.RiderAuthContext;
-import com.flab.woowahaneats.domain.member.application.exception.RiderNotFoundException;
 import com.flab.woowahaneats.domain.member.domain.Rider;
 import com.flab.woowahaneats.domain.member.repository.RiderRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,25 +10,28 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class RiderAuthInterceptor extends AuthInterceptor {
+public class RiderAuthHandler implements AuthHandler {
 
     private final RiderRepository riderRepository;
 
     @Override
-    protected boolean checkPermission(Long accountId) {
+    public boolean supports(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/rider/");
+    }
+
+    @Override
+    public boolean handleAuth(HttpServletRequest request, HttpServletResponse response) {
+        Long accountId = (Long) request.getSession().getAttribute("accountId");
+
         Rider rider = riderRepository.findByAccountId(accountId);
 
         if (rider == null) {
-            throw new RiderNotFoundException();
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return false;
         }
 
         RiderAuthContext.setRider(rider);
         return true;
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request,
-                                HttpServletResponse response, Object handler, Exception ex){
-        RiderAuthContext.clear();
     }
 }

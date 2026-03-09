@@ -3,9 +3,17 @@ package com.flab.woowahaneats.global.interceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-public abstract class AuthInterceptor implements HandlerInterceptor {
+import java.util.List;
+
+@Component
+@RequiredArgsConstructor
+public class AuthInterceptor implements HandlerInterceptor {
+
+    private final List<AuthHandler> authHandlers;
 
     @Override
     public boolean preHandle(HttpServletRequest request,
@@ -19,11 +27,12 @@ public abstract class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        Long accountId = (Long) session.getAttribute("accountId");
+        AuthHandler authHandler = authHandlers.stream()
+                .filter(h -> h.supports(request))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No AuthHandler found for path: " + request.getRequestURI()));
 
-        return checkPermission(accountId);
+        return authHandler.handleAuth(request, response);
     }
-
-    protected abstract boolean checkPermission(Long accountId);
 
 }

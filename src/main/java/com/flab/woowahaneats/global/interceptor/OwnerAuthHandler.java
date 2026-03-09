@@ -1,7 +1,6 @@
 package com.flab.woowahaneats.global.interceptor;
 
 import com.flab.woowahaneats.domain.auth.OwnerAuthContext;
-import com.flab.woowahaneats.domain.member.application.exception.OwnerNotFoundException;
 import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.member.repository.OwnerRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,25 +10,28 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class OwnerAuthInterceptor extends AuthInterceptor {
+public class OwnerAuthHandler implements AuthHandler {
 
     private final OwnerRepository ownerRepository;
 
     @Override
-    protected boolean checkPermission(Long accountId) {
+    public boolean supports(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/owner/") || path.startsWith("/restaurant/");
+    }
+
+    @Override
+    public boolean handleAuth(HttpServletRequest request, HttpServletResponse response) {
+        Long accountId = (Long) request.getSession().getAttribute("accountId");
+
         Owner owner = ownerRepository.findByAccountId(accountId);
 
         if (owner == null) {
-            throw new OwnerNotFoundException();
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return false;
         }
 
         OwnerAuthContext.setOwner(owner);
         return true;
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request,
-                                HttpServletResponse response, Object handler, Exception ex){
-        OwnerAuthContext.clear();
     }
 }
