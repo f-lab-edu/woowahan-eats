@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.member.application;
 
-import com.flab.woowahaneats.domain.auth.UserAuthContext;
+import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.member.application.exception.DuplicateEmailException;
 import com.flab.woowahaneats.domain.member.controller.dto.UserResponse;
 import com.flab.woowahaneats.domain.member.controller.dto.UserSignUpRequest;
@@ -53,7 +53,7 @@ public class UserService {
 
     public UserResponse getUserProfile(){
 
-        User user = UserAuthContext.getUser();
+        User user = AuthContextHolder.getContext().getUser();
         Account account = accountRepository.findById(user.getAccountId());
 
         return UserResponse.from(user, account);

@@ -1,6 +1,7 @@
 package com.flab.woowahaneats.global.interceptor;
 
-import com.flab.woowahaneats.domain.auth.RiderAuthContext;
+import com.flab.woowahaneats.domain.auth.AuthContext;
+import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.member.domain.Rider;
 import com.flab.woowahaneats.domain.member.repository.RiderRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ public class RiderAuthHandler implements AuthHandler {
             return false;
         }
 
-        RiderAuthContext.setRider(rider);
+        AuthContextHolder.setContext(new AuthContext(rider, "RIDER"));
         return true;
     }
 }

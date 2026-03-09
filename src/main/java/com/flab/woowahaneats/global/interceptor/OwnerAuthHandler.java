@@ -1,6 +1,7 @@
 package com.flab.woowahaneats.global.interceptor;
 
-import com.flab.woowahaneats.domain.auth.OwnerAuthContext;
+import com.flab.woowahaneats.domain.auth.AuthContext;
+import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.member.repository.OwnerRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ public class OwnerAuthHandler implements AuthHandler {
             return false;
         }
 
-        OwnerAuthContext.setOwner(owner);
+        AuthContextHolder.setContext(new AuthContext(owner, "OWNER"));
         return true;
     }
 }

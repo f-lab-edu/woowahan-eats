@@ -1,6 +1,7 @@
 package com.flab.woowahaneats.global.interceptor;
 
-import com.flab.woowahaneats.domain.auth.AdminAuthContext;
+import com.flab.woowahaneats.domain.auth.AuthContext;
+import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.member.domain.Admin;
 import com.flab.woowahaneats.domain.member.repository.AdminRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ public class AdminAuthHandler implements AuthHandler {
             return false;
         }
 
-        AdminAuthContext.setAdmin(admin);
+        AuthContextHolder.setContext(new AuthContext(admin, "ADMIN"));
         return true;
     }
 }

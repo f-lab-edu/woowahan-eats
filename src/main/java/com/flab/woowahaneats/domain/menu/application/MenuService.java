@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.menu.application;
 
-import com.flab.woowahaneats.domain.auth.OwnerAuthContext;
+import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.menu.application.exception.MenuNotBelongToRestaurantException;
 import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundException;
@@ -81,7 +81,7 @@ public class MenuService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
 
-        Owner owner = OwnerAuthContext.getOwner();
+        Owner owner = AuthContextHolder.getContext().getOwner();
 
         if (!restaurant.getOwnerId().equals(owner.getId())) {
             throw new RestaurantNotOwnedException();

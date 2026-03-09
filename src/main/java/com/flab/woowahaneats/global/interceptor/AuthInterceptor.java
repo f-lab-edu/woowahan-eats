@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.global.interceptor;
 
+import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -33,6 +34,14 @@ public class AuthInterceptor implements HandlerInterceptor {
                 .orElseThrow(() -> new IllegalStateException("No AuthHandler found for path: " + request.getRequestURI()));
 
         return authHandler.handleAuth(request, response);
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request,
+                                HttpServletResponse response,
+                                Object handler,
+                                Exception ex) {
+        AuthContextHolder.clear();
     }
 
 }
