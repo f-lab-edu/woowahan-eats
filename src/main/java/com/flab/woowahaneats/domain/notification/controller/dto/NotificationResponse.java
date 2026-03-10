@@ -31,18 +31,18 @@ public record NotificationResponse(
     public static NotificationResponse of(String message, Restaurant restaurant, Owner owner) {
         return new NotificationResponse(
                 message,
-                new RestaurantInfo(
+                restaurant != null ? new RestaurantInfo(
                         restaurant.getId(),
                         restaurant.getName(),
                         restaurant.getAddress(),
                         restaurant.getLocation()
-                ),
-                new OwnerInfo(
+                ) : null,
+                owner != null ? new OwnerInfo(
                         owner.getName(),
                         owner.getPhoneNumber(),
                         owner.getBusinessRegistrationCertUrl(),
                         owner.getBusinessNotificationCertUrl()
-                ),
+                ) : null,
                 false,
                 LocalDateTime.now()
         );

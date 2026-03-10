@@ -55,6 +55,24 @@ public class SseEmitterManager {
         });
     }
 
+    public void sendToId(String id, Object data) {
+        SseEmitter emitter = emitters.get(id);
+        if (emitter != null) {
+            try {
+                emitter.send(SseEmitter.event()
+                        .name("notification")
+                        .data(data));
+                log.info("SSE 알림 전송 성공 (id): {}", id);
+            } catch (IOException e) {
+                log.error("SSE 알림 전송 실패 (id): {}", id, e);
+                emitter.completeWithError(e);
+                emitters.remove(id);
+            }
+        } else {
+            log.warn("SSE 연결을 찾을 수 없음: {}", id);
+        }
+    }
+
     public void deleteById(String id) {
         emitters.remove(id);
         log.info("SSE 연결 제거: {}", id);

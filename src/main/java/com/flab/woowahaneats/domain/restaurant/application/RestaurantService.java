@@ -137,6 +137,12 @@ public class RestaurantService {
                 .build();
 
         restaurantRepository.save(updatedRestaurant);
+
+        String message = status == RestaurantApprovalStatus.APPROVED
+                ? String.format("음식점 '%s'의 등록이 승인되었습니다.", restaurant.getName())
+                : String.format("음식점 '%s'의 등록이 거절되었습니다.", restaurant.getName());
+
+        notificationService.sendToOwner(restaurant.getOwnerId(), message, restaurant);
     }
 
 }

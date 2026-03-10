@@ -18,8 +18,15 @@ public class NotificationService {
 
     public SseEmitter subscribe() {
         Admin admin = AuthContextHolder.getContext().getAdmin();
-        String emitterId = "ADMIN_" + admin.getId();
+        return createSubscription("ADMIN_" + admin.getId());
+    }
 
+    public SseEmitter subscribeOwner() {
+        Owner owner = AuthContextHolder.getContext().getOwner();
+        return createSubscription("OWNER_" + owner.getId());
+    }
+
+    private SseEmitter createSubscription(String emitterId) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         sseEmitterManager.save(emitterId, emitter);
 
@@ -37,5 +44,11 @@ public class NotificationService {
     public void sendToRole(String role, String message, Restaurant restaurant, Owner owner) {
         NotificationResponse response = NotificationResponse.of(message, restaurant, owner);
         sseEmitterManager.sendToRole(role, response);
+    }
+
+    public void sendToOwner(Long ownerId, String message, Restaurant restaurant) {
+        String emitterId = "OWNER_" + ownerId;
+        NotificationResponse response = NotificationResponse.of(message, restaurant, null);
+        sseEmitterManager.sendToId(emitterId, response);
     }
 }
