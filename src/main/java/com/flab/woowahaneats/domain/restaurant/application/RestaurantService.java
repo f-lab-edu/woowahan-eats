@@ -117,4 +117,26 @@ public class RestaurantService {
 
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
+
+    public void approveRestaurant(Long restaurantId) {
+        updateApprovalStatus(restaurantId, RestaurantApprovalStatus.APPROVED);
+    }
+
+    public void rejectRestaurant(Long restaurantId) {
+        updateApprovalStatus(restaurantId, RestaurantApprovalStatus.REJECTED);
+    }
+
+    private void updateApprovalStatus(Long restaurantId, RestaurantApprovalStatus status) {
+        AuthContextHolder.getContext().getAdmin();
+
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(RestaurantNotFoundException::new);
+
+        Restaurant updatedRestaurant = restaurant.toBuilder()
+                .approvalStatus(status)
+                .build();
+
+        restaurantRepository.save(updatedRestaurant);
+    }
+
 }
