@@ -2,12 +2,14 @@ package com.flab.woowahaneats.domain.restaurant.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.member.domain.Owner;
+import com.flab.woowahaneats.domain.notification.application.NotificationService;
 import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotOwnedException;
 import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantOperationInfoNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import com.flab.woowahaneats.domain.restaurant.domain.RestaurantApprovalStatus;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
@@ -23,6 +25,7 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
+    private final NotificationService notificationService;
 
     public void registerRestaurant(RestaurantRequest restaurantRequest) {
 
@@ -36,6 +39,7 @@ public class RestaurantService {
                 .address(restaurantRequest.address())
                 .location(restaurantRequest.location())
                 .avgRating(0.0)
+                .approvalStatus(RestaurantApprovalStatus.PENDING)
                 .build();
 
         RestaurantOperationInfo restaurantOperationInfo = RestaurantOperationInfo.builder()
@@ -47,6 +51,12 @@ public class RestaurantService {
 
         restaurantRepository.save(restaurant);
         restaurantOperationInfoRepository.save(restaurantOperationInfo);
+
+        notificationService.sendToRole(
+                "ADMIN",
+                String.format("새로운 음식점 '%s'의 승인 요청이 있습니다.", restaurant.getName()),
+                restaurant.getId()
+        );
     }
 
     public RestaurantResponse getRestaurant(Long restaurantId) {

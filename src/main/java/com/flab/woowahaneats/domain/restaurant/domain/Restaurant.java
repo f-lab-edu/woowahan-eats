@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class Restaurant {
     private Long id;
     private Long ownerId;
@@ -15,5 +15,5 @@ public class Restaurant {
     private Address address;
     private Location location;
     private double avgRating;
-    private RestaurantApprovalStatus ApprovalStatus;
+    private RestaurantApprovalStatus approvalStatus;
 }
