@@ -2,8 +2,10 @@ package com.flab.woowahaneats.domain.notification.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.member.domain.Admin;
+import com.flab.woowahaneats.domain.member.domain.Owner;
 import com.flab.woowahaneats.domain.notification.controller.dto.NotificationResponse;
 import com.flab.woowahaneats.domain.notification.infrastructure.SseEmitterManager;
+import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -32,8 +34,8 @@ public class NotificationService {
         return emitter;
     }
 
-    public void sendToRole(String role, String message, Long restaurantId) {
-        NotificationResponse response = NotificationResponse.of(message, restaurantId);
+    public void sendToRole(String role, String message, Restaurant restaurant, Owner owner) {
+        NotificationResponse response = NotificationResponse.of(message, restaurant, owner);
         sseEmitterManager.sendToRole(role, response);
     }
 }

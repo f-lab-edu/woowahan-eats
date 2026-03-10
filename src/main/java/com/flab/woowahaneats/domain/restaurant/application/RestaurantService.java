@@ -55,7 +55,8 @@ public class RestaurantService {
         notificationService.sendToRole(
                 "ADMIN",
                 String.format("새로운 음식점 '%s'의 승인 요청이 있습니다.", restaurant.getName()),
-                restaurant.getId()
+                restaurant,
+                owner
         );
     }
 
