@@ -38,4 +38,18 @@ public class CartService {
 
         cartRepository.save(updatedCart);
     }
+
+    public void deleteCartMenu(UUID cartId, Long menuId) {
+        Cart cart = cartRepository.findById(cartId);
+
+        List<CartMenu> updatedMenus = cart.getMenus().stream()
+                .filter(menu -> !menu.menuId().equals(menuId))
+                .toList();
+
+        Cart updatedCart = cart.toBuilder()
+                .menus(updatedMenus)
+                .build();
+
+        cartRepository.save(updatedCart);
+    }
 }

@@ -35,4 +35,11 @@ public class CartController {
         cartService.updateMenuQuantity(cartId, menuId, quantity);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{cartId}/{menuId}")
+    public ResponseEntity<Void> deleteCartMenu(@PathVariable UUID cartId,
+                                               @PathVariable Long menuId) {
+        cartService.deleteCartMenu(cartId, menuId);
+        return ResponseEntity.ok().build();
+    }
 }
