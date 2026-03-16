@@ -4,19 +4,21 @@ import com.flab.woowahaneats.domain.cart.application.exception.InvalidCartExcept
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Getter
 @Builder(toBuilder = true)
 public class CartMenu {
-    private Long id;
-    private Long cartId;
+    private UUID id;
+    private UUID cartId;
     private Long menuId;
     private int quantity;
 
-    public static CartMenu create(Long id, Long cartId, Long menuId, int quantity) {
+    public static CartMenu create(UUID id, UUID cartId, Long menuId, int quantity) {
         validateQuantity(quantity);
 
         return CartMenu.builder()
-                .id(id)
+                .id(UUID.randomUUID())
                 .cartId(cartId)
                 .menuId(menuId)
                 .quantity(quantity)
