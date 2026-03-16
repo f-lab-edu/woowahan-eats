@@ -28,4 +28,27 @@ public class Cart {
                 .restaurantId(restaurantId)
                 .build();
     }
+
+    public Cart updateMenuQuantity(Long menuId, int quantity) {
+        List<CartMenu> updatedMenus = this.menus.stream()
+                .map(menu -> menu.menuId().equals(menuId)
+                        ? new CartMenu(menuId, quantity)
+                        : menu)
+                .toList();
+
+        return this.toBuilder()
+                .menus(updatedMenus)
+                .build();
+    }
+
+    public Cart removeMenu(Long menuId) {
+        List<CartMenu> updatedMenus = this.menus.stream()
+                .filter(menu -> !menu.menuId().equals(menuId))
+                .toList();
+
+        return this.toBuilder()
+                .menus(updatedMenus)
+                .build();
+    }
+
 }

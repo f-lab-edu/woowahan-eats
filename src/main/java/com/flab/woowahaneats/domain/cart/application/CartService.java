@@ -25,31 +25,13 @@ public class CartService {
 
     public void updateMenuQuantity(UUID cartId, Long menuId, int quantity) {
         Cart cart = cartRepository.findById(cartId);
-
-        List<CartMenu> updatedMenus = cart.getMenus().stream()
-                .map(menu -> menu.menuId().equals(menuId)
-                        ? new CartMenu(menuId, quantity)
-                        : menu)
-                .toList();
-
-        Cart updatedCart = cart.toBuilder()
-                .menus(updatedMenus)
-                .build();
-
+        Cart updatedCart = cart.updateMenuQuantity(menuId, quantity);
         cartRepository.save(updatedCart);
     }
 
     public void deleteCartMenu(UUID cartId, Long menuId) {
         Cart cart = cartRepository.findById(cartId);
-
-        List<CartMenu> updatedMenus = cart.getMenus().stream()
-                .filter(menu -> !menu.menuId().equals(menuId))
-                .toList();
-
-        Cart updatedCart = cart.toBuilder()
-                .menus(updatedMenus)
-                .build();
-
+        Cart updatedCart = cart.removeMenu(menuId);
         cartRepository.save(updatedCart);
     }
 
