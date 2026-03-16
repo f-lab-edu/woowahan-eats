@@ -20,4 +20,9 @@ public class HashMapCartRepository implements CartRepository {
     public Cart findById(UUID cartId) {
         return cartMap.get(cartId);
     }
+
+    @Override
+    public void deleteById(UUID cartId) {
+        cartMap.remove(cartId);
+    }
 }

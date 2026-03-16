@@ -52,4 +52,8 @@ public class CartService {
 
         cartRepository.save(updatedCart);
     }
+
+    public void deleteCart(UUID cartId) {
+        cartRepository.deleteById(cartId);
+    }
 }

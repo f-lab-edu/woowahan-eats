@@ -42,4 +42,11 @@ public class CartController {
         cartService.deleteCartMenu(cartId, menuId);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{cartId}")
+    public ResponseEntity<Void> deleteCart(@PathVariable UUID cartId) {
+        cartService.deleteCart(cartId);
+        return ResponseEntity.ok().build();
+    }
+
 }

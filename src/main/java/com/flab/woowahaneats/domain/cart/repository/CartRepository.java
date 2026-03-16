@@ -7,4 +7,5 @@ import java.util.UUID;
 public interface CartRepository {
     void save(Cart cart);
     Cart findById(UUID cartId);
+    void deleteById(UUID cartId);
 }
