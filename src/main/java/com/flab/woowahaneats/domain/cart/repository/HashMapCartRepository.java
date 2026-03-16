@@ -15,4 +15,9 @@ public class HashMapCartRepository implements CartRepository {
     public void save(Cart cart) {
         cartMap.put(cart.getId(), cart);
     }
+
+    @Override
+    public Cart findById(UUID cartId) {
+        return cartMap.get(cartId);
+    }
 }

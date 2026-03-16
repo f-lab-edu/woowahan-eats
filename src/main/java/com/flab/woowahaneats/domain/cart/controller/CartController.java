@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/cart")
@@ -20,5 +21,10 @@ public class CartController {
                                            @RequestBody List<CartMenu> menus) {
         cartService.createCart(userId, restaurantId, menus);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{cartId}")
+    public ResponseEntity<Cart> getCart(@PathVariable UUID cartId) {
+        return ResponseEntity.ok().body(cartService.getCart(cartId));
     }
 }

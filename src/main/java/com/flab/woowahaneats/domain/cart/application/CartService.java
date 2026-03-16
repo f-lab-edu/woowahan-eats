@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -16,5 +17,9 @@ public class CartService {
     public void createCart(Long userId, Long restaurantId, List<CartMenu> menus) {
         Cart cart = Cart.create(userId, restaurantId, menus);
         cartRepository.save(cart);
+    }
+
+    public Cart getCart(UUID cartId){
+        return cartRepository.findById(cartId);
     }
 }
