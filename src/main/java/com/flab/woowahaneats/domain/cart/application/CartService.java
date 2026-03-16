@@ -22,4 +22,20 @@ public class CartService {
     public Cart getCart(UUID cartId){
         return cartRepository.findById(cartId);
     }
+
+    public void updateMenuQuantity(UUID cartId, Long menuId, int quantity) {
+        Cart cart = cartRepository.findById(cartId);
+
+        List<CartMenu> updatedMenus = cart.getMenus().stream()
+                .map(menu -> menu.menuId().equals(menuId)
+                        ? new CartMenu(menuId, quantity)
+                        : menu)
+                .toList();
+
+        Cart updatedCart = cart.toBuilder()
+                .menus(updatedMenus)
+                .build();
+
+        cartRepository.save(updatedCart);
+    }
 }

@@ -27,4 +27,12 @@ public class CartController {
     public ResponseEntity<Cart> getCart(@PathVariable UUID cartId) {
         return ResponseEntity.ok().body(cartService.getCart(cartId));
     }
+
+    @PatchMapping("/{cartId}/menu/{menuId}")
+    public ResponseEntity<Void> updateMenuQuantity(@PathVariable UUID cartId,
+                                                   @PathVariable Long menuId,
+                                                   @RequestBody int quantity) {
+        cartService.updateMenuQuantity(cartId, menuId, quantity);
+        return ResponseEntity.ok().build();
+    }
 }
