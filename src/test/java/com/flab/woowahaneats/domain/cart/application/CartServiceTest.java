@@ -8,6 +8,7 @@ import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
 import com.flab.woowahaneats.domain.cart.repository.CartRepository;
 import com.flab.woowahaneats.domain.member.domain.User;
+import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -34,11 +34,14 @@ class CartServiceTest {
     @Mock
     private CartRepository cartRepository;
 
-    @InjectMocks
+    @Mock
+    private MenuRepository menuRepository;
+
     private CartService cartService;
 
     @BeforeEach
     void setUp() {
+        cartService = new CartService(cartRepository, menuRepository);
         User mockUser = User.builder()
                 .id(1L)
                 .name("테스트 사용자")
