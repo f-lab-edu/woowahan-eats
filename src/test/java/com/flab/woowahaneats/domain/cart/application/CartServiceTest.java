@@ -171,4 +171,41 @@ class CartServiceTest {
             verify(cartRepository).findById(cartId);
         }
     }
+
+    @Nested
+    @DisplayName("장바구니 메뉴 수량 수정")
+    class UpdateCartMenu{
+
+        @Test
+        @DisplayName("유효한 수량으로 메뉴 수량을 수정하면 정상적으로 업데이트된다")
+        void updateMenuQuantity_WithValidQuantity_UpdatesSuccessfully() {
+
+            // Given
+            UUID cartId = UUID.randomUUID();
+            Long menuId = 1L;
+            int newQuantity = 5;
+
+            Cart mockCart = Cart.builder()
+                    .id(cartId)
+                    .userId(1L)
+                    .restaurantId(100L)
+                    .menus(List.of(new CartMenu(menuId, 2)))
+                    .build();
+
+            when(cartRepository.findById(cartId)).thenReturn(Optional.of(mockCart));
+
+            // When
+            cartService.updateMenuQuantity(cartId, menuId, newQuantity);
+
+            // Then
+            ArgumentCaptor<Cart> cartCaptor = ArgumentCaptor.forClass(Cart.class);
+            verify(cartRepository).save(cartCaptor.capture());
+
+            Cart savedCart = cartCaptor.getValue();
+            assertThat(savedCart.getMenus())
+                    .hasSize(1)
+                    .extracting(CartMenu::quantity)
+                    .containsExactly(newQuantity);
+        }
+    }
 }
