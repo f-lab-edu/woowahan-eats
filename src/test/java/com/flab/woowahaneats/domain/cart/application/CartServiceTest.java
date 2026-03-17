@@ -208,4 +208,63 @@ class CartServiceTest {
                     .containsExactly(newQuantity);
         }
     }
+
+    @Nested
+    @DisplayName("장바구니 메뉴 삭제")
+    class DeleteCart{
+
+        @Test
+        @DisplayName("장바구니에서 메뉴를 삭제하면 해당 메뉴가 제거된다.")
+        void deleteCartMenu_WithValidMenu_RemovesSuccessfully() {
+            // Given
+            UUID cartId = UUID.randomUUID();
+            Long menuIdToDelete = 1L;
+
+            Cart mockCart = Cart.builder()
+                    .id(cartId)
+                    .userId(1L)
+                    .restaurantId(100L)
+                    .menus(List.of(
+                            new CartMenu(1L, 2),
+                            new CartMenu(2L, 3)
+                    ))
+                    .build();
+
+            when(cartRepository.findById(cartId)).thenReturn(Optional.of(mockCart));
+
+            // When
+            cartService.deleteCartMenu(cartId, menuIdToDelete);
+
+            // Then
+            ArgumentCaptor<Cart> cartCaptor = ArgumentCaptor.forClass(Cart.class);
+            verify(cartRepository).save(cartCaptor.capture());
+
+            Cart savedCart = cartCaptor.getValue();
+            assertThat(savedCart.getMenus())
+                    .hasSize(1)
+                    .extracting(CartMenu::menuId)
+                    .containsExactly(2L);
+        }
+
+        @Test
+        @DisplayName("장바구니를 삭제하면 정상적으로 삭제된다")
+        void deleteCart_WithValidCart_DeletesSuccessfully() {
+            // Given
+            UUID cartId = UUID.randomUUID();
+            Cart mockCart = Cart.builder()
+                    .id(cartId)
+                    .userId(1L)
+                    .restaurantId(100L)
+                    .menus(List.of(new CartMenu(1L, 2)))
+                    .build();
+
+            when(cartRepository.findById(cartId)).thenReturn(Optional.of(mockCart));
+
+            // When
+            cartService.deleteCart(cartId);
+
+            // Then
+            verify(cartRepository).deleteById(cartId);
+        }
+    }
 }
