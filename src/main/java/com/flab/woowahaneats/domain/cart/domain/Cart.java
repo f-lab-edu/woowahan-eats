@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.cart.domain;
 
+import com.flab.woowahaneats.domain.cart.application.exception.InvalidQuantityException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,6 +17,7 @@ public class Cart {
     private List<CartMenu> menus;
 
     public static Cart create(Long userId, Long restaurantId, List<CartMenu> menus) {
+        menus.forEach(menu -> validateQuantity(menu.quantity()));
         return Cart.builder()
                 .id(UUID.randomUUID())
                 .userId(userId)
@@ -31,6 +33,7 @@ public class Cart {
     }
 
     public Cart updateMenuQuantity(Long menuId, int quantity) {
+        validateQuantity(quantity);
         List<CartMenu> updatedMenus = this.menus.stream()
                 .map(menu -> menu.menuId().equals(menuId)
                         ? new CartMenu(menuId, quantity)
@@ -53,15 +56,21 @@ public class Cart {
     }
 
     public Cart addMenu(CartMenu newMenu) {
+        validateQuantity(newMenu.quantity());
         boolean menuExists = this.menus.stream()
                 .anyMatch(menu -> menu.menuId().equals(newMenu.menuId()));
 
         List<CartMenu> updatedMenus;
         if (menuExists) {
             updatedMenus = this.menus.stream()
-                    .map(menu -> menu.menuId().equals(newMenu.menuId())
-                            ? new CartMenu(menu.menuId(), menu.quantity() + newMenu.quantity())
-                            : menu)
+                    .map(menu -> {
+                        if (menu.menuId().equals(newMenu.menuId())) {
+                            int totalQuantity = menu.quantity() + newMenu.quantity();
+                            validateQuantity(totalQuantity);
+                            return new CartMenu(menu.menuId(), totalQuantity);
+                        }
+                        return menu;
+                    })
                     .toList();
         } else {
             updatedMenus = new ArrayList<>(this.menus);
@@ -71,5 +80,11 @@ public class Cart {
         return this.toBuilder()
                 .menus(updatedMenus)
                 .build();
+    }
+
+    private static void validateQuantity(int quantity) {
+        if (quantity < 1 || quantity > 99) {
+            throw new InvalidQuantityException();
+        }
     }
 }

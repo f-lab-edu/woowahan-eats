@@ -4,6 +4,7 @@ import com.flab.woowahaneats.domain.cart.domain.Cart;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -17,8 +18,8 @@ public class HashMapCartRepository implements CartRepository {
     }
 
     @Override
-    public Cart findById(UUID cartId) {
-        return cartMap.get(cartId);
+    public Optional<Cart> findById(UUID cartId) {
+        return Optional.ofNullable(cartMap.get(cartId));
     }
 
     @Override

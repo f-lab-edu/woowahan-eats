@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.cart.application;
 
+import com.flab.woowahaneats.domain.cart.application.exception.CartNotFoundException;
 import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
 import com.flab.woowahaneats.domain.cart.repository.CartRepository;
@@ -19,18 +20,21 @@ public class CartService {
         cartRepository.save(cart);
     }
 
-    public Cart getCart(UUID cartId){
-        return cartRepository.findById(cartId);
+    public Cart getCart(UUID cartId) {
+        return cartRepository.findById(cartId)
+                .orElseThrow(CartNotFoundException::new);
     }
 
     public void updateMenuQuantity(UUID cartId, Long menuId, int quantity) {
-        Cart cart = cartRepository.findById(cartId);
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(CartNotFoundException::new);
         Cart updatedCart = cart.updateMenuQuantity(menuId, quantity);
         cartRepository.save(updatedCart);
     }
 
     public void deleteCartMenu(UUID cartId, Long menuId) {
-        Cart cart = cartRepository.findById(cartId);
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(CartNotFoundException::new);
         Cart updatedCart = cart.removeMenu(menuId);
         cartRepository.save(updatedCart);
     }
@@ -40,7 +44,8 @@ public class CartService {
     }
 
     public void addCartMenu(UUID cartId, CartMenu menu) {
-        Cart cart = cartRepository.findById(cartId);
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(CartNotFoundException::new);
         Cart updatedCart = cart.addMenu(menu);
         cartRepository.save(updatedCart);
     }
