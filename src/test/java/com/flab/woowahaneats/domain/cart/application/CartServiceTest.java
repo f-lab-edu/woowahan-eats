@@ -1,9 +1,15 @@
 package com.flab.woowahaneats.domain.cart.application;
 
+import com.flab.woowahaneats.domain.auth.AuthContext;
+import com.flab.woowahaneats.domain.auth.AuthContextHolder;
+import com.flab.woowahaneats.domain.cart.application.exception.CartNotFoundException;
 import com.flab.woowahaneats.domain.cart.application.exception.InvalidQuantityException;
 import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
 import com.flab.woowahaneats.domain.cart.repository.CartRepository;
+import com.flab.woowahaneats.domain.member.domain.User;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,6 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,6 +37,21 @@ class CartServiceTest {
     @InjectMocks
     private CartService cartService;
 
+    @BeforeEach
+    void setUp() {
+        User mockUser = User.builder()
+                .id(1L)
+                .name("테스트 사용자")
+                .build();
+        AuthContext authContext = new AuthContext(mockUser, "USER");
+        AuthContextHolder.setContext(authContext);
+    }
+
+    @AfterEach
+    void tearDown() {
+        AuthContextHolder.clear();
+    }
+
     @Nested
     @DisplayName("장바구니 생성")
     class CreateCart {
@@ -37,7 +60,6 @@ class CartServiceTest {
         @DisplayName("유효한 데이터로 장바구니를 생성하면 Cart 객체가 올바르게 생성되고 저장된다")
         void createCart_WithValidData_SavesCartCorrectly() {
             // Given
-            Long userId = 1L;
             Long restaurantId = 100L;
             List<CartMenu> menus = List.of(
                     new CartMenu(1L, 2),
@@ -45,7 +67,7 @@ class CartServiceTest {
             );
 
             // When
-            cartService.createCart(userId, restaurantId, menus);
+            cartService.createCart(restaurantId, menus);
 
             // Then
             ArgumentCaptor<Cart> cartCaptor = ArgumentCaptor.forClass(Cart.class);
@@ -54,7 +76,7 @@ class CartServiceTest {
             Cart savedCart = cartCaptor.getValue();
             assertThat(savedCart).isNotNull();
             assertThat(savedCart.getId()).isNotNull();
-            assertThat(savedCart.getUserId()).isEqualTo(userId);
+            assertThat(savedCart.getUserId()).isEqualTo(1L);
             assertThat(savedCart.getRestaurantId()).isEqualTo(restaurantId);
             assertThat(savedCart.getMenus())
                     .hasSize(2)
@@ -66,14 +88,13 @@ class CartServiceTest {
         @DisplayName("수량이 0인 메뉴가 포함되면 InvalidQuantityException이 발생한다")
         void createCart_WithZeroQuantity_ThrowsException() {
             // Given
-            Long userId = 1L;
             Long restaurantId = 100L;
             List<CartMenu> menus = List.of(
                     new CartMenu(1L, 0)
             );
 
             // When & Then
-            assertThatThrownBy(() -> cartService.createCart(userId, restaurantId, menus))
+            assertThatThrownBy(() -> cartService.createCart(restaurantId, menus))
                     .isInstanceOf(InvalidQuantityException.class)
                     .hasMessage("수량은 1개 이상 99개 이하여야 합니다.");
 
@@ -84,19 +105,70 @@ class CartServiceTest {
         @DisplayName("수량이 100인 메뉴가 포함되면 InvalidQuantityException이 발생한다")
         void createCart_WithOverMaxQuantity_ThrowsException() {
             // Given
-            Long userId = 1L;
             Long restaurantId = 100L;
             List<CartMenu> menus = List.of(
                     new CartMenu(1L, 100)
             );
 
             // When & Then
-            assertThatThrownBy(() -> cartService.createCart(userId, restaurantId, menus))
+            assertThatThrownBy(() -> cartService.createCart(restaurantId, menus))
                     .isInstanceOf(InvalidQuantityException.class)
                     .hasMessage("수량은 1개 이상 99개 이하여야 합니다.");
 
             verify(cartRepository, never()).save(any(Cart.class));
         }
 
+    }
+
+    @Nested
+    @DisplayName("장바구니 조회")
+    class GetCart {
+
+        @Test
+        @DisplayName("존재하는 장바구니 ID로 조회하면 장바구니 정보를 반환한다")
+        void getCart_WithExistingCartId_ReturnsCart(){
+
+            // Given
+            UUID cartId = UUID.randomUUID();
+            Long userId = 1L;
+            Long restaurantId = 100L;
+            List<CartMenu> menus = List.of(new CartMenu(1L, 2));
+
+            Cart mockCart = Cart.builder()
+                    .id(cartId)
+                    .userId(userId)
+                    .restaurantId(restaurantId)
+                    .menus(menus)
+                    .build();
+
+            when(cartRepository.findById(cartId)).thenReturn(Optional.of(mockCart));
+
+            // When
+            Cart result = cartService.getCart(cartId);
+
+            // Then
+            assertThat(result).isNotNull();
+            assertThat(result.getId()).isEqualTo(cartId);
+            assertThat(result.getUserId()).isEqualTo(userId);
+            assertThat(result.getRestaurantId()).isEqualTo(restaurantId);
+            assertThat(result.getMenus()).hasSize(1);
+
+            verify(cartRepository).findById(cartId);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 장바구니 ID로 조회하면 CartNotFoundException이 발생한다")
+        void getCart_WithNonExistingCartId_ThrowsException() {
+            // Given
+            UUID cartId = UUID.randomUUID();
+
+            when(cartRepository.findById(cartId)).thenReturn(Optional.empty());
+
+            // When & Then
+            assertThatThrownBy(() -> cartService.getCart(cartId))
+            .isInstanceOf(CartNotFoundException.class).hasMessage("장바구니를 찾을 수 없습니다.");
+
+            verify(cartRepository).findById(cartId);
+        }
     }
 }

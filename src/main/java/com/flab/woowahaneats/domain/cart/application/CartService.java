@@ -23,8 +23,9 @@ public class CartService {
     private final CartRepository cartRepository;
     private final MenuRepository menuRepository;
 
-    public void createCart(Long userId, Long restaurantId, List<CartMenu> menus) {
-        Cart cart = Cart.create(userId, restaurantId, menus);
+    public void createCart(Long restaurantId, List<CartMenu> menus) {
+        User user = AuthContextHolder.getContext().getUser();
+        Cart cart = Cart.create(user.getId(), restaurantId, menus);
         cartRepository.save(cart);
     }
 

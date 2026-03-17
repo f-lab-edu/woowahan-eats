@@ -16,10 +16,10 @@ import java.util.UUID;
 public class CartController {
     private final CartService cartService;
 
-    @PostMapping("/create/{userId}/{restaurantId}")
-    public ResponseEntity<Void> createCart(@PathVariable Long userId, @PathVariable Long restaurantId,
+    @PostMapping("/create/{restaurantId}")
+    public ResponseEntity<Void> createCart(@PathVariable Long restaurantId,
                                            @RequestBody List<CartMenu> menus) {
-        cartService.createCart(userId, restaurantId, menus);
+        cartService.createCart(restaurantId, menus);
         return ResponseEntity.ok().build();
     }
 
