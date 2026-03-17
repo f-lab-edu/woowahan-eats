@@ -49,4 +49,10 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{cartId}")
+    public ResponseEntity<Void> addCartMenu(@PathVariable UUID cartId,
+                                            @RequestBody CartMenu menu) {
+        cartService.addCartMenu(cartId, menu);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -3,6 +3,7 @@ package com.flab.woowahaneats.domain.cart.domain;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,4 +52,24 @@ public class Cart {
                 .build();
     }
 
+    public Cart addMenu(CartMenu newMenu) {
+        boolean menuExists = this.menus.stream()
+                .anyMatch(menu -> menu.menuId().equals(newMenu.menuId()));
+
+        List<CartMenu> updatedMenus;
+        if (menuExists) {
+            updatedMenus = this.menus.stream()
+                    .map(menu -> menu.menuId().equals(newMenu.menuId())
+                            ? new CartMenu(menu.menuId(), menu.quantity() + newMenu.quantity())
+                            : menu)
+                    .toList();
+        } else {
+            updatedMenus = new ArrayList<>(this.menus);
+            updatedMenus.add(newMenu);
+        }
+
+        return this.toBuilder()
+                .menus(updatedMenus)
+                .build();
+    }
 }
