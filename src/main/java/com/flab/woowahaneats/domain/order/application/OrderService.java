@@ -11,6 +11,8 @@ import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundExcep
 import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
 import com.flab.woowahaneats.domain.order.application.exception.MenuNotAvailableException;
+import com.flab.woowahaneats.domain.order.application.exception.OrderNotFoundException;
+import com.flab.woowahaneats.domain.order.application.exception.OrderNotBelongToUserException;
 import com.flab.woowahaneats.domain.order.application.exception.RestaurantClosedException;
 import com.flab.woowahaneats.domain.order.application.exception.RestaurantOperationInfoNotFoundException;
 import com.flab.woowahaneats.domain.order.controller.dto.CreateOrderRequest;
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +65,19 @@ public class OrderService {
                 operationInfo.getMinOrderAmt()
         );
 
+        orderRepository.save(order);
+    }
+
+    public void cancelOrder(UUID orderId){
+        User user = AuthContextHolder.getContext().getUser();
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        if (!order.getUserId().equals(user.getId())) {
+            throw new OrderNotBelongToUserException();
+        }
+
+        order.cancel();
         orderRepository.save(order);
     }
 

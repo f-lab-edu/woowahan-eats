@@ -2,6 +2,7 @@ package com.flab.woowahaneats.domain.order.domain;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.order.application.exception.MinOrderAmountNotMetException;
+import com.flab.woowahaneats.domain.order.application.exception.OrderCannotBeCancelledException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -50,6 +51,24 @@ public class Order {
                 .createdAt(LocalDateTime.now())
                 .completedAt(null)
                 .build();
+    }
+
+    public void cancel(){
+        validateCancellable();
+        this.status = OrderStatus.CANCELLED;
+        this.completedAt = LocalDateTime.now();
+    }
+
+    private void validateCancellable() {
+        if (this.status == OrderStatus.CANCELLED) {
+            throw new OrderCannotBeCancelledException("이미 취소된 주문입니다.");
+        }
+        if (this.status == OrderStatus.COMPLETED) {
+            throw new OrderCannotBeCancelledException("완료된 주문은 취소할 수 없습니다.");
+        }
+        if (this.status == OrderStatus.DELIVERING) {
+            throw new OrderCannotBeCancelledException("배달 중인 주문은 취소할 수 없습니다.");
+        }
     }
 
     private static void validateMinOrderAmount(int menuTotalPrice, int minOrderAmt) {
