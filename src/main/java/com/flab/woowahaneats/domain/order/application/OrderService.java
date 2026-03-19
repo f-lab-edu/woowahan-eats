@@ -16,6 +16,7 @@ import com.flab.woowahaneats.domain.order.application.exception.OrderNotBelongTo
 import com.flab.woowahaneats.domain.order.application.exception.RestaurantClosedException;
 import com.flab.woowahaneats.domain.order.application.exception.RestaurantOperationInfoNotFoundException;
 import com.flab.woowahaneats.domain.order.controller.dto.CreateOrderRequest;
+import com.flab.woowahaneats.domain.order.controller.dto.OrderResponse;
 import com.flab.woowahaneats.domain.order.domain.Order;
 import com.flab.woowahaneats.domain.order.domain.OrderMenu;
 import com.flab.woowahaneats.domain.order.repository.OrderRepository;
@@ -79,6 +80,15 @@ public class OrderService {
 
         order.cancel();
         orderRepository.save(order);
+    }
+
+    public List<OrderResponse> getOrderList(){
+        User user = AuthContextHolder.getContext().getUser();
+        List<Order> orders = orderRepository.findActiveOrdersByUserId(user.getId());
+
+        return orders.stream()
+                .map(OrderResponse::from)
+                .toList();
     }
 
     private List<OrderMenu> convertToOrderMenus(Cart cart) {

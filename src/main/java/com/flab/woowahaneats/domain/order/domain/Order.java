@@ -59,6 +59,11 @@ public class Order {
         this.completedAt = LocalDateTime.now();
     }
 
+    public boolean isActive() {
+        return this.status != OrderStatus.CANCELLED
+                && this.status != OrderStatus.COMPLETED;
+    }
+
     private void validateCancellable() {
         if (this.status == OrderStatus.CANCELLED) {
             throw new OrderCannotBeCancelledException("이미 취소된 주문입니다.");

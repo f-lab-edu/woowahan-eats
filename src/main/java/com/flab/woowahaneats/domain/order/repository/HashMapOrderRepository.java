@@ -4,6 +4,7 @@ import com.flab.woowahaneats.domain.order.domain.Order;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,5 +21,13 @@ public class HashMapOrderRepository implements OrderRepository {
     @Override
     public Optional<Order> findById(UUID orderId) {
         return Optional.ofNullable(orderMap.get(orderId));
+    }
+
+    @Override
+    public List<Order> findActiveOrdersByUserId(Long userId) {
+        return orderMap.values().stream()
+                .filter(order -> order.getUserId().equals(userId))
+                .filter(Order::isActive)
+                .toList();
     }
 }
