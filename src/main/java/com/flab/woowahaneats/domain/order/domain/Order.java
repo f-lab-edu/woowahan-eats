@@ -17,12 +17,9 @@ public class Order {
     private Long restaurantId;
     private UUID riderId;
     private List<OrderMenu> orderMenus;
-    private String requestToStore;
-    private String requestToRider;
+    private OrderRequest orderRequest;
     private OrderStatus status;
-    private int menuTotalPrice;
-    private int totalPrice;
-    private int deliveryFee;
+    private OrderPrice orderPrice;
     private Address deliveryAddress;
     private LocalDateTime createdAt;
     private LocalDateTime completedAt;
@@ -47,11 +44,8 @@ public class Order {
                 .riderId(null)
                 .orderMenus(orderMenus)
                 .deliveryAddress(deliveryAddress)
-                .requestToStore(requestToStore)
-                .requestToRider(requestToRider)
-                .menuTotalPrice(menuTotalPrice)
-                .deliveryFee(deliveryFee)
-                .totalPrice(menuTotalPrice + deliveryFee)
+                .orderRequest(new OrderRequest(requestToStore, requestToRider))
+                .orderPrice(OrderPrice.of(menuTotalPrice, deliveryFee))
                 .status(OrderStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .completedAt(null)
