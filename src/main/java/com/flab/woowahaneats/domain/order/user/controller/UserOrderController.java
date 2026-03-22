@@ -1,8 +1,8 @@
-package com.flab.woowahaneats.domain.order.controller;
+package com.flab.woowahaneats.domain.order.user.controller;
 
-import com.flab.woowahaneats.domain.order.application.OrderService;
-import com.flab.woowahaneats.domain.order.controller.dto.CreateOrderRequest;
-import com.flab.woowahaneats.domain.order.controller.dto.OrderResponse;
+import com.flab.woowahaneats.domain.order.user.application.UserOrderService;
+import com.flab.woowahaneats.domain.order.user.controller.dto.CreateOrderRequest;
+import com.flab.woowahaneats.domain.order.user.controller.dto.OrderResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +14,8 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/order")
-public class OrderController {
-    private final OrderService orderService;
+public class UserOrderController {
+    private final UserOrderService orderService;
 
     @PostMapping("/create")
     public ResponseEntity<Void> createOrder(@Valid @RequestBody CreateOrderRequest createOrderRequest) {

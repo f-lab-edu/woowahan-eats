@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.order.application;
+package com.flab.woowahaneats.domain.order.user.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.cart.application.exception.CartNotBelongToUserException;
@@ -10,16 +10,16 @@ import com.flab.woowahaneats.domain.member.domain.User;
 import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
-import com.flab.woowahaneats.domain.order.application.exception.MenuNotAvailableException;
-import com.flab.woowahaneats.domain.order.application.exception.OrderNotFoundException;
-import com.flab.woowahaneats.domain.order.application.exception.OrderNotBelongToUserException;
-import com.flab.woowahaneats.domain.order.application.exception.RestaurantClosedException;
-import com.flab.woowahaneats.domain.order.application.exception.RestaurantOperationInfoNotFoundException;
-import com.flab.woowahaneats.domain.order.controller.dto.CreateOrderRequest;
-import com.flab.woowahaneats.domain.order.controller.dto.OrderResponse;
-import com.flab.woowahaneats.domain.order.domain.Order;
-import com.flab.woowahaneats.domain.order.domain.OrderMenu;
-import com.flab.woowahaneats.domain.order.repository.OrderRepository;
+import com.flab.woowahaneats.domain.order.exception.MenuNotAvailableException;
+import com.flab.woowahaneats.domain.order.exception.OrderNotFoundException;
+import com.flab.woowahaneats.domain.order.exception.OrderNotBelongToUserException;
+import com.flab.woowahaneats.domain.order.exception.RestaurantClosedException;
+import com.flab.woowahaneats.domain.order.exception.RestaurantOperationInfoNotFoundException;
+import com.flab.woowahaneats.domain.order.user.controller.dto.CreateOrderRequest;
+import com.flab.woowahaneats.domain.order.user.controller.dto.OrderResponse;
+import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import com.flab.woowahaneats.domain.order.common.OrderMenu;
+import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +30,8 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService {
-    private final OrderRepository orderRepository;
+public class UserOrderService {
+    private final UserOrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final MenuRepository menuRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
@@ -55,7 +55,7 @@ public class OrderService {
 
         List<OrderMenu> orderMenus = convertToOrderMenus(cart);
 
-        Order order = Order.create(
+        UserOrder order = UserOrder.create(
                 user.getId(),
                 cart.getRestaurantId(),
                 orderMenus,
@@ -71,7 +71,7 @@ public class OrderService {
 
     public void cancelOrder(UUID orderId){
         User user = AuthContextHolder.getContext().getUser();
-        Order order = orderRepository.findById(orderId)
+        UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
 
         if (!order.getUserId().equals(user.getId())) {
@@ -84,7 +84,7 @@ public class OrderService {
 
     public List<OrderResponse> getOrderList(){
         User user = AuthContextHolder.getContext().getUser();
-        List<Order> orders = orderRepository.findActiveOrdersByUserId(user.getId());
+        List<UserOrder> orders = orderRepository.findActiveOrdersByUserId(user.getId());
 
         return orders.stream()
                 .map(OrderResponse::from)

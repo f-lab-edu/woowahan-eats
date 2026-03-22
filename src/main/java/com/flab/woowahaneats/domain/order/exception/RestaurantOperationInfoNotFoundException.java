@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.order.application.exception;
+package com.flab.woowahaneats.domain.order.exception;
 
 import org.springframework.http.HttpStatus;
 

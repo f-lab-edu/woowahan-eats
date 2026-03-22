@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.order.domain;
+package com.flab.woowahaneats.domain.order.common;
 
 public record OrderMenu(
         Long menuId,

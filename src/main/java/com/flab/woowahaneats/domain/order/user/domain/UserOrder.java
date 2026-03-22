@@ -1,8 +1,12 @@
-package com.flab.woowahaneats.domain.order.domain;
+package com.flab.woowahaneats.domain.order.user.domain;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
-import com.flab.woowahaneats.domain.order.application.exception.MinOrderAmountNotMetException;
-import com.flab.woowahaneats.domain.order.application.exception.OrderCannotBeCancelledException;
+import com.flab.woowahaneats.domain.order.exception.MinOrderAmountNotMetException;
+import com.flab.woowahaneats.domain.order.exception.OrderCannotBeCancelledException;
+import com.flab.woowahaneats.domain.order.common.OrderMenu;
+import com.flab.woowahaneats.domain.order.common.OrderPrice;
+import com.flab.woowahaneats.domain.order.common.OrderRequest;
+import com.flab.woowahaneats.domain.order.common.OrderStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,11 +16,10 @@ import java.util.UUID;
 
 @Getter
 @Builder(toBuilder = true)
-public class Order {
+public class UserOrder {
     private UUID id;
     private Long userId;
     private Long restaurantId;
-    private UUID riderId;
     private List<OrderMenu> orderMenus;
     private OrderRequest orderRequest;
     private OrderStatus status;
@@ -25,7 +28,7 @@ public class Order {
     private LocalDateTime createdAt;
     private LocalDateTime completedAt;
 
-    public static Order create(
+    public static UserOrder create(
             Long userId,
             Long restaurantId,
             List<OrderMenu> orderMenus,
@@ -38,11 +41,10 @@ public class Order {
         int menuTotalPrice = calculateMenuTotalPrice(orderMenus);
         validateMinOrderAmount(menuTotalPrice, minOrderAmt);
 
-        return Order.builder()
+        return UserOrder.builder()
                 .id(UUID.randomUUID())
                 .userId(userId)
                 .restaurantId(restaurantId)
-                .riderId(null)
                 .orderMenus(orderMenus)
                 .deliveryAddress(deliveryAddress)
                 .orderRequest(new OrderRequest(requestToStore, requestToRider))

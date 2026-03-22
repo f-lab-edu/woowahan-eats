@@ -1,11 +1,11 @@
-package com.flab.woowahaneats.domain.order.controller.dto;
+package com.flab.woowahaneats.domain.order.user.controller.dto;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
-import com.flab.woowahaneats.domain.order.domain.Order;
-import com.flab.woowahaneats.domain.order.domain.OrderMenu;
-import com.flab.woowahaneats.domain.order.domain.OrderPrice;
-import com.flab.woowahaneats.domain.order.domain.OrderRequest;
-import com.flab.woowahaneats.domain.order.domain.OrderStatus;
+import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import com.flab.woowahaneats.domain.order.common.OrderMenu;
+import com.flab.woowahaneats.domain.order.common.OrderPrice;
+import com.flab.woowahaneats.domain.order.common.OrderRequest;
+import com.flab.woowahaneats.domain.order.common.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +21,7 @@ public record OrderResponse(
         Address deliveryAddress,
         LocalDateTime createdAt
 ) {
-    public static OrderResponse from(Order order) {
+    public static OrderResponse from(UserOrder order) {
         return new OrderResponse(
                 order.getId(),
                 order.getRestaurantId(),

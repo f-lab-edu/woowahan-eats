@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.order.application.exception;
+package com.flab.woowahaneats.domain.order.exception;
 
 import com.flab.woowahaneats.global.exception.BusinessException;
 import org.springframework.http.HttpStatus;

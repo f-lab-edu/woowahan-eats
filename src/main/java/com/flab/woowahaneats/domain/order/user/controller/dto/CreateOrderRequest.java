@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.order.controller.dto;
+package com.flab.woowahaneats.domain.order.user.controller.dto;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
 import jakarta.validation.Valid;

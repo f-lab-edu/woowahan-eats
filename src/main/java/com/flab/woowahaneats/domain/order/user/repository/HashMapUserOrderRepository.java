@@ -1,6 +1,6 @@
-package com.flab.woowahaneats.domain.order.repository;
+package com.flab.woowahaneats.domain.order.user.repository;
 
-import com.flab.woowahaneats.domain.order.domain.Order;
+import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -9,25 +9,25 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class HashMapOrderRepository implements OrderRepository {
+public class HashMapUserOrderRepository implements UserOrderRepository {
 
-    HashMap<UUID, Order> orderMap = new HashMap<>();
+    HashMap<UUID, UserOrder> orderMap = new HashMap<>();
 
     @Override
-    public void save(Order order) {
+    public void save(UserOrder order) {
         orderMap.put(order.getId(), order);
     }
 
     @Override
-    public Optional<Order> findById(UUID orderId) {
+    public Optional<UserOrder> findById(UUID orderId) {
         return Optional.ofNullable(orderMap.get(orderId));
     }
 
     @Override
-    public List<Order> findActiveOrdersByUserId(Long userId) {
+    public List<UserOrder> findActiveOrdersByUserId(Long userId) {
         return orderMap.values().stream()
                 .filter(order -> order.getUserId().equals(userId))
-                .filter(Order::isActive)
+                .filter(UserOrder::isActive)
                 .toList();
     }
 }
