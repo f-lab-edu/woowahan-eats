@@ -13,17 +13,17 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/order")
+@RequestMapping("/user/orders")
 public class UserOrderController {
     private final UserOrderService orderService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<Void> createOrder(@Valid @RequestBody CreateOrderRequest createOrderRequest) {
         orderService.createOrder(createOrderRequest);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/cancel/{orderId}")
+    @PostMapping("/{orderId}")
     public ResponseEntity<Void> cancelOrder(@PathVariable UUID orderId) {
         orderService.cancelOrder(orderId);
         return ResponseEntity.noContent().build();
