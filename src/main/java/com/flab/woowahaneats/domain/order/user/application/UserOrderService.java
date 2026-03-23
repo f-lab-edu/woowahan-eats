@@ -10,6 +10,7 @@ import com.flab.woowahaneats.domain.member.domain.User;
 import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
+import com.flab.woowahaneats.domain.order.event.UserOrderCreatedEvent;
 import com.flab.woowahaneats.domain.order.exception.MenuNotAvailableException;
 import com.flab.woowahaneats.domain.order.exception.OrderNotFoundException;
 import com.flab.woowahaneats.domain.order.exception.OrderNotBelongToUserException;
@@ -23,6 +24,7 @@ import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,6 +37,7 @@ public class UserOrderService {
     private final CartRepository cartRepository;
     private final MenuRepository menuRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void createOrder(CreateOrderRequest request) {
         User user = AuthContextHolder.getContext().getUser();
@@ -67,6 +70,17 @@ public class UserOrderService {
         );
 
         orderRepository.save(order);
+
+        eventPublisher.publishEvent(new UserOrderCreatedEvent(
+                this,
+                order.getId(),
+                order.getRestaurantId(),
+                order.getOrderMenus(),
+                order.getOrderRequest(),
+                order.getOrderPrice(),
+                order.getDeliveryAddress(),
+                order.getCreatedAt()
+        ));
     }
 
     public void cancelOrder(UUID orderId){
@@ -79,6 +93,14 @@ public class UserOrderService {
         }
 
         order.cancel();
+        orderRepository.save(order);
+    }
+
+    public void approveOrder(UUID orderId) {
+        UserOrder order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        order.approve();
         orderRepository.save(order);
     }
 

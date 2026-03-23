@@ -2,6 +2,7 @@ package com.flab.woowahaneats.domain.order.user.domain;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.order.exception.MinOrderAmountNotMetException;
+import com.flab.woowahaneats.domain.order.exception.OrderCannotBeApprovedException;
 import com.flab.woowahaneats.domain.order.exception.OrderCannotBeCancelledException;
 import com.flab.woowahaneats.domain.order.common.OrderMenu;
 import com.flab.woowahaneats.domain.order.common.OrderPrice;
@@ -61,6 +62,11 @@ public class UserOrder {
         this.completedAt = LocalDateTime.now();
     }
 
+    public void approve() {
+        validateApprovable();
+        this.status = OrderStatus.ACCEPTED;
+    }
+
     public boolean isActive() {
         return this.status != OrderStatus.CANCELLED
                 && this.status != OrderStatus.COMPLETED;
@@ -75,6 +81,12 @@ public class UserOrder {
         }
         if (this.status == OrderStatus.DELIVERING) {
             throw new OrderCannotBeCancelledException("배달 중인 주문은 취소할 수 없습니다.");
+        }
+    }
+
+    private void validateApprovable() {
+        if (this.status != OrderStatus.PENDING) {
+            throw new OrderCannotBeApprovedException("대기 중인 주문만 승인할 수 있습니다.");
         }
     }
 

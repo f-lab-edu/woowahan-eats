@@ -4,7 +4,6 @@ import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.order.common.OrderMenu;
 import com.flab.woowahaneats.domain.order.common.OrderPrice;
 import com.flab.woowahaneats.domain.order.common.OrderRequest;
-import com.flab.woowahaneats.domain.order.common.OrderStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,7 +17,6 @@ public class OwnerOrder {
     private UUID id;
     private Long restaurantId;
     private OrderRequest orderRequest;
-    private OrderStatus status;
     private Address deliveryAddress;
     private OrderPrice orderPrice;
     private List<OrderMenu> orderMenus;
