@@ -2,10 +2,10 @@ package com.flab.woowahaneats.domain.order.user.controller.dto;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import com.flab.woowahaneats.domain.order.user.domain.UserOrderStatus;
 import com.flab.woowahaneats.domain.order.common.OrderMenu;
 import com.flab.woowahaneats.domain.order.common.OrderPrice;
 import com.flab.woowahaneats.domain.order.common.OrderRequest;
-import com.flab.woowahaneats.domain.order.common.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.UUID;
 public record OrderResponse(
         UUID orderId,
         Long restaurantId,
-        OrderStatus status,
+        UserOrderStatus status,
         List<OrderMenu> orderMenus,
         OrderPrice orderPrice,
         OrderRequest orderRequest,

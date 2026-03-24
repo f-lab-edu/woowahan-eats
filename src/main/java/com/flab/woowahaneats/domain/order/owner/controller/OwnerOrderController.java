@@ -22,4 +22,16 @@ public class OwnerOrderController {
         ownerOrderService.approveOrder(userOrderId);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/start-cooking/{userOrderId}")
+    public ResponseEntity<Void> startCooking(@PathVariable UUID userOrderId) {
+        ownerOrderService.startCooking(userOrderId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/complete-cooking/{userOrderId}")
+    public ResponseEntity<Void> completeCooking(@PathVariable UUID userOrderId) {
+        ownerOrderService.completeCooking(userOrderId);
+        return ResponseEntity.ok().build();
+    }
 }

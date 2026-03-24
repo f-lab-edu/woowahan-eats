@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface OwnerOrderRepository {
     void save(OwnerOrder ownerOrder);
+    Optional<OwnerOrder> findByUserOrderId(UUID userOrderId);
 }

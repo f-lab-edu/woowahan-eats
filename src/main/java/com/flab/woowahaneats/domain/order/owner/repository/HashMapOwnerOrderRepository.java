@@ -4,6 +4,7 @@ import com.flab.woowahaneats.domain.order.owner.domain.OwnerOrder;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -14,5 +15,12 @@ public class HashMapOwnerOrderRepository implements OwnerOrderRepository {
     @Override
     public void save(OwnerOrder ownerOrder) {
         ownerOrderMap.put(ownerOrder.getId(), ownerOrder);
+    }
+
+    @Override
+    public Optional<OwnerOrder> findByUserOrderId(UUID userOrderId) {
+        return ownerOrderMap.values().stream()
+                .filter(order -> order.getUserOrderId().equals(userOrderId))
+                .findFirst();
     }
 }

@@ -10,6 +10,7 @@ import com.flab.woowahaneats.domain.member.domain.User;
 import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
+import com.flab.woowahaneats.domain.order.event.UserOrderCancelledEvent;
 import com.flab.woowahaneats.domain.order.event.UserOrderCreatedEvent;
 import com.flab.woowahaneats.domain.order.exception.MenuNotAvailableException;
 import com.flab.woowahaneats.domain.order.exception.OrderNotFoundException;
@@ -94,6 +95,8 @@ public class UserOrderService {
 
         order.cancel();
         orderRepository.save(order);
+
+        eventPublisher.publishEvent(new UserOrderCancelledEvent(this, orderId));
     }
 
     public void approveOrder(UUID orderId) {
@@ -101,6 +104,38 @@ public class UserOrderService {
                 .orElseThrow(OrderNotFoundException::new);
 
         order.approve();
+        orderRepository.save(order);
+    }
+
+    public void startCooking(UUID orderId) {
+        UserOrder order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        order.startCooking();
+        orderRepository.save(order);
+    }
+
+    public void completeCooking(UUID orderId) {
+        UserOrder order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        order.completeCooking();
+        orderRepository.save(order);
+    }
+
+    public void startDelivering(UUID orderId) {
+        UserOrder order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        order.startDelivering();
+        orderRepository.save(order);
+    }
+
+    public void completeOrder(UUID orderId) {
+        UserOrder order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        order.complete();
         orderRepository.save(order);
     }
 
