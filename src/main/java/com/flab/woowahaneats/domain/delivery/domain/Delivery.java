@@ -51,6 +51,13 @@ public class Delivery {
         this.timeline = this.timeline.pickUp();
     }
 
+    public void startDelivery() {
+        if (this.status != DeliveryStatus.PICKED_UP) {
+            throw new InvalidDeliveryStatusException("픽업 완료된 배달만 배송을 시작할 수 있습니다.");
+        }
+        this.status = DeliveryStatus.IN_DELIVERY;
+    }
+
     public void cancel() {
         if (this.status == DeliveryStatus.DELIVERED) {
             throw new InvalidDeliveryStatusException("완료된 배달은 취소할 수 없습니다.");

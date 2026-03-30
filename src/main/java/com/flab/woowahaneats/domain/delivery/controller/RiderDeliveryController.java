@@ -60,4 +60,10 @@ public class RiderDeliveryController {
         deliveryService.completePickup(deliveryId);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{deliveryId}/start-delivery")
+    public ResponseEntity<Void> startDelivery(@PathVariable UUID deliveryId) {
+        deliveryService.startDelivery(deliveryId);
+        return ResponseEntity.ok().build();
+    }
 }
