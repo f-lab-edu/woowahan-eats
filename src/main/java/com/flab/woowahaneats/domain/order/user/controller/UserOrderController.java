@@ -2,6 +2,7 @@ package com.flab.woowahaneats.domain.order.user.controller;
 
 import com.flab.woowahaneats.domain.order.user.application.UserOrderService;
 import com.flab.woowahaneats.domain.order.user.controller.dto.CreateOrderRequest;
+import com.flab.woowahaneats.domain.order.user.controller.dto.CreateOrderResponse;
 import com.flab.woowahaneats.domain.order.user.controller.dto.OrderResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,9 @@ public class UserOrderController {
     private final UserOrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Void> createOrder(@Valid @RequestBody CreateOrderRequest createOrderRequest) {
-        orderService.createOrder(createOrderRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<CreateOrderResponse> createOrder(@Valid @RequestBody CreateOrderRequest createOrderRequest) {
+        CreateOrderResponse response = orderService.createOrder(createOrderRequest);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{orderId}")
