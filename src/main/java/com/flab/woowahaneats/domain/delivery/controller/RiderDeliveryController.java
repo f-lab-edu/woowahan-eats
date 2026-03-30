@@ -48,4 +48,10 @@ public class RiderDeliveryController {
         deliveryService.acceptDelivery(deliveryId, request.riderId());
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{deliveryId}/start-pickup")
+    public ResponseEntity<Void> startPickup(@PathVariable UUID deliveryId) {
+        deliveryService.startPickup(deliveryId);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -36,6 +36,13 @@ public class Delivery {
         this.timeline = new DeliveryTimeline(LocalDateTime.now(), null, null);
     }
 
+    public void startPickup() {
+        if (this.status != DeliveryStatus.ASSIGNED) {
+            throw new InvalidDeliveryStatusException("배정된 배달만 픽업을 시작할 수 있습니다.");
+        }
+        this.status = DeliveryStatus.PICKING_UP;
+    }
+
     public void cancel() {
         if (this.status == DeliveryStatus.DELIVERED) {
             throw new InvalidDeliveryStatusException("완료된 배달은 취소할 수 없습니다.");
