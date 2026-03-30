@@ -1,6 +1,8 @@
 package com.flab.woowahaneats.domain.delivery.application;
 
+import com.flab.woowahaneats.domain.delivery.controller.dto.DeliveryResponse;
 import com.flab.woowahaneats.domain.delivery.domain.Delivery;
+import com.flab.woowahaneats.domain.delivery.domain.DeliveryStatus;
 import com.flab.woowahaneats.domain.delivery.event.DeliveryCancelledEvent;
 import com.flab.woowahaneats.domain.delivery.event.DeliveryCreatedEvent;
 import com.flab.woowahaneats.domain.delivery.exception.DeliveryNotFoundException;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -46,5 +49,13 @@ public class DeliveryService {
         deliveryRepository.save(delivery);
 
         eventPublisher.publishEvent(new DeliveryCancelledEvent(this, delivery.getId(), delivery.getOrderId()));
+    }
+
+    public List<DeliveryResponse> getPendingDeliveries() {
+        List<Delivery> deliveries = deliveryRepository.findByStatus(DeliveryStatus.PENDING);
+
+        return deliveries.stream()
+                .map(DeliveryResponse::from)
+                .toList();
     }
 }
