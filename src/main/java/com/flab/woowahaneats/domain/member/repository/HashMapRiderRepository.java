@@ -4,6 +4,7 @@ import com.flab.woowahaneats.domain.member.domain.Rider;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @Repository
 public class HashMapRiderRepository implements RiderRepository {
@@ -22,5 +23,10 @@ public class HashMapRiderRepository implements RiderRepository {
             }
         }
         return null;
+    }
+
+    @Override
+    public Optional<Rider> findById(Long riderId) {
+        return Optional.ofNullable(HashMapRiderRepository.get(riderId));
     }
 }

@@ -13,7 +13,7 @@ public class Delivery {
 
     private UUID id;
     private UUID orderId;
-    private UUID riderId;
+    private Long riderId;
     private DeliveryStatus status;
     private DeliveryTimeline timeline;
     private LocalDateTime createdAt;
@@ -27,7 +27,7 @@ public class Delivery {
                 .build();
     }
 
-    public void accept(UUID riderId) {
+    public void accept(Long riderId) {
         if (this.status != DeliveryStatus.PENDING) {
             throw new InvalidDeliveryStatusException("대기 중인 배달만 수락할 수 있습니다.");
         }

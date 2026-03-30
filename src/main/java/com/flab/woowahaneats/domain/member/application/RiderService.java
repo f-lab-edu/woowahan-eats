@@ -2,6 +2,7 @@ package com.flab.woowahaneats.domain.member.application;
 
 import com.flab.woowahaneats.domain.auth.domain.Account;
 import com.flab.woowahaneats.domain.member.application.exception.DuplicateEmailException;
+import com.flab.woowahaneats.domain.member.application.exception.RiderNotFoundException;
 import com.flab.woowahaneats.domain.member.controller.dto.RiderSignUpRequest;
 import com.flab.woowahaneats.domain.member.domain.Rider;
 import com.flab.woowahaneats.domain.member.domain.RiderStatus;
@@ -43,9 +44,38 @@ public class RiderService {
                 .location(riderSignUpRequest.location())
                 .bankAccount(riderSignUpRequest.bankAccount())
                 .vehicleType(riderSignUpRequest.vehicleType())
-                .riderStatus(RiderStatus.WAITING)
+                .riderStatus(RiderStatus.RESTING)
                 .build();
 
         riderRepository.save(rider);
+    }
+
+    public void startWork(Long riderId) {
+        Rider rider = getRider(riderId);
+        rider.startWork();
+        riderRepository.save(rider);
+    }
+
+    public void endWork(Long riderId) {
+        Rider rider = getRider(riderId);
+        rider.endWork();
+        riderRepository.save(rider);
+    }
+
+    public void startDelivering(Long riderId) {
+        Rider rider = getRider(riderId);
+        rider.startDelivering();
+        riderRepository.save(rider);
+    }
+
+    public void finishDelivering(Long riderId) {
+        Rider rider = getRider(riderId);
+        rider.finishDelivering();
+        riderRepository.save(rider);
+    }
+
+    private Rider getRider(Long riderId) {
+        return riderRepository.findById(riderId)
+                .orElseThrow(RiderNotFoundException::new);
     }
 }

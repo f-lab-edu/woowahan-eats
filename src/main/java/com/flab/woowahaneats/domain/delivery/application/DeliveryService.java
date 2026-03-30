@@ -3,6 +3,7 @@ package com.flab.woowahaneats.domain.delivery.application;
 import com.flab.woowahaneats.domain.delivery.controller.dto.DeliveryResponse;
 import com.flab.woowahaneats.domain.delivery.domain.Delivery;
 import com.flab.woowahaneats.domain.delivery.domain.DeliveryStatus;
+import com.flab.woowahaneats.domain.delivery.event.DeliveryAcceptedEvent;
 import com.flab.woowahaneats.domain.delivery.event.DeliveryCancelledEvent;
 import com.flab.woowahaneats.domain.delivery.event.DeliveryCompletedEvent;
 import com.flab.woowahaneats.domain.delivery.event.DeliveryCreatedEvent;
@@ -46,10 +47,11 @@ public class DeliveryService {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
+        Long riderId = delivery.getRiderId();
         delivery.cancel();
         deliveryRepository.save(delivery);
 
-        eventPublisher.publishEvent(new DeliveryCancelledEvent(this, delivery.getId(), delivery.getOrderId()));
+        eventPublisher.publishEvent(new DeliveryCancelledEvent(this, delivery.getId(), delivery.getOrderId(), riderId));
     }
 
     public List<DeliveryResponse> getPendingDeliveries() {
@@ -60,12 +62,14 @@ public class DeliveryService {
                 .toList();
     }
 
-    public void acceptDelivery(UUID deliveryId, UUID riderId) {
+    public void acceptDelivery(UUID deliveryId, Long riderId) {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
         delivery.accept(riderId);
         deliveryRepository.save(delivery);
+
+        eventPublisher.publishEvent(new DeliveryAcceptedEvent(this, delivery.getId(), delivery.getOrderId(), riderId));
     }
 
     public void startPickup(UUID deliveryId) {
@@ -96,9 +100,10 @@ public class DeliveryService {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
+        Long riderId = delivery.getRiderId();
         delivery.complete();
         deliveryRepository.save(delivery);
 
-        eventPublisher.publishEvent(new DeliveryCompletedEvent(this, delivery.getId(), delivery.getOrderId()));
+        eventPublisher.publishEvent(new DeliveryCompletedEvent(this, delivery.getId(), delivery.getOrderId(), riderId));
     }
 }

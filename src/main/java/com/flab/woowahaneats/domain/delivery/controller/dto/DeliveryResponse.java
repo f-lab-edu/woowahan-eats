@@ -9,7 +9,7 @@ import java.util.UUID;
 public record DeliveryResponse(
         UUID deliveryId,
         UUID orderId,
-        UUID riderId,
+        Long riderId,
         DeliveryStatus status,
         LocalDateTime createdAt
 ) {

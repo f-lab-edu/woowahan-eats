@@ -9,10 +9,12 @@ import java.util.UUID;
 public class DeliveryCompletedEvent extends ApplicationEvent {
     private final UUID deliveryId;
     private final UUID orderId;
+    private final Long riderId;
 
-    public DeliveryCompletedEvent(Object source, UUID deliveryId, UUID orderId) {
+    public DeliveryCompletedEvent(Object source, UUID deliveryId, UUID orderId, Long riderId) {
         super(source);
         this.deliveryId = deliveryId;
         this.orderId = orderId;
+        this.riderId = riderId;
     }
 }

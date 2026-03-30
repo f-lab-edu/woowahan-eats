@@ -6,12 +6,12 @@ import org.springframework.context.ApplicationEvent;
 import java.util.UUID;
 
 @Getter
-public class DeliveryCancelledEvent extends ApplicationEvent {
+public class DeliveryAcceptedEvent extends ApplicationEvent {
     private final UUID deliveryId;
     private final UUID orderId;
     private final Long riderId;
 
-    public DeliveryCancelledEvent(Object source, UUID deliveryId, UUID orderId, Long riderId) {
+    public DeliveryAcceptedEvent(Object source, UUID deliveryId, UUID orderId, Long riderId) {
         super(source);
         this.deliveryId = deliveryId;
         this.orderId = orderId;
