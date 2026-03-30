@@ -27,6 +27,15 @@ public class Delivery {
                 .build();
     }
 
+    public void accept(UUID riderId) {
+        if (this.status != DeliveryStatus.PENDING) {
+            throw new InvalidDeliveryStatusException("대기 중인 배달만 수락할 수 있습니다.");
+        }
+        this.riderId = riderId;
+        this.status = DeliveryStatus.ASSIGNED;
+        this.timeline = new DeliveryTimeline(LocalDateTime.now(), null, null);
+    }
+
     public void cancel() {
         if (this.status == DeliveryStatus.DELIVERED) {
             throw new InvalidDeliveryStatusException("완료된 배달은 취소할 수 없습니다.");

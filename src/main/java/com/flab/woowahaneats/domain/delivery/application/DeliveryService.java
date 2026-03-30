@@ -58,4 +58,12 @@ public class DeliveryService {
                 .map(DeliveryResponse::from)
                 .toList();
     }
+
+    public void acceptDelivery(UUID deliveryId, UUID riderId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+                .orElseThrow(DeliveryNotFoundException::new);
+
+        delivery.accept(riderId);
+        deliveryRepository.save(delivery);
+    }
 }
