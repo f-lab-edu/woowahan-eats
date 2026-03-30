@@ -1,7 +1,9 @@
 package com.flab.woowahaneats.domain.delivery.application;
 
 import com.flab.woowahaneats.domain.delivery.domain.Delivery;
+import com.flab.woowahaneats.domain.delivery.event.DeliveryCancelledEvent;
 import com.flab.woowahaneats.domain.delivery.event.DeliveryCreatedEvent;
+import com.flab.woowahaneats.domain.delivery.exception.DeliveryNotFoundException;
 import com.flab.woowahaneats.domain.delivery.exception.OrderNotReadyForDeliveryException;
 import com.flab.woowahaneats.domain.delivery.repository.DeliveryRepository;
 import com.flab.woowahaneats.domain.order.exception.OrderNotFoundException;
@@ -34,5 +36,15 @@ public class DeliveryService {
         deliveryRepository.save(delivery);
 
         eventPublisher.publishEvent(new DeliveryCreatedEvent(this, delivery.getId(), userOrderId));
+    }
+
+    public void cancelDelivery(UUID deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+                .orElseThrow(DeliveryNotFoundException::new);
+
+        delivery.cancel();
+        deliveryRepository.save(delivery);
+
+        eventPublisher.publishEvent(new DeliveryCancelledEvent(this, delivery.getId(), delivery.getOrderId()));
     }
 }

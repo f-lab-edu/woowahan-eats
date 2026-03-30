@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.delivery.domain;
 
+import com.flab.woowahaneats.domain.delivery.exception.InvalidDeliveryStatusException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,5 +25,15 @@ public class Delivery {
                 .status(DeliveryStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .build();
+    }
+
+    public void cancel() {
+        if (this.status == DeliveryStatus.DELIVERED) {
+            throw new InvalidDeliveryStatusException("완료된 배달은 취소할 수 없습니다.");
+        }
+        if (this.status == DeliveryStatus.CANCELLED) {
+            throw new InvalidDeliveryStatusException("이미 취소된 배달입니다.");
+        }
+        this.status = DeliveryStatus.CANCELLED;
     }
 }

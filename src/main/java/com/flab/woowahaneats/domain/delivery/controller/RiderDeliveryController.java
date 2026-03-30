@@ -22,4 +22,10 @@ public class RiderDeliveryController {
         deliveryService.createDelivery(userOrderId);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{deliveryId}")
+    public ResponseEntity<Void> cancelDelivery(@PathVariable UUID deliveryId) {
+        deliveryService.cancelDelivery(deliveryId);
+        return ResponseEntity.ok().build();
+    }
 }

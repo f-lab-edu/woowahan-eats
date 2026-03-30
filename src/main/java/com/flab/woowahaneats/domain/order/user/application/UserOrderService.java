@@ -139,6 +139,14 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
+    public void resetOrderToReady(UUID orderId) {
+        UserOrder order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        order.resetToReady();
+        orderRepository.save(order);
+    }
+
     public List<OrderResponse> getOrderList(){
         User user = AuthContextHolder.getContext().getUser();
         List<UserOrder> orders = orderRepository.findActiveOrdersByUserId(user.getId());
