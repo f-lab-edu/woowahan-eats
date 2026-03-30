@@ -4,6 +4,7 @@ import com.flab.woowahaneats.domain.delivery.controller.dto.DeliveryResponse;
 import com.flab.woowahaneats.domain.delivery.domain.Delivery;
 import com.flab.woowahaneats.domain.delivery.domain.DeliveryStatus;
 import com.flab.woowahaneats.domain.delivery.event.DeliveryCancelledEvent;
+import com.flab.woowahaneats.domain.delivery.event.DeliveryCompletedEvent;
 import com.flab.woowahaneats.domain.delivery.event.DeliveryCreatedEvent;
 import com.flab.woowahaneats.domain.delivery.exception.DeliveryNotFoundException;
 import com.flab.woowahaneats.domain.delivery.exception.OrderNotReadyForDeliveryException;
@@ -89,5 +90,15 @@ public class DeliveryService {
 
         delivery.startDelivery();
         deliveryRepository.save(delivery);
+    }
+
+    public void completeDelivery(UUID deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+                .orElseThrow(DeliveryNotFoundException::new);
+
+        delivery.complete();
+        deliveryRepository.save(delivery);
+
+        eventPublisher.publishEvent(new DeliveryCompletedEvent(this, delivery.getId(), delivery.getOrderId()));
     }
 }

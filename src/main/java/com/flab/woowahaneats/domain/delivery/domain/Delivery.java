@@ -58,6 +58,14 @@ public class Delivery {
         this.status = DeliveryStatus.IN_DELIVERY;
     }
 
+    public void complete() {
+        if (this.status != DeliveryStatus.IN_DELIVERY) {
+            throw new InvalidDeliveryStatusException("배송 중인 배달만 완료할 수 있습니다.");
+        }
+        this.status = DeliveryStatus.DELIVERED;
+        this.timeline = this.timeline.complete();
+    }
+
     public void cancel() {
         if (this.status == DeliveryStatus.DELIVERED) {
             throw new InvalidDeliveryStatusException("완료된 배달은 취소할 수 없습니다.");
