@@ -10,6 +10,5 @@ import java.util.UUID;
 public interface DeliveryRepository {
     void save(Delivery delivery);
     Optional<Delivery> findById(UUID deliveryId);
-    Optional<Delivery> findByOrderId(UUID orderId);
     List<Delivery> findByStatus(DeliveryStatus status);
 }

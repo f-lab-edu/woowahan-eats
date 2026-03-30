@@ -25,13 +25,6 @@ public class HashMapDeliveryRepository implements DeliveryRepository {
     }
 
     @Override
-    public Optional<Delivery> findByOrderId(UUID orderId) {
-        return deliveryMap.values().stream()
-                .filter(delivery -> delivery.getOrderId().equals(orderId))
-                .findFirst();
-    }
-
-    @Override
     public List<Delivery> findByStatus(DeliveryStatus status) {
         return deliveryMap.values().stream()
                 .filter(delivery -> delivery.getStatus() == status)
