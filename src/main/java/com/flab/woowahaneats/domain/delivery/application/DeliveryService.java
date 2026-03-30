@@ -74,4 +74,12 @@ public class DeliveryService {
         delivery.startPickup();
         deliveryRepository.save(delivery);
     }
+
+    public void completePickup(UUID deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+                .orElseThrow(DeliveryNotFoundException::new);
+
+        delivery.completePickup();
+        deliveryRepository.save(delivery);
+    }
 }

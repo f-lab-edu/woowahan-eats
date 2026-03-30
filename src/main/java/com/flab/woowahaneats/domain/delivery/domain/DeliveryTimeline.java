@@ -7,4 +7,19 @@ public record DeliveryTimeline(
         LocalDateTime pickedUpAt,
         LocalDateTime deliveredAt
 ) {
+    public DeliveryTimeline pickUp() {
+        return new DeliveryTimeline(
+                this.assignedAt,
+                LocalDateTime.now(),
+                this.deliveredAt
+        );
+    }
+
+    public DeliveryTimeline complete() {
+        return new DeliveryTimeline(
+                this.assignedAt,
+                this.pickedUpAt,
+                LocalDateTime.now()
+        );
+    }
 }
