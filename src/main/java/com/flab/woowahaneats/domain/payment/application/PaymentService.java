@@ -10,6 +10,7 @@ import com.flab.woowahaneats.domain.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
@@ -20,12 +21,14 @@ public class PaymentService {
     private final PaymentGateway paymentGateway;
     private final ApplicationEventPublisher eventPublisher;
 
+    @Transactional
     public Payment preparePayment(UUID orderId, int amount) {
         Payment payment = Payment.prepare(orderId, amount);
         paymentRepository.save(payment);
         return payment;
     }
 
+    @Transactional
     public void confirmPayment(String paymentKey, String tossOrderId, int amount) {
         Payment payment = paymentRepository.findByTossOrderId(tossOrderId)
                 .orElseThrow(PaymentNotFoundException::new);
@@ -51,6 +54,7 @@ public class PaymentService {
         }
     }
 
+    @Transactional
     public void refundPayment(UUID orderId, String reason) {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(PaymentNotFoundException::new);
