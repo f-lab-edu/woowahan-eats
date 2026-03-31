@@ -2,29 +2,56 @@ package com.flab.woowahaneats.domain.payment.domain;
 
 import com.flab.woowahaneats.domain.payment.exception.InvalidPaymentStatusException;
 import com.flab.woowahaneats.domain.payment.exception.PaymentAmountMismatchException;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "payments")
 @Getter
-@Builder(toBuilder = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class Payment {
-    private UUID id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "payment_id")
+    private Long id;
+
+    @Column(nullable = false)
     private UUID orderId;
+
+    @Column(name = "payment_key")
     private String paymentKey;
+
+    @Column(nullable = false)
     private String tossOrderId;
+
+    @Column(nullable = false)
     private int amount;
+
+    @Enumerated(EnumType.STRING)
     private PaymentStatus status;
+
     private String method;
+
+    @Column(name = "requested_at", nullable = false)
     private LocalDateTime requestedAt;
+
+    @Column(name = "approved_at")
     private LocalDateTime approvedAt;
+
+    @Column(name = "fail_reason")
     private String failReason;
 
     public static Payment prepare(UUID orderId, int amount) {
         return Payment.builder()
-                .id(UUID.randomUUID())
                 .orderId(orderId)
                 .tossOrderId(orderId.toString())
                 .amount(amount)
