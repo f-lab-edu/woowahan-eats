@@ -2,7 +2,6 @@ package com.flab.woowahaneats.domain.payment.application;
 
 import com.flab.woowahaneats.domain.order.event.PaymentCompletedEvent;
 import com.flab.woowahaneats.domain.payment.domain.Payment;
-import com.flab.woowahaneats.domain.payment.domain.PaymentStatus;
 import com.flab.woowahaneats.domain.payment.exception.PaymentApprovalFailedException;
 import com.flab.woowahaneats.domain.payment.exception.PaymentNotFoundException;
 import com.flab.woowahaneats.domain.payment.gateway.PaymentApprovalResult;
@@ -56,13 +55,9 @@ public class PaymentService {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(PaymentNotFoundException::new);
 
-        if (payment.getStatus() != PaymentStatus.COMPLETED) {
-            return;
-        }
+        payment.refund();
 
         paymentGateway.cancelPayment(payment.getPaymentKey(), reason);
-
-        payment.refund();
         paymentRepository.save(payment);
     }
 }
