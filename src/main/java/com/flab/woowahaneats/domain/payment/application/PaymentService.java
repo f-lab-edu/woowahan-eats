@@ -30,6 +30,7 @@ public class PaymentService {
     private final UserOrderRepository userOrderRepository;
     private final PaymentGatewayResolver gatewayRegistry;
     private final ApplicationEventPublisher eventPublisher;
+    private final PaymentFailureRecorder failureRecorder;
 
     @Transactional
     public Payment preparePayment(UUID orderId, int amount, PaymentProvider provider) {
@@ -70,11 +71,11 @@ public class PaymentService {
                     order.getCreatedAt()
             ));
         } catch (Exception e) {
-            payment.fail(e.getMessage());
-            paymentRepository.save(payment);
+            failureRecorder.recordFailure(payment, e.getMessage());
             throw new PaymentApprovalFailedException("결제 승인 실패: " + e.getMessage());
         }
     }
+
 
     private void approvePayment(Payment payment, String paymentKey, String gatewayOrderId, int amount) {
         PaymentGateway gateway = gatewayRegistry.getGateway(payment.getProvider());
