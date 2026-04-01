@@ -1,6 +1,7 @@
 package com.flab.woowahaneats.domain.order.user.controller.dto;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
+import com.flab.woowahaneats.domain.payment.domain.PaymentProvider;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
@@ -16,6 +17,9 @@ public record CreateOrderRequest(
 
         String requestToStore,
 
-        String requestToRider
+        String requestToRider,
+
+        @NotNull
+        PaymentProvider paymentProvider
 ) {
 }

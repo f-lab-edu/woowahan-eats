@@ -14,6 +14,7 @@ import com.flab.woowahaneats.domain.order.event.UserOrderCancelledEvent;
 import com.flab.woowahaneats.domain.order.user.controller.dto.CreateOrderResponse;
 import com.flab.woowahaneats.domain.payment.application.PaymentService;
 import com.flab.woowahaneats.domain.payment.domain.Payment;
+import com.flab.woowahaneats.domain.payment.domain.PaymentProvider;
 import com.flab.woowahaneats.domain.order.exception.MenuNotAvailableException;
 import com.flab.woowahaneats.domain.order.exception.OrderNotFoundException;
 import com.flab.woowahaneats.domain.order.exception.OrderNotBelongToUserException;
@@ -77,12 +78,16 @@ public class UserOrderService {
 
         Payment payment = paymentService.preparePayment(
                 order.getId(),
-                order.getOrderPrice().totalPrice()
+                order.getOrderPrice().totalPrice(),
+                request.paymentProvider()
         );
 
         return new CreateOrderResponse(
-                payment.getTossOrderId(),
-                payment.getAmount()
+                payment.getGatewayOrderId(),
+                payment.getAmount(),
+                createOrderName(orderMenus),
+                payment.getProvider(),
+                payment.getStatus()
         );
     }
 
@@ -157,6 +162,14 @@ public class UserOrderService {
         return cart.getMenus().stream()
                 .map(this::convertToOrderMenu)
                 .toList();
+    }
+
+    private String createOrderName(List<OrderMenu> orderMenus) {
+        OrderMenu firstMenu = orderMenus.getFirst();
+        if (orderMenus.size() == 1) {
+            return firstMenu.menuName();
+        }
+        return firstMenu.menuName() + " 외 " + (orderMenus.size() - 1) + "건";
     }
 
     private OrderMenu convertToOrderMenu(CartMenu cartMenu) {

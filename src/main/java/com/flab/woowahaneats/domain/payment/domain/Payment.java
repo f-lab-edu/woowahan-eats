@@ -27,16 +27,21 @@ public class Payment {
     @Column(nullable = false)
     private UUID orderId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentProvider provider;
+
     @Column(name = "payment_key")
     private String paymentKey;
 
-    @Column(nullable = false)
-    private String tossOrderId;
+    @Column(name = "gateway_order_id", nullable = false)
+    private String gatewayOrderId;
 
     @Column(nullable = false)
     private int amount;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PaymentStatus status;
 
     private String method;
@@ -50,10 +55,11 @@ public class Payment {
     @Column(name = "fail_reason")
     private String failReason;
 
-    public static Payment prepare(UUID orderId, int amount) {
+    public static Payment prepare(UUID orderId, int amount, PaymentProvider provider, String gatewayOrderId) {
         return Payment.builder()
                 .orderId(orderId)
-                .tossOrderId(orderId.toString())
+                .provider(provider)
+                .gatewayOrderId(gatewayOrderId)
                 .amount(amount)
                 .status(PaymentStatus.PENDING)
                 .requestedAt(LocalDateTime.now())

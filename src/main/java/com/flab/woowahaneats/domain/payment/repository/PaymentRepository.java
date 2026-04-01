@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByOrderId(UUID orderId);
-    Optional<Payment> findByTossOrderId(String tossOrderId);
+    Optional<Payment> findByGatewayOrderId(String gatewayOrderId);
 }
