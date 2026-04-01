@@ -60,7 +60,6 @@ public class PaymentService {
             paymentRepository.save(payment);
 
             eventPublisher.publishEvent(new PaymentCompletedEvent(
-                    this,
                     order.getId(),
                     order.getUserId(),
                     order.getRestaurantId(),

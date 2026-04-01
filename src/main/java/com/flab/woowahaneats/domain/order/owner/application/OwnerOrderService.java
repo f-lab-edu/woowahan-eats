@@ -57,7 +57,7 @@ public class OwnerOrderService {
         ownerOrder.approve();
         ownerOrderRepository.save(ownerOrder);
 
-        eventPublisher.publishEvent(new OrderAcceptedEvent(this, userOrderId));
+        eventPublisher.publishEvent(new OrderAcceptedEvent(userOrderId));
     }
 
     public void startCooking(UUID userOrderId) {
@@ -67,7 +67,7 @@ public class OwnerOrderService {
         ownerOrder.startCooking();
         ownerOrderRepository.save(ownerOrder);
 
-        eventPublisher.publishEvent(new OwnerOrderCookingStartedEvent(this, userOrderId));
+        eventPublisher.publishEvent(new OwnerOrderCookingStartedEvent(userOrderId));
     }
 
     public void completeCooking(UUID userOrderId) {
@@ -77,7 +77,7 @@ public class OwnerOrderService {
         ownerOrder.completeCooking();
         ownerOrderRepository.save(ownerOrder);
 
-        eventPublisher.publishEvent(new OwnerOrderCookingCompletedEvent(this, userOrderId));
+        eventPublisher.publishEvent(new OwnerOrderCookingCompletedEvent(userOrderId));
     }
 
     public void cancelOrder(UUID userOrderId) {

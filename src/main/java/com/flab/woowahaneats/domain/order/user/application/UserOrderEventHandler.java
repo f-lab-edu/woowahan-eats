@@ -15,16 +15,16 @@ public class UserOrderEventHandler {
 
     @EventListener
     public void handleOrderAccepted(OrderAcceptedEvent event) {
-        userOrderService.approveOrder(event.getUserOrderId());
+        userOrderService.approveOrder(event.userOrderId());
     }
 
     @EventListener
     public void handleCookingStarted(OwnerOrderCookingStartedEvent event) {
-        userOrderService.startCooking(event.getUserOrderId());
+        userOrderService.startCooking(event.userOrderId());
     }
 
     @EventListener
     public void handleCookingCompleted(OwnerOrderCookingCompletedEvent event) {
-        userOrderService.completeCooking(event.getUserOrderId());
+        userOrderService.completeCooking(event.userOrderId());
     }
 }

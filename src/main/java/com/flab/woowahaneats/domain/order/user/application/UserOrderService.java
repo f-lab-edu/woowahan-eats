@@ -105,7 +105,7 @@ public class UserOrderService {
 
         paymentService.refundPayment(orderId, "사용자 주문 취소");
 
-        eventPublisher.publishEvent(new UserOrderCancelledEvent(this, orderId));
+        eventPublisher.publishEvent(new UserOrderCancelledEvent(orderId));
     }
 
     public void approveOrder(UUID orderId) {
