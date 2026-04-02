@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.order.event;
+package com.flab.woowahaneats.domain.order.owner.event;
 
 import java.util.UUID;
 

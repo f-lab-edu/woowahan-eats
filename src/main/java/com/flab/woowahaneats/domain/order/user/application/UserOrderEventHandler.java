@@ -1,8 +1,8 @@
 package com.flab.woowahaneats.domain.order.user.application;
 
-import com.flab.woowahaneats.domain.order.event.OrderAcceptedEvent;
-import com.flab.woowahaneats.domain.order.event.OwnerOrderCookingCompletedEvent;
-import com.flab.woowahaneats.domain.order.event.OwnerOrderCookingStartedEvent;
+import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderAcceptedEvent;
+import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderCookingCompletedEvent;
+import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderCookingStartedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ public class UserOrderEventHandler {
     private final UserOrderService userOrderService;
 
     @EventListener
-    public void handleOrderAccepted(OrderAcceptedEvent event) {
+    public void handleOrderAccepted(OwnerOrderAcceptedEvent event) {
         userOrderService.approveOrder(event.userOrderId());
     }
 

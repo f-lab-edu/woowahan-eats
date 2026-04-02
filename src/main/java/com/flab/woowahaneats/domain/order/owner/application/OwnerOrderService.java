@@ -4,12 +4,12 @@ import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.order.common.OrderMenu;
 import com.flab.woowahaneats.domain.order.common.OrderPrice;
 import com.flab.woowahaneats.domain.order.common.OrderRequest;
-import com.flab.woowahaneats.domain.order.event.OrderAcceptedEvent;
-import com.flab.woowahaneats.domain.order.event.OwnerOrderCookingCompletedEvent;
-import com.flab.woowahaneats.domain.order.event.OwnerOrderCookingStartedEvent;
 import com.flab.woowahaneats.domain.order.exception.OrderNotFoundException;
 import com.flab.woowahaneats.domain.order.owner.domain.OwnerOrder;
 import com.flab.woowahaneats.domain.order.owner.domain.OwnerOrderStatus;
+import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderAcceptedEvent;
+import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderCookingCompletedEvent;
+import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderCookingStartedEvent;
 import com.flab.woowahaneats.domain.order.owner.repository.OwnerOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -57,7 +57,7 @@ public class OwnerOrderService {
         ownerOrder.approve();
         ownerOrderRepository.save(ownerOrder);
 
-        eventPublisher.publishEvent(new OrderAcceptedEvent(userOrderId));
+        eventPublisher.publishEvent(new OwnerOrderAcceptedEvent(userOrderId));
     }
 
     public void startCooking(UUID userOrderId) {

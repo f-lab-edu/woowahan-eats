@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.order.event;
+package com.flab.woowahaneats.domain.payment.event;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.order.common.OrderMenu;

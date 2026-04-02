@@ -1,7 +1,7 @@
 package com.flab.woowahaneats.domain.order.owner.application;
 
-import com.flab.woowahaneats.domain.order.event.PaymentCompletedEvent;
-import com.flab.woowahaneats.domain.order.event.UserOrderCancelledEvent;
+import com.flab.woowahaneats.domain.order.user.event.UserOrderCancelledEvent;
+import com.flab.woowahaneats.domain.payment.event.PaymentCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
