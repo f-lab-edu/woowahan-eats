@@ -10,8 +10,10 @@ import com.flab.woowahaneats.domain.member.domain.User;
 import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
-import com.flab.woowahaneats.domain.order.event.UserOrderCancelledEvent;
-import com.flab.woowahaneats.domain.order.event.UserOrderCreatedEvent;
+import com.flab.woowahaneats.domain.order.user.controller.dto.CreateOrderResponse;
+import com.flab.woowahaneats.domain.payment.application.PaymentService;
+import com.flab.woowahaneats.domain.payment.domain.Payment;
+import com.flab.woowahaneats.domain.payment.domain.PaymentProvider;
 import com.flab.woowahaneats.domain.order.exception.MenuNotAvailableException;
 import com.flab.woowahaneats.domain.order.exception.OrderNotFoundException;
 import com.flab.woowahaneats.domain.order.exception.OrderNotBelongToUserException;
@@ -21,6 +23,7 @@ import com.flab.woowahaneats.domain.order.user.controller.dto.CreateOrderRequest
 import com.flab.woowahaneats.domain.order.user.controller.dto.OrderResponse;
 import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
 import com.flab.woowahaneats.domain.order.common.OrderMenu;
+import com.flab.woowahaneats.domain.order.user.event.UserOrderCancelledEvent;
 import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
@@ -38,9 +41,10 @@ public class UserOrderService {
     private final CartRepository cartRepository;
     private final MenuRepository menuRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
+    private final PaymentService paymentService;
     private final ApplicationEventPublisher eventPublisher;
 
-    public void createOrder(CreateOrderRequest request) {
+    public CreateOrderResponse createOrder(CreateOrderRequest request) {
         User user = AuthContextHolder.getContext().getUser();
         Cart cart = cartRepository.findById(request.cartId())
                 .orElseThrow(CartNotFoundException::new);
@@ -72,16 +76,19 @@ public class UserOrderService {
 
         orderRepository.save(order);
 
-        eventPublisher.publishEvent(new UserOrderCreatedEvent(
-                this,
+        Payment payment = paymentService.preparePayment(
                 order.getId(),
-                order.getRestaurantId(),
-                order.getOrderMenus(),
-                order.getOrderRequest(),
-                order.getOrderPrice(),
-                order.getDeliveryAddress(),
-                order.getCreatedAt()
-        ));
+                order.getOrderPrice().totalPrice(),
+                request.paymentProvider()
+        );
+
+        return new CreateOrderResponse(
+                payment.getGatewayOrderId(),
+                payment.getAmount(),
+                createOrderName(orderMenus),
+                payment.getProvider(),
+                payment.getStatus()
+        );
     }
 
     public void cancelOrder(UUID orderId){
@@ -96,7 +103,9 @@ public class UserOrderService {
         order.cancel();
         orderRepository.save(order);
 
-        eventPublisher.publishEvent(new UserOrderCancelledEvent(this, orderId));
+        paymentService.refundPayment(orderId, "사용자 주문 취소");
+
+        eventPublisher.publishEvent(new UserOrderCancelledEvent(orderId));
     }
 
     public void approveOrder(UUID orderId) {
@@ -123,7 +132,8 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
-    public void startDelivering(UUID orderId) {
+    // 나중에 배달 추가 예정
+    /*public void startDelivering(UUID orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -137,7 +147,7 @@ public class UserOrderService {
 
         order.complete();
         orderRepository.save(order);
-    }
+    }*/
 
     public void resetOrderToReady(UUID orderId) {
         UserOrder order = orderRepository.findById(orderId)
@@ -160,6 +170,14 @@ public class UserOrderService {
         return cart.getMenus().stream()
                 .map(this::convertToOrderMenu)
                 .toList();
+    }
+
+    private String createOrderName(List<OrderMenu> orderMenus) {
+        OrderMenu firstMenu = orderMenus.getFirst();
+        if (orderMenus.size() == 1) {
+            return firstMenu.menuName();
+        }
+        return firstMenu.menuName() + " 외 " + (orderMenus.size() - 1) + "건";
     }
 
     private OrderMenu convertToOrderMenu(CartMenu cartMenu) {
