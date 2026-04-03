@@ -132,8 +132,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
-    // 나중에 배달 추가 예정
-    /*public void startDelivering(UUID orderId) {
+    public void startDelivering(UUID orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -147,7 +146,15 @@ public class UserOrderService {
 
         order.complete();
         orderRepository.save(order);
-    }*/
+    }
+
+    public void resetOrderToReady(UUID orderId) {
+        UserOrder order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        order.resetToReady();
+        orderRepository.save(order);
+    }
 
     public List<OrderResponse> getOrderList(){
         User user = AuthContextHolder.getContext().getUser();

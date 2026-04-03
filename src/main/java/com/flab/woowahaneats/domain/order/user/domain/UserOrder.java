@@ -107,6 +107,13 @@ public class UserOrder {
         this.completedAt = LocalDateTime.now();
     }
 
+    public void resetToReady() {
+        if (this.status != UserOrderStatus.DELIVERING) {
+            throw new InvalidOrderStatusException("배달 중인 주문만 픽업 대기 상태로 되돌릴 수 있습니다.");
+        }
+        this.status = UserOrderStatus.READY;
+    }
+
     public boolean isActive() {
         return this.status != UserOrderStatus.CANCELLED
                 && this.status != UserOrderStatus.COMPLETED;
