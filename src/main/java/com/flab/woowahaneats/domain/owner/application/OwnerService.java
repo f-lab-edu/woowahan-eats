@@ -32,17 +32,16 @@ public class OwnerService {
                 encodedPassword
         ));
 
-        Owner owner = Owner.builder()
-                .id(ownerSignUpRequest.id())
-                .accountId(account.getId())
-                .address(ownerSignUpRequest.address())
-                .location(ownerSignUpRequest.location())
-                .businessNotificationCertUrl(ownerSignUpRequest.businessNotificationCertUrl())
-                .businessRegistrationCertUrl(ownerSignUpRequest.businessRegistrationCertUrl())
-                .bankAccount(ownerSignUpRequest.bankAccount())
-                .name(ownerSignUpRequest.name())
-                .phoneNumber(ownerSignUpRequest.phoneNumber())
-                .build();
+        Owner owner = Owner.create(
+                account.getId(),
+                ownerSignUpRequest.name(),
+                ownerSignUpRequest.phoneNumber(),
+                ownerSignUpRequest.address(),
+                ownerSignUpRequest.location(),
+                ownerSignUpRequest.businessRegistrationCertUrl(),
+                ownerSignUpRequest.businessNotificationCertUrl(),
+                ownerSignUpRequest.bankAccount()
+        );
 
         ownerRepository.save(owner);
     }
