@@ -26,13 +26,10 @@ public class AdminService {
 
         String encodedPassword = passwordEncoder.encode(adminSignUpRequest.password());
 
-        Account account = Account.builder()
-                .id(adminSignUpRequest.id())
-                .password(encodedPassword)
-                .email(adminSignUpRequest.email())
-                .build();
-
-        accountRepository.save(account);
+        Account account = accountRepository.save(Account.create(
+                adminSignUpRequest.email(),
+                encodedPassword
+        ));
 
         Admin admin = Admin.builder()
                 .id(adminSignUpRequest.id())

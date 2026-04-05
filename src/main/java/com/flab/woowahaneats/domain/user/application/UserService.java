@@ -1,6 +1,7 @@
 package com.flab.woowahaneats.domain.user.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
+import com.flab.woowahaneats.domain.auth.exception.AccountNotFoundException;
 import com.flab.woowahaneats.domain.user.exception.DuplicateEmailException;
 import com.flab.woowahaneats.domain.user.controller.dto.UserResponse;
 import com.flab.woowahaneats.domain.user.controller.dto.UserSignUpRequest;
@@ -29,13 +30,10 @@ public class UserService {
 
         String encodedPassword = passwordEncoder.encode(userSignUpRequest.password());
 
-        Account account = Account.builder()
-                .id(userSignUpRequest.id())
-                .password(encodedPassword)
-                .email(userSignUpRequest.email())
-                .build();
-
-        accountRepository.save(account);
+        Account account = accountRepository.save(Account.create(
+                userSignUpRequest.email(),
+                encodedPassword
+        ));
 
         User user = User.create(
                 account.getId(),
@@ -53,7 +51,8 @@ public class UserService {
     public UserResponse getUserProfile(){
 
         User user = AuthContextHolder.getContext().getUser();
-        Account account = accountRepository.findById(user.getAccountId());
+        Account account = accountRepository.findById(user.getAccountId())
+                .orElseThrow(AccountNotFoundException::new);
 
         return UserResponse.from(user, account);
     }

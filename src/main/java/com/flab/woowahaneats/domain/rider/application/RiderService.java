@@ -28,13 +28,10 @@ public class RiderService {
 
         String encodedPassword = passwordEncoder.encode(riderSignUpRequest.password());
 
-        Account account = Account.builder()
-                .id(riderSignUpRequest.id())
-                .password(encodedPassword)
-                .email(riderSignUpRequest.email())
-                .build();
-
-        accountRepository.save(account);
+        Account account = accountRepository.save(Account.create(
+                riderSignUpRequest.email(),
+                encodedPassword
+        ));
 
         Rider rider = Rider.builder()
                 .id(riderSignUpRequest.id())

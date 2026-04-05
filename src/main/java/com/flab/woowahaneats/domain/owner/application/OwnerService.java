@@ -27,13 +27,10 @@ public class OwnerService {
 
         String encodedPassword = passwordEncoder.encode(ownerSignUpRequest.password());
 
-        Account account = Account.builder()
-                .id(ownerSignUpRequest.id())
-                .password(encodedPassword)
-                .email(ownerSignUpRequest.email())
-                .build();
-
-        accountRepository.save(account);
+        Account account = accountRepository.save(Account.create(
+                ownerSignUpRequest.email(),
+                encodedPassword
+        ));
 
         Owner owner = Owner.builder()
                 .id(ownerSignUpRequest.id())

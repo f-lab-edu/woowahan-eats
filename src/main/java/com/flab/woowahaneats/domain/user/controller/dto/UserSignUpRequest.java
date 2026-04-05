@@ -8,9 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record UserSignUpRequest (
-        @NotNull
-        Long id,
-
         @NotBlank
         String name,
 
