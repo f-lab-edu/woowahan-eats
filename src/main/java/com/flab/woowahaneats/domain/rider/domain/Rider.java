@@ -2,6 +2,7 @@ package com.flab.woowahaneats.domain.rider.domain;
 
 import com.flab.woowahaneats.domain.common.vo.BankAccount;
 import com.flab.woowahaneats.domain.common.vo.Location;
+import com.flab.woowahaneats.domain.rider.exception.InvalidRiderException;
 import com.flab.woowahaneats.domain.rider.exception.InvalidRiderStatusException;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -63,6 +64,10 @@ public class Rider {
             BankAccount bankAccount,
             VehicleType vehicleType
     ) {
+        validateAccountId(accountId);
+        validateName(name);
+        validatePhoneNumber(phoneNumber);
+
         return Rider.builder()
                 .accountId(accountId)
                 .name(name)
@@ -72,6 +77,24 @@ public class Rider {
                 .vehicleType(vehicleType)
                 .riderStatus(RiderStatus.RESTING)
                 .build();
+    }
+
+    private static void validateAccountId(Long accountId) {
+        if (accountId == null) {
+            throw new InvalidRiderException("계정 정보가 올바르지 않습니다.");
+        }
+    }
+
+    private static void validateName(String name) {
+        if (name.length() < 2 || name.length() > 50) {
+            throw new InvalidRiderException("이름은 2자 이상 50자 이하여야 합니다.");
+        }
+    }
+
+    private static void validatePhoneNumber(String phoneNumber) {
+        if (phoneNumber.length() < 10 || phoneNumber.length() > 11) {
+            throw new InvalidRiderException("전화번호는 10자 이상 11자 이하여야 합니다.");
+        }
     }
 
     public void startWork() {

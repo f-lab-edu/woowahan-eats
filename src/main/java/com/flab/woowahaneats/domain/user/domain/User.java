@@ -2,6 +2,7 @@ package com.flab.woowahaneats.domain.user.domain;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.common.vo.Location;
+import com.flab.woowahaneats.domain.user.exception.InvalidUserException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -52,6 +53,11 @@ public class User {
             String profileImageUrl,
             String nickName
     ) {
+        validateAccountId(accountId);
+        validateName(name);
+        validatePhoneNumber(phoneNumber);
+        validateNickName(nickName);
+
         return User.builder()
                 .accountId(accountId)
                 .name(name)
@@ -61,5 +67,32 @@ public class User {
                 .profileImageUrl(profileImageUrl)
                 .nickName(nickName)
                 .build();
+    }
+
+    private static void validateAccountId(Long accountId) {
+        if (accountId == null) {
+            throw new InvalidUserException("계정 정보가 올바르지 않습니다.");
+        }
+    }
+
+    private static void validateName(String name) {
+        if (name.length() < 2 || name.length() > 50) {
+            throw new InvalidUserException("이름은 2자 이상 50자 이하여야 합니다.");
+        }
+    }
+
+    private static void validatePhoneNumber(String phoneNumber) {
+        if (phoneNumber.length() < 10 || phoneNumber.length() > 11) {
+            throw new InvalidUserException("전화번호는 10자 이상 11자 이하여야 합니다.");
+        }
+    }
+
+    private static void validateNickName(String nickName) {
+        if (nickName == null || nickName.isBlank()) {
+            return;
+        }
+        if (nickName.length() < 2 || nickName.length() > 30) {
+            throw new InvalidUserException("닉네임은 2자 이상 30자 이하여야 합니다.");
+        }
     }
 }

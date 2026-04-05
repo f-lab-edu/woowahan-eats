@@ -3,6 +3,7 @@ package com.flab.woowahaneats.domain.owner.domain;
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.common.vo.BankAccount;
 import com.flab.woowahaneats.domain.common.vo.Location;
+import com.flab.woowahaneats.domain.owner.exception.InvalidOwnerException;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -65,6 +66,10 @@ public class Owner {
             String businessNotificationCertUrl,
             BankAccount bankAccount
     ) {
+        validateAccountId(accountId);
+        validateName(name);
+        validatePhoneNumber(phoneNumber);
+
         return Owner.builder()
                 .accountId(accountId)
                 .name(name)
@@ -75,5 +80,23 @@ public class Owner {
                 .businessNotificationCertUrl(businessNotificationCertUrl)
                 .bankAccount(bankAccount)
                 .build();
+    }
+
+    private static void validateAccountId(Long accountId) {
+        if (accountId == null) {
+            throw new InvalidOwnerException("계정 정보가 올바르지 않습니다.");
+        }
+    }
+
+    private static void validateName(String name) {
+        if (name.length() < 2 || name.length() > 50) {
+            throw new InvalidOwnerException("이름은 2자 이상 50자 이하여야 합니다.");
+        }
+    }
+
+    private static void validatePhoneNumber(String phoneNumber) {
+        if (phoneNumber.length() < 10 || phoneNumber.length() > 11) {
+            throw new InvalidOwnerException("전화번호는 10자 이상 11자 이하여야 합니다.");
+        }
     }
 }

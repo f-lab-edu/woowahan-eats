@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.admin.domain;
 
+import com.flab.woowahaneats.domain.admin.exception.InvalidAdminException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,10 +35,32 @@ public class Admin {
     private String phoneNumber;
 
     public static Admin create(Long accountId, String name, String phoneNumber) {
+        validateAccountId(accountId);
+        validateName(name);
+        validatePhoneNumber(phoneNumber);
+
         return Admin.builder()
                 .accountId(accountId)
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .build();
+    }
+
+    private static void validateAccountId(Long accountId) {
+        if (accountId == null) {
+            throw new InvalidAdminException("계정 정보가 올바르지 않습니다.");
+        }
+    }
+
+    private static void validateName(String name) {
+        if (name.length() < 2 || name.length() > 50) {
+            throw new InvalidAdminException("이름은 2자 이상 50자 이하여야 합니다.");
+        }
+    }
+
+    private static void validatePhoneNumber(String phoneNumber) {
+        if (phoneNumber.length() < 10 || phoneNumber.length() > 11) {
+            throw new InvalidAdminException("전화번호는 10자 이상 11자 이하여야 합니다.");
+        }
     }
 }
