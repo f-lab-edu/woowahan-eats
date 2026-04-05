@@ -31,12 +31,11 @@ public class AdminService {
                 encodedPassword
         ));
 
-        Admin admin = Admin.builder()
-                .id(adminSignUpRequest.id())
-                .accountId(account.getId())
-                .name(adminSignUpRequest.name())
-                .phoneNumber(adminSignUpRequest.phoneNumber())
-                .build();
+        Admin admin = Admin.create(
+                account.getId(),
+                adminSignUpRequest.name(),
+                adminSignUpRequest.phoneNumber()
+        );
 
         adminRepository.save(admin);
     }
