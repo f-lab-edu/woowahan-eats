@@ -31,25 +31,20 @@ public class RestaurantService {
 
         Owner owner = AuthContextHolder.getContext().getOwner();
 
-        Restaurant restaurant = Restaurant.builder()
-                .id(restaurantRequest.id())
-                .ownerId(owner.getId())
-                .name(restaurantRequest.name())
-                .description(restaurantRequest.description())
-                .address(restaurantRequest.address())
-                .location(restaurantRequest.location())
-                .avgRating(0.0)
-                .approvalStatus(RestaurantApprovalStatus.PENDING)
-                .build();
+        Restaurant restaurant = restaurantRepository.save(Restaurant.create(
+                owner.getId(),
+                restaurantRequest.name(),
+                restaurantRequest.description(),
+                restaurantRequest.address(),
+                restaurantRequest.location()
+        ));
 
-        RestaurantOperationInfo restaurantOperationInfo = RestaurantOperationInfo.builder()
-                .restaurantId(restaurant.getId())
-                .deliveryFee(restaurantRequest.deliveryFee())
-                .minOrderAmt(restaurantRequest.minOrderAmt())
-                .open(false)
-                .build();
+        RestaurantOperationInfo restaurantOperationInfo = RestaurantOperationInfo.create(
+                restaurant.getId(),
+                restaurantRequest.minOrderAmt(),
+                restaurantRequest.deliveryFee()
+        );
 
-        restaurantRepository.save(restaurant);
         restaurantOperationInfoRepository.save(restaurantOperationInfo);
 
         notificationService.sendToRole(
@@ -108,7 +103,7 @@ public class RestaurantService {
     }
 
     public RestaurantResponse searchRestaurant(String name) {
-        Restaurant restaurant = restaurantRepository.findByName(name)
+        Restaurant restaurant = restaurantRepository.findFirstByNameContaining(name)
                 .orElseThrow(RestaurantNotFoundException::new);
 
         RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository
