@@ -1,5 +1,8 @@
 package com.flab.woowahaneats.domain.common.vo;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public record Address (
      String province, // 시/도
      String city, // 시/군/구

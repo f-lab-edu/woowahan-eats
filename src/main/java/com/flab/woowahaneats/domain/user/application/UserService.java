@@ -37,16 +37,15 @@ public class UserService {
 
         accountRepository.save(account);
 
-        User user = User.builder()
-                .id(userSignUpRequest.id())
-                .accountId(account.getId())
-                .nickName(userSignUpRequest.nickName())
-                .address(userSignUpRequest.address())
-                .location(userSignUpRequest.location())
-                .profileImageUrl(userSignUpRequest.profileImageUrl())
-                .name(userSignUpRequest.name())
-                .phoneNumber(userSignUpRequest.phoneNumber())
-                .build();
+        User user = User.create(
+                account.getId(),
+                userSignUpRequest.name(),
+                userSignUpRequest.phoneNumber(),
+                userSignUpRequest.address(),
+                userSignUpRequest.location(),
+                userSignUpRequest.profileImageUrl(),
+                userSignUpRequest.nickName()
+        );
 
         userRepository.save(user);
     }
