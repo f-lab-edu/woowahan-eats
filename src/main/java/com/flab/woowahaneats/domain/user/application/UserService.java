@@ -1,7 +1,7 @@
 package com.flab.woowahaneats.domain.user.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.user.application.exception.DuplicateEmailException;
+import com.flab.woowahaneats.domain.user.exception.DuplicateEmailException;
 import com.flab.woowahaneats.domain.user.controller.dto.UserResponse;
 import com.flab.woowahaneats.domain.user.controller.dto.UserSignUpRequest;
 import com.flab.woowahaneats.domain.auth.domain.Account;

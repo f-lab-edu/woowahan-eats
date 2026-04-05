@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.owner.application;
 
-import com.flab.woowahaneats.domain.owner.application.exception.DuplicateEmailException;
+import com.flab.woowahaneats.domain.owner.exception.DuplicateEmailException;
 import com.flab.woowahaneats.domain.owner.controller.dto.OwnerSignUpRequest;
 import com.flab.woowahaneats.domain.auth.domain.Account;
 import com.flab.woowahaneats.domain.owner.domain.Owner;

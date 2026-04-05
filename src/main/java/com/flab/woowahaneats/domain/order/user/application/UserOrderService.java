@@ -1,19 +1,18 @@
 package com.flab.woowahaneats.domain.order.user.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.cart.application.exception.CartNotBelongToUserException;
-import com.flab.woowahaneats.domain.cart.application.exception.CartNotFoundException;
+import com.flab.woowahaneats.domain.cart.exception.CartNotBelongToUserException;
+import com.flab.woowahaneats.domain.cart.exception.CartNotFoundException;
 import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
 import com.flab.woowahaneats.domain.cart.repository.CartRepository;
 import com.flab.woowahaneats.domain.user.domain.User;
-import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundException;
+import com.flab.woowahaneats.domain.menu.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
 import com.flab.woowahaneats.domain.order.user.controller.dto.CreateOrderResponse;
 import com.flab.woowahaneats.domain.payment.application.PaymentService;
 import com.flab.woowahaneats.domain.payment.domain.Payment;
-import com.flab.woowahaneats.domain.payment.domain.PaymentProvider;
 import com.flab.woowahaneats.domain.order.exception.MenuNotAvailableException;
 import com.flab.woowahaneats.domain.order.exception.OrderNotFoundException;
 import com.flab.woowahaneats.domain.order.exception.OrderNotBelongToUserException;

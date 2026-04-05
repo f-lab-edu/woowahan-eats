@@ -1,8 +1,8 @@
 package com.flab.woowahaneats.domain.rider.application;
 
 import com.flab.woowahaneats.domain.auth.domain.Account;
-import com.flab.woowahaneats.domain.rider.application.exception.DuplicateEmailException;
-import com.flab.woowahaneats.domain.rider.application.exception.RiderNotFoundException;
+import com.flab.woowahaneats.domain.rider.exception.DuplicateEmailException;
+import com.flab.woowahaneats.domain.rider.exception.RiderNotFoundException;
 import com.flab.woowahaneats.domain.rider.controller.dto.RiderSignUpRequest;
 import com.flab.woowahaneats.domain.rider.domain.Rider;
 import com.flab.woowahaneats.domain.rider.domain.RiderStatus;

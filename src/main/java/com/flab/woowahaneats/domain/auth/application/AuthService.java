@@ -1,7 +1,7 @@
 package com.flab.woowahaneats.domain.auth.application;
 
-import com.flab.woowahaneats.domain.auth.application.exception.AccountNotFoundException;
-import com.flab.woowahaneats.domain.auth.application.exception.InvalidPasswordException;
+import com.flab.woowahaneats.domain.auth.exception.AccountNotFoundException;
+import com.flab.woowahaneats.domain.auth.exception.InvalidPasswordException;
 import com.flab.woowahaneats.domain.auth.controller.dto.AuthLoginRequest;
 import com.flab.woowahaneats.domain.auth.domain.Account;
 import com.flab.woowahaneats.domain.auth.repository.AccountRepository;

@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.menu.domain;
 
-import com.flab.woowahaneats.domain.menu.application.exception.InvalidMenuException;
+import com.flab.woowahaneats.domain.menu.exception.InvalidMenuException;
 import lombok.Builder;
 import lombok.Getter;
 

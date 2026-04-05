@@ -2,14 +2,14 @@ package com.flab.woowahaneats.domain.menu.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.owner.domain.Owner;
-import com.flab.woowahaneats.domain.menu.application.exception.MenuNotBelongToRestaurantException;
-import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundException;
+import com.flab.woowahaneats.domain.menu.exception.MenuNotBelongToRestaurantException;
+import com.flab.woowahaneats.domain.menu.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.controller.dto.MenuRequest;
 import com.flab.woowahaneats.domain.menu.controller.dto.MenuUpdateRequest;
 import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
-import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotFoundException;
-import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotOwnedException;
+import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
+import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotOwnedException;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;

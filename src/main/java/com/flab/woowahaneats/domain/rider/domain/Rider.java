@@ -2,7 +2,7 @@ package com.flab.woowahaneats.domain.rider.domain;
 
 import com.flab.woowahaneats.domain.common.vo.BankAccount;
 import com.flab.woowahaneats.domain.common.vo.Location;
-import com.flab.woowahaneats.domain.rider.application.exception.InvalidRiderStatusException;
+import com.flab.woowahaneats.domain.rider.exception.InvalidRiderStatusException;
 import lombok.Builder;
 import lombok.Getter;
 

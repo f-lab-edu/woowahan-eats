@@ -1,7 +1,7 @@
 package com.flab.woowahaneats.domain.admin.application;
 
 import com.flab.woowahaneats.domain.auth.domain.Account;
-import com.flab.woowahaneats.domain.admin.application.exception.DuplicateEmailException;
+import com.flab.woowahaneats.domain.admin.exception.DuplicateEmailException;
 import com.flab.woowahaneats.domain.admin.controller.dto.AdminSignUpRequest;
 import com.flab.woowahaneats.domain.admin.domain.Admin;
 import com.flab.woowahaneats.domain.auth.repository.AccountRepository;

@@ -2,8 +2,8 @@ package com.flab.woowahaneats.domain.cart.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContext;
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.cart.application.exception.CartNotFoundException;
-import com.flab.woowahaneats.domain.cart.application.exception.InvalidQuantityException;
+import com.flab.woowahaneats.domain.cart.exception.CartNotFoundException;
+import com.flab.woowahaneats.domain.cart.exception.InvalidQuantityException;
 import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
 import com.flab.woowahaneats.domain.cart.repository.CartRepository;

@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.cart.domain;
 
-import com.flab.woowahaneats.domain.cart.application.exception.InvalidQuantityException;
+import com.flab.woowahaneats.domain.cart.exception.InvalidQuantityException;
 import lombok.Builder;
 import lombok.Getter;
 
