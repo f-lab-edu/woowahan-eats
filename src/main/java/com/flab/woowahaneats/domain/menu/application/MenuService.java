@@ -27,7 +27,6 @@ public class MenuService {
         validateRestaurantOwnership(restaurantId);
 
         Menu menu = Menu.create(
-                menuRequest.id(),
                 restaurantId,
                 menuRequest.internalName(),
                 menuRequest.displayName(),
@@ -74,7 +73,7 @@ public class MenuService {
             throw new MenuNotBelongToRestaurantException();
         }
 
-        menuRepository.delete(menuId);
+        menuRepository.deleteById(menuId);
     }
 
     private void validateRestaurantOwnership(Long restaurantId) {

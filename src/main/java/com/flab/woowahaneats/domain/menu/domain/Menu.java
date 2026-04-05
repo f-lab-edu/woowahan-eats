@@ -1,21 +1,54 @@
 package com.flab.woowahaneats.domain.menu.domain;
 
 import com.flab.woowahaneats.domain.menu.exception.InvalidMenuException;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Entity
+@Table(name = "menus")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class Menu {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "menu_id")
     private Long id;
+
+    @Column(name = "restaurant_id", nullable = false)
     private Long restaurantId;
+
+    @Column(name = "internal_name", nullable = false)
     private String internalName;
+
+    @Column(name = "display_name", nullable = false)
     private String displayName;
+
     private String description;
+
+    @ElementCollection
+    @CollectionTable(name = "menu_images", joinColumns = @JoinColumn(name = "menu_id"))
     private List<MenuImage> images;
+
+    @Column(nullable = false)
     private int price;
+
+    @Column(nullable = false)
     private boolean available;
 
     public Menu update(String internalName, String displayName, String description,
@@ -30,7 +63,7 @@ public class Menu {
                 .build();
     }
 
-    public static Menu create(Long id, Long restaurantId, String internalName, String displayName,
+    public static Menu create(Long restaurantId, String internalName, String displayName,
                               String description, List<MenuImage> images, int price, boolean available){
 
         validateInternalName(internalName);
@@ -40,7 +73,6 @@ public class Menu {
         validateImages(images);
 
         return Menu.builder()
-                .id(id)
                 .restaurantId(restaurantId)
                 .internalName(internalName)
                 .displayName(displayName)
