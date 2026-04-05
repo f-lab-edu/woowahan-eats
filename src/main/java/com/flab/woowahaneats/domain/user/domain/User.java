@@ -25,20 +25,10 @@ public class User {
     private Long accountId;
 
     @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "province", column = @Column(name = "province")),
-            @AttributeOverride(name = "city", column = @Column(name = "city")),
-            @AttributeOverride(name = "district", column = @Column(name = "district")),
-            @AttributeOverride(name = "village", column = @Column(name = "village")),
-            @AttributeOverride(name = "detail", column = @Column(name = "address_detail"))
-    })
+    @AttributeOverride(name = "detail", column = @Column(name = "address_detail"))
     private Address address;
 
     @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "latitude", column = @Column(name = "latitude")),
-            @AttributeOverride(name = "longitude", column = @Column(name = "longitude"))
-    })
     private Location location;
 
     @Column(name = "profile_image_url")
