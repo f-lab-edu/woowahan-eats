@@ -23,7 +23,7 @@ public class RiderDeliveryController {
     private final DeliveryService deliveryService;
 
     @PostMapping("/{userOrderId}")
-    public ResponseEntity<Void> createDelivery(@PathVariable UUID userOrderId) {
+    public ResponseEntity<Void> createDelivery(@PathVariable Long userOrderId) {
         deliveryService.createDelivery(userOrderId);
         return ResponseEntity.ok().build();
     }

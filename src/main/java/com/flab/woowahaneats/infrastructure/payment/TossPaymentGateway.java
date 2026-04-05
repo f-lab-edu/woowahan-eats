@@ -7,8 +7,6 @@ import com.flab.woowahaneats.infrastructure.payment.dto.TossPaymentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
 @RequiredArgsConstructor
 public class TossPaymentGateway implements PaymentGateway {
@@ -21,8 +19,8 @@ public class TossPaymentGateway implements PaymentGateway {
     }
 
     @Override
-    public String generateGatewayOrderId(UUID orderId) {
-        return orderId.toString();
+    public String generateGatewayOrderId(Long orderId) {
+        return String.valueOf(orderId);
     }
 
     @Override

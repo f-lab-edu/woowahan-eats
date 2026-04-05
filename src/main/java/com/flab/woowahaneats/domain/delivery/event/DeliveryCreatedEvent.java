@@ -8,9 +8,9 @@ import java.util.UUID;
 @Getter
 public class DeliveryCreatedEvent extends ApplicationEvent {
     private final UUID deliveryId;
-    private final UUID orderId;
+    private final Long orderId;
 
-    public DeliveryCreatedEvent(Object source, UUID deliveryId, UUID orderId) {
+    public DeliveryCreatedEvent(Object source, UUID deliveryId, Long orderId) {
         super(source);
         this.deliveryId = deliveryId;
         this.orderId = orderId;

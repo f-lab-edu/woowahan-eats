@@ -29,7 +29,7 @@ public class DeliveryService {
     private final OwnerOrderRepository ownerOrderRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    public void createDelivery(UUID userOrderId) {
+    public void createDelivery(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
 

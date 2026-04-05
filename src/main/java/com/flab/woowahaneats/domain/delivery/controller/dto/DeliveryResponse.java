@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public record DeliveryResponse(
         UUID deliveryId,
-        UUID orderId,
+        Long orderId,
         Long riderId,
         DeliveryStatus status,
         LocalDateTime createdAt

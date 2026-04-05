@@ -6,25 +6,54 @@ import com.flab.woowahaneats.domain.order.exception.MinOrderAmountNotMetExceptio
 import com.flab.woowahaneats.domain.order.common.OrderMenu;
 import com.flab.woowahaneats.domain.order.common.OrderPrice;
 import com.flab.woowahaneats.domain.order.common.OrderRequest;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
+@Entity
+@Table(name = "user_orders")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class UserOrder {
-    private UUID id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_order_id")
+    private Long id;
+
+    @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    @Column(name = "restaurant_id", nullable = false)
     private Long restaurantId;
+
+    @ElementCollection
+    @CollectionTable(name = "user_order_menus", joinColumns = @JoinColumn(name = "user_order_id"))
     private List<OrderMenu> orderMenus;
+
+    @Embedded
     private OrderRequest orderRequest;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserOrderStatus status;
+
+    @Embedded
     private OrderPrice orderPrice;
+
+    @Embedded
     private Address deliveryAddress;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
     private LocalDateTime completedAt;
 
     public static UserOrder create(
@@ -41,7 +70,6 @@ public class UserOrder {
         validateMinOrderAmount(menuTotalPrice, minOrderAmt);
 
         return UserOrder.builder()
-                .id(UUID.randomUUID())
                 .userId(userId)
                 .restaurantId(restaurantId)
                 .orderMenus(orderMenus)

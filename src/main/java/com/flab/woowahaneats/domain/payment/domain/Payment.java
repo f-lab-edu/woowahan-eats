@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "payments")
@@ -25,7 +24,7 @@ public class Payment {
     private Long id;
 
     @Column(nullable = false)
-    private UUID orderId;
+    private Long orderId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -55,7 +54,7 @@ public class Payment {
     @Column(name = "fail_reason")
     private String failReason;
 
-    public static Payment prepare(UUID orderId, int amount, PaymentProvider provider, String gatewayOrderId) {
+    public static Payment prepare(Long orderId, int amount, PaymentProvider provider, String gatewayOrderId) {
         return Payment.builder()
                 .orderId(orderId)
                 .provider(provider)

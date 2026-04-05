@@ -31,7 +31,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -90,7 +89,7 @@ public class UserOrderService {
         );
     }
 
-    public void cancelOrder(UUID orderId){
+    public void cancelOrder(Long orderId){
         User user = AuthContextHolder.getContext().getUser();
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
@@ -107,7 +106,7 @@ public class UserOrderService {
         eventPublisher.publishEvent(new UserOrderCancelledEvent(orderId));
     }
 
-    public void approveOrder(UUID orderId) {
+    public void approveOrder(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -115,7 +114,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
-    public void startCooking(UUID orderId) {
+    public void startCooking(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -123,7 +122,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
-    public void completeCooking(UUID orderId) {
+    public void completeCooking(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -131,7 +130,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
-    public void startDelivering(UUID orderId) {
+    public void startDelivering(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -139,7 +138,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
-    public void completeOrder(UUID orderId) {
+    public void completeOrder(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -147,7 +146,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
-    public void resetOrderToReady(UUID orderId) {
+    public void resetOrderToReady(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
 

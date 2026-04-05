@@ -12,13 +12,13 @@ import java.util.UUID;
 public class Delivery {
 
     private UUID id;
-    private UUID orderId;
+    private Long orderId;
     private Long riderId;
     private DeliveryStatus status;
     private DeliveryTimeline timeline;
     private LocalDateTime createdAt;
 
-    public static Delivery create(UUID orderId) {
+    public static Delivery create(Long orderId) {
         return Delivery.builder()
                 .id(UUID.randomUUID())
                 .orderId(orderId)

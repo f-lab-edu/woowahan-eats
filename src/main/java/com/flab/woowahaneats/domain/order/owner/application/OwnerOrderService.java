@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class OwnerOrderService {
     private final ApplicationEventPublisher eventPublisher;
 
     public void createOrder(
-            UUID userOrderId,
+            Long userOrderId,
             Long restaurantId,
             List<OrderMenu> orderMenus,
             OrderRequest orderRequest,
@@ -36,7 +35,6 @@ public class OwnerOrderService {
             LocalDateTime createdAt
     ) {
         OwnerOrder ownerOrder = OwnerOrder.builder()
-                .id(UUID.randomUUID())
                 .userOrderId(userOrderId)
                 .restaurantId(restaurantId)
                 .orderMenus(orderMenus)
@@ -50,7 +48,7 @@ public class OwnerOrderService {
         ownerOrderRepository.save(ownerOrder);
     }
 
-    public void approveOrder(UUID userOrderId) {
+    public void approveOrder(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -60,7 +58,7 @@ public class OwnerOrderService {
         eventPublisher.publishEvent(new OwnerOrderAcceptedEvent(userOrderId));
     }
 
-    public void startCooking(UUID userOrderId) {
+    public void startCooking(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -70,7 +68,7 @@ public class OwnerOrderService {
         eventPublisher.publishEvent(new OwnerOrderCookingStartedEvent(userOrderId));
     }
 
-    public void completeCooking(UUID userOrderId) {
+    public void completeCooking(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -80,7 +78,7 @@ public class OwnerOrderService {
         eventPublisher.publishEvent(new OwnerOrderCookingCompletedEvent(userOrderId));
     }
 
-    public void cancelOrder(UUID userOrderId) {
+    public void cancelOrder(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
 

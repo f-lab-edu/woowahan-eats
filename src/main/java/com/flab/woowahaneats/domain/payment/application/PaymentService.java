@@ -20,8 +20,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
@@ -33,7 +31,7 @@ public class PaymentService {
     private final PaymentFailureRecorder failureRecorder;
 
     @Transactional
-    public Payment preparePayment(UUID orderId, int amount, PaymentProvider provider) {
+    public Payment preparePayment(Long orderId, int amount, PaymentProvider provider) {
         PaymentGateway gateway = gatewayRegistry.getGateway(provider);
         String gatewayOrderId = gateway.generateGatewayOrderId(orderId);
 
@@ -86,7 +84,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public void refundPayment(UUID orderId, String reason) {
+    public void refundPayment(Long orderId, String reason) {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(PaymentNotFoundException::new);
 
