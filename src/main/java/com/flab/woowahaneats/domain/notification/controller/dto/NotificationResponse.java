@@ -2,7 +2,7 @@ package com.flab.woowahaneats.domain.notification.controller.dto;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.common.vo.Location;
-import com.flab.woowahaneats.domain.member.domain.Owner;
+import com.flab.woowahaneats.domain.owner.domain.Owner;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 
 import java.time.LocalDateTime;

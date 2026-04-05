@@ -1,8 +1,8 @@
 package com.flab.woowahaneats.domain.notification.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.member.domain.Admin;
-import com.flab.woowahaneats.domain.member.domain.Owner;
+import com.flab.woowahaneats.domain.admin.domain.Admin;
+import com.flab.woowahaneats.domain.owner.domain.Owner;
 import com.flab.woowahaneats.domain.notification.controller.dto.NotificationResponse;
 import com.flab.woowahaneats.domain.notification.infrastructure.SseEmitterManager;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;

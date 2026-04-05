@@ -7,7 +7,7 @@ import com.flab.woowahaneats.domain.cart.application.exception.InvalidQuantityEx
 import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
 import com.flab.woowahaneats.domain.cart.repository.CartRepository;
-import com.flab.woowahaneats.domain.member.domain.User;
+import com.flab.woowahaneats.domain.user.domain.User;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

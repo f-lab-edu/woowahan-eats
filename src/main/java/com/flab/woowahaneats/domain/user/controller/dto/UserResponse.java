@@ -1,0 +1,30 @@
+package com.flab.woowahaneats.domain.user.controller.dto;
+
+import com.flab.woowahaneats.domain.common.vo.Address;
+import com.flab.woowahaneats.domain.auth.domain.Account;
+import com.flab.woowahaneats.domain.user.domain.User;
+
+public record UserResponse (
+        String name,
+
+        String email,
+
+        String phoneNumber,
+
+        Address address,
+
+        String profileImageUrl,
+
+        String nickName
+){
+    public static UserResponse from(User user, Account account) {
+        return new UserResponse(
+                user.getName(),
+                account.getEmail(),
+                user.getPhoneNumber(),
+                user.getAddress(),
+                user.getProfileImageUrl(),
+                user.getNickName()
+        );
+    }
+}

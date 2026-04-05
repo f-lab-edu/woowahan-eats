@@ -1,7 +1,7 @@
 package com.flab.woowahaneats.domain.payment.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.member.domain.User;
+import com.flab.woowahaneats.domain.user.domain.User;
 import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
 import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
 import com.flab.woowahaneats.domain.payment.domain.Payment;

@@ -1,10 +1,10 @@
 package com.flab.woowahaneats.domain.auth;
 
 import com.flab.woowahaneats.domain.auth.exception.InvalidRoleException;
-import com.flab.woowahaneats.domain.member.domain.Admin;
-import com.flab.woowahaneats.domain.member.domain.Owner;
-import com.flab.woowahaneats.domain.member.domain.Rider;
-import com.flab.woowahaneats.domain.member.domain.User;
+import com.flab.woowahaneats.domain.admin.domain.Admin;
+import com.flab.woowahaneats.domain.owner.domain.Owner;
+import com.flab.woowahaneats.domain.rider.domain.Rider;
+import com.flab.woowahaneats.domain.user.domain.User;
 
 public class AuthContext {
 

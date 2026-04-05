@@ -1,7 +1,7 @@
 package com.flab.woowahaneats.domain.menu.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.member.domain.Owner;
+import com.flab.woowahaneats.domain.owner.domain.Owner;
 import com.flab.woowahaneats.domain.menu.application.exception.MenuNotBelongToRestaurantException;
 import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.controller.dto.MenuRequest;

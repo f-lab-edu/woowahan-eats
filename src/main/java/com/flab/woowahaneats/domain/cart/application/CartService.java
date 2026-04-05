@@ -7,7 +7,7 @@ import com.flab.woowahaneats.domain.cart.application.exception.RestaurantMismatc
 import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
 import com.flab.woowahaneats.domain.cart.repository.CartRepository;
-import com.flab.woowahaneats.domain.member.domain.User;
+import com.flab.woowahaneats.domain.user.domain.User;
 import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;

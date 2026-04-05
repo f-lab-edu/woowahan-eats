@@ -2,8 +2,8 @@ package com.flab.woowahaneats.global.interceptor;
 
 import com.flab.woowahaneats.domain.auth.AuthContext;
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.member.domain.User;
-import com.flab.woowahaneats.domain.member.repository.UserRepository;
+import com.flab.woowahaneats.domain.user.domain.User;
+import com.flab.woowahaneats.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
