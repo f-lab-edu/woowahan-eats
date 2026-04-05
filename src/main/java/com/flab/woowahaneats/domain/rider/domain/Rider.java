@@ -3,20 +3,76 @@ package com.flab.woowahaneats.domain.rider.domain;
 import com.flab.woowahaneats.domain.common.vo.BankAccount;
 import com.flab.woowahaneats.domain.common.vo.Location;
 import com.flab.woowahaneats.domain.rider.exception.InvalidRiderStatusException;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "riders")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class Rider {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "rider_id")
     private Long id;
+
+    @Column(name = "account_id", nullable = false)
     private Long accountId;
+
+    @Embedded
     private Location location;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
+
+    @Embedded
+    @AttributeOverride(name = "accountNumber", column = @Column(name = "account_number"))
     private BankAccount bankAccount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "vehicle_type", nullable = false)
     private VehicleType vehicleType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "rider_status", nullable = false)
     private RiderStatus riderStatus;
+
+    public static Rider create(
+            Long accountId,
+            String name,
+            String phoneNumber,
+            Location location,
+            BankAccount bankAccount,
+            VehicleType vehicleType
+    ) {
+        return Rider.builder()
+                .accountId(accountId)
+                .name(name)
+                .phoneNumber(phoneNumber)
+                .location(location)
+                .bankAccount(bankAccount)
+                .vehicleType(vehicleType)
+                .riderStatus(RiderStatus.RESTING)
+                .build();
+    }
 
     public void startWork() {
         if (this.riderStatus != RiderStatus.RESTING) {

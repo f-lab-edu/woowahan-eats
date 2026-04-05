@@ -9,9 +9,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record RiderSignUpRequest(
-        @NotNull
-        Long id,
-
         @NotBlank
         String name,
 
