@@ -1,12 +1,7 @@
 package com.flab.woowahaneats.domain.cart.repository;
 
 import com.flab.woowahaneats.domain.cart.domain.Cart;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-import java.util.UUID;
-
-public interface CartRepository {
-    void save(Cart cart);
-    Optional<Cart> findById(UUID cartId);
-    void deleteById(UUID cartId);
+public interface CartRepository extends JpaRepository<Cart, Long> {
 }

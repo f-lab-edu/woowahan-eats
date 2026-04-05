@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,14 +28,14 @@ public class CartService {
         cartRepository.save(cart);
     }
 
-    public Cart getCart(UUID cartId) {
+    public Cart getCart(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         validateCartOwnership(cart);
         return cart;
     }
 
-    public void updateMenuQuantity(UUID cartId, Long menuId, int quantity) {
+    public void updateMenuQuantity(Long cartId, Long menuId, int quantity) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         validateCartOwnership(cart);
@@ -44,7 +43,7 @@ public class CartService {
         cartRepository.save(updatedCart);
     }
 
-    public void deleteCartMenu(UUID cartId, Long menuId) {
+    public void deleteCartMenu(Long cartId, Long menuId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         validateCartOwnership(cart);
@@ -52,14 +51,14 @@ public class CartService {
         cartRepository.save(updatedCart);
     }
 
-    public void deleteCart(UUID cartId) {
+    public void deleteCart(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         validateCartOwnership(cart);
         cartRepository.deleteById(cartId);
     }
 
-    public void addCartMenu(UUID cartId, CartMenu cartMenu) {
+    public void addCartMenu(Long cartId, CartMenu cartMenu) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         validateCartOwnership(cart);
