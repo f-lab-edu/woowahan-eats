@@ -2,7 +2,11 @@ package com.flab.woowahaneats.domain.restaurant.domain;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.common.vo.Location;
+import com.flab.woowahaneats.domain.owner.domain.Owner;
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -30,8 +34,9 @@ public class Restaurant {
     @Column(name = "restaurant_id")
     private Long id;
 
-    @Column(name = "owner_id", nullable = false)
-    private Long ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private Owner owner;
 
     @Column(nullable = false)
     private String name;
@@ -54,14 +59,14 @@ public class Restaurant {
     private RestaurantApprovalStatus approvalStatus;
 
     public static Restaurant create(
-            Long ownerId,
+            Owner owner,
             String name,
             String description,
             Address address,
             Location location
     ) {
         return Restaurant.builder()
-                .ownerId(ownerId)
+                .owner(owner)
                 .name(name)
                 .description(description)
                 .address(address)

@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.owner.domain;
 
+import com.flab.woowahaneats.domain.auth.domain.Account;
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.common.vo.BankAccount;
 import com.flab.woowahaneats.domain.common.vo.Location;
@@ -8,9 +9,12 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,8 +34,9 @@ public class Owner {
     @Column(name = "owner_id")
     private Long id;
 
-    @Column(name = "account_id", nullable = false)
-    private Long accountId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
+    private Account account;
 
     @Embedded
     @AttributeOverride(name = "detail", column = @Column(name = "address_detail"))
@@ -57,7 +62,7 @@ public class Owner {
     private String phoneNumber;
 
     public static Owner create(
-            Long accountId,
+            Account account,
             String name,
             String phoneNumber,
             Address address,
@@ -66,12 +71,12 @@ public class Owner {
             String businessNotificationCertUrl,
             BankAccount bankAccount
     ) {
-        validateAccountId(accountId);
+        validateAccount(account);
         validateName(name);
         validatePhoneNumber(phoneNumber);
 
         return Owner.builder()
-                .accountId(accountId)
+                .account(account)
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .address(address)
@@ -82,8 +87,8 @@ public class Owner {
                 .build();
     }
 
-    private static void validateAccountId(Long accountId) {
-        if (accountId == null) {
+    private static void validateAccount(Account account) {
+        if (account == null) {
             throw new InvalidOwnerException("계정 정보가 올바르지 않습니다.");
         }
     }

@@ -1,14 +1,19 @@
 package com.flab.woowahaneats.domain.cart.domain;
 
 import com.flab.woowahaneats.domain.cart.exception.InvalidQuantityException;
+import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import com.flab.woowahaneats.domain.user.domain.User;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,21 +36,23 @@ public class Cart {
     @Column(name = "cart_id", nullable = false)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
-    @Column(name = "restaurant_id", nullable = false)
-    private Long restaurantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
 
     @ElementCollection
     @CollectionTable(name = "cart_menus", joinColumns = @JoinColumn(name = "cart_id"))
     private List<CartMenu> menus;
 
-    public static Cart create(Long userId, Long restaurantId, List<CartMenu> menus) {
+    public static Cart create(User user, Restaurant restaurant, List<CartMenu> menus) {
         menus.forEach(menu -> validateQuantity(menu.quantity()));
         return Cart.builder()
-                .userId(userId)
-                .restaurantId(restaurantId)
+                .user(user)
+                .restaurant(restaurant)
                 .menus(menus)
                 .build();
     }

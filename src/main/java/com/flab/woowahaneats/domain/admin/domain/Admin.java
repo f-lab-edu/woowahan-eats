@@ -1,11 +1,15 @@
 package com.flab.woowahaneats.domain.admin.domain;
 
 import com.flab.woowahaneats.domain.admin.exception.InvalidAdminException;
+import com.flab.woowahaneats.domain.auth.domain.Account;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,8 +29,9 @@ public class Admin {
     @Column(name = "admin_id")
     private Long id;
 
-    @Column(name = "account_id", nullable = false)
-    private Long accountId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
+    private Account account;
 
     @Column(nullable = false)
     private String name;
@@ -34,20 +39,20 @@ public class Admin {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    public static Admin create(Long accountId, String name, String phoneNumber) {
-        validateAccountId(accountId);
+    public static Admin create(Account account, String name, String phoneNumber) {
+        validateAccount(account);
         validateName(name);
         validatePhoneNumber(phoneNumber);
 
         return Admin.builder()
-                .accountId(accountId)
+                .account(account)
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .build();
     }
 
-    private static void validateAccountId(Long accountId) {
-        if (accountId == null) {
+    private static void validateAccount(Account account) {
+        if (account == null) {
             throw new InvalidAdminException("계정 정보가 올바르지 않습니다.");
         }
     }

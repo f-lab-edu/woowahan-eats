@@ -5,6 +5,9 @@ import com.flab.woowahaneats.domain.order.common.OrderMenu;
 import com.flab.woowahaneats.domain.order.common.OrderPrice;
 import com.flab.woowahaneats.domain.order.common.OrderRequest;
 import com.flab.woowahaneats.domain.order.exception.InvalidOrderStatusException;
+import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import com.flab.woowahaneats.domain.rider.domain.Rider;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,8 +30,9 @@ public class OwnerOrder {
     @Column(name = "owner_order_id")
     private Long id;
 
-    @Column(name = "restaurant_id", nullable = false)
-    private Long restaurantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
 
     @Embedded
     private OrderRequest orderRequest;
@@ -43,11 +47,13 @@ public class OwnerOrder {
     @CollectionTable(name = "owner_order_menus", joinColumns = @JoinColumn(name = "owner_order_id"))
     private List<OrderMenu> orderMenus;
 
-    @Column(name = "user_order_id", nullable = false)
-    private Long userOrderId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_order_id", nullable = false, unique = true)
+    private UserOrder userOrder;
 
-    @Column(name = "rider_id")
-    private Long riderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rider_id")
+    private Rider rider;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

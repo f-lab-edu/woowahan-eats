@@ -1,7 +1,10 @@
 package com.flab.woowahaneats.domain.menu.domain;
 
 import com.flab.woowahaneats.domain.menu.exception.InvalidMenuException;
+import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import jakarta.persistence.CollectionTable;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -30,8 +33,9 @@ public class Menu {
     @Column(name = "menu_id")
     private Long id;
 
-    @Column(name = "restaurant_id", nullable = false)
-    private Long restaurantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
 
     @Column(name = "internal_name", nullable = false)
     private String internalName;
@@ -63,7 +67,7 @@ public class Menu {
                 .build();
     }
 
-    public static Menu create(Long restaurantId, String internalName, String displayName,
+    public static Menu create(Restaurant restaurant, String internalName, String displayName,
                               String description, List<MenuImage> images, int price, boolean available){
 
         validateInternalName(internalName);
@@ -73,7 +77,7 @@ public class Menu {
         validateImages(images);
 
         return Menu.builder()
-                .restaurantId(restaurantId)
+                .restaurant(restaurant)
                 .internalName(internalName)
                 .displayName(displayName)
                 .description(description)

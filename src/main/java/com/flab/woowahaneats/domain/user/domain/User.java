@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.user.domain;
 
+import com.flab.woowahaneats.domain.auth.domain.Account;
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.common.vo.Location;
 import com.flab.woowahaneats.domain.user.exception.InvalidUserException;
@@ -22,8 +23,9 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "account_id", nullable = false)
-    private Long accountId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
+    private Account account;
 
     @Embedded
     @AttributeOverride(name = "detail", column = @Column(name = "address_detail"))
@@ -45,7 +47,7 @@ public class User {
     private String phoneNumber;
 
     public static User create(
-            Long accountId,
+            Account account,
             String name,
             String phoneNumber,
             Address address,
@@ -53,13 +55,13 @@ public class User {
             String profileImageUrl,
             String nickName
     ) {
-        validateAccountId(accountId);
+        validateAccount(account);
         validateName(name);
         validatePhoneNumber(phoneNumber);
         validateNickName(nickName);
 
         return User.builder()
-                .accountId(accountId)
+                .account(account)
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .address(address)
@@ -69,8 +71,8 @@ public class User {
                 .build();
     }
 
-    private static void validateAccountId(Long accountId) {
-        if (accountId == null) {
+    private static void validateAccount(Account account) {
+        if (account == null) {
             throw new InvalidUserException("계정 정보가 올바르지 않습니다.");
         }
     }

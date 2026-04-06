@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.rider.domain;
 
+import com.flab.woowahaneats.domain.auth.domain.Account;
 import com.flab.woowahaneats.domain.common.vo.BankAccount;
 import com.flab.woowahaneats.domain.common.vo.Location;
 import com.flab.woowahaneats.domain.rider.exception.InvalidRiderException;
@@ -10,9 +11,12 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,8 +36,9 @@ public class Rider {
     @Column(name = "rider_id")
     private Long id;
 
-    @Column(name = "account_id", nullable = false)
-    private Long accountId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
+    private Account account;
 
     @Embedded
     private Location location;
@@ -57,19 +62,19 @@ public class Rider {
     private RiderStatus riderStatus;
 
     public static Rider create(
-            Long accountId,
+            Account account,
             String name,
             String phoneNumber,
             Location location,
             BankAccount bankAccount,
             VehicleType vehicleType
     ) {
-        validateAccountId(accountId);
+        validateAccount(account);
         validateName(name);
         validatePhoneNumber(phoneNumber);
 
         return Rider.builder()
-                .accountId(accountId)
+                .account(account)
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .location(location)
@@ -79,8 +84,8 @@ public class Rider {
                 .build();
     }
 
-    private static void validateAccountId(Long accountId) {
-        if (accountId == null) {
+    private static void validateAccount(Account account) {
+        if (account == null) {
             throw new InvalidRiderException("계정 정보가 올바르지 않습니다.");
         }
     }

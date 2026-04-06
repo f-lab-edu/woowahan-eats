@@ -6,6 +6,8 @@ import com.flab.woowahaneats.domain.order.exception.MinOrderAmountNotMetExceptio
 import com.flab.woowahaneats.domain.order.common.OrderMenu;
 import com.flab.woowahaneats.domain.order.common.OrderPrice;
 import com.flab.woowahaneats.domain.order.common.OrderRequest;
+import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import com.flab.woowahaneats.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,11 +30,13 @@ public class UserOrder {
     @Column(name = "user_order_id")
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "restaurant_id", nullable = false)
-    private Long restaurantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
 
     @ElementCollection
     @CollectionTable(name = "user_order_menus", joinColumns = @JoinColumn(name = "user_order_id"))
@@ -57,8 +61,8 @@ public class UserOrder {
     private LocalDateTime completedAt;
 
     public static UserOrder create(
-            Long userId,
-            Long restaurantId,
+            User user,
+            Restaurant restaurant,
             List<OrderMenu> orderMenus,
             Address deliveryAddress,
             String requestToStore,
@@ -70,8 +74,8 @@ public class UserOrder {
         validateMinOrderAmount(menuTotalPrice, minOrderAmt);
 
         return UserOrder.builder()
-                .userId(userId)
-                .restaurantId(restaurantId)
+                .user(user)
+                .restaurant(restaurant)
                 .orderMenus(orderMenus)
                 .deliveryAddress(deliveryAddress)
                 .orderRequest(new OrderRequest(requestToStore, requestToRider))

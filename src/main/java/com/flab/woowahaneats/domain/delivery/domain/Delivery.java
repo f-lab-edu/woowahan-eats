@@ -1,14 +1,20 @@
 package com.flab.woowahaneats.domain.delivery.domain;
 
 import com.flab.woowahaneats.domain.delivery.exception.InvalidDeliveryStatusException;
+import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import com.flab.woowahaneats.domain.rider.domain.Rider;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,11 +37,13 @@ public class Delivery {
     @Column(name = "delivery_id")
     private Long id;
 
-    @Column(name = "order_id", nullable = false)
-    private Long orderId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
+    private UserOrder order;
 
-    @Column(name = "rider_id")
-    private Long riderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rider_id")
+    private Rider rider;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -47,19 +55,19 @@ public class Delivery {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public static Delivery create(Long orderId) {
+    public static Delivery create(UserOrder order) {
         return Delivery.builder()
-                .orderId(orderId)
+                .order(order)
                 .status(DeliveryStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public void accept(Long riderId) {
+    public void accept(Rider rider) {
         if (this.status != DeliveryStatus.PENDING) {
             throw new InvalidDeliveryStatusException("대기 중인 배달만 수락할 수 있습니다.");
         }
-        this.riderId = riderId;
+        this.rider = rider;
         this.status = DeliveryStatus.ASSIGNED;
         this.timeline = new DeliveryTimeline(LocalDateTime.now(), null, null);
     }
