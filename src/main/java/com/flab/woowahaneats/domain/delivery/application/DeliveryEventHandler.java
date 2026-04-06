@@ -17,16 +17,16 @@ public class DeliveryEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleDeliveryCreated(DeliveryCreatedEvent event) {
-        userOrderService.startDelivering(event.getOrderId());
+        userOrderService.startDelivering(event.orderId());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleDeliveryCancelled(DeliveryCancelledEvent event) {
-        userOrderService.resetOrderToReady(event.getOrderId());
+        userOrderService.resetOrderToReady(event.orderId());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleDeliveryCompleted(DeliveryCompletedEvent event) {
-        userOrderService.completeOrder(event.getOrderId());
+        userOrderService.completeOrder(event.orderId());
     }
 }

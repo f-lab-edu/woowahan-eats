@@ -17,20 +17,20 @@ public class RiderEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleDeliveryAccepted(DeliveryAcceptedEvent event) {
-        riderService.startDelivering(event.getRiderId());
+        riderService.startDelivering(event.riderId());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleDeliveryCompleted(DeliveryCompletedEvent event) {
-        if (event.getRiderId() != null) {
-            riderService.finishDelivering(event.getRiderId());
+        if (event.riderId() != null) {
+            riderService.finishDelivering(event.riderId());
         }
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleDeliveryCancelled(DeliveryCancelledEvent event) {
-        if (event.getRiderId() != null) {
-            riderService.finishDelivering(event.getRiderId());
+        if (event.riderId() != null) {
+            riderService.finishDelivering(event.riderId());
         }
     }
 }

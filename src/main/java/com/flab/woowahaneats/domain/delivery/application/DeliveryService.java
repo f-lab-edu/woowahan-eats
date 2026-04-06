@@ -51,7 +51,7 @@ public class DeliveryService {
         Delivery delivery = Delivery.create(userOrder);
         deliveryRepository.save(delivery);
 
-        eventPublisher.publishEvent(new DeliveryCreatedEvent(this, delivery.getId(), userOrderId));
+        eventPublisher.publishEvent(new DeliveryCreatedEvent(delivery.getId(), userOrderId));
     }
 
     @Transactional
@@ -63,7 +63,7 @@ public class DeliveryService {
         delivery.cancel();
         deliveryRepository.save(delivery);
 
-        eventPublisher.publishEvent(new DeliveryCancelledEvent(this, delivery.getId(), delivery.getOrder().getId(), riderId));
+        eventPublisher.publishEvent(new DeliveryCancelledEvent(delivery.getId(), delivery.getOrder().getId(), riderId));
     }
 
     @Transactional(readOnly = true)
@@ -86,7 +86,7 @@ public class DeliveryService {
         delivery.accept(rider);
         deliveryRepository.save(delivery);
 
-        eventPublisher.publishEvent(new DeliveryAcceptedEvent(this, delivery.getId(), delivery.getOrder().getId(), riderId));
+        eventPublisher.publishEvent(new DeliveryAcceptedEvent(delivery.getId(), delivery.getOrder().getId(), riderId));
     }
 
     @Transactional
@@ -125,6 +125,6 @@ public class DeliveryService {
         delivery.complete();
         deliveryRepository.save(delivery);
 
-        eventPublisher.publishEvent(new DeliveryCompletedEvent(this, delivery.getId(), delivery.getOrder().getId(), riderId));
+        eventPublisher.publishEvent(new DeliveryCompletedEvent(delivery.getId(), delivery.getOrder().getId(), riderId));
     }
 }
