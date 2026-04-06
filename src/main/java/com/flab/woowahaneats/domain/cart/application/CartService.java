@@ -16,6 +16,7 @@ import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class CartService {
     private final MenuRepository menuRepository;
     private final RestaurantRepository restaurantRepository;
 
+    @Transactional
     public void createCart(Long restaurantId, List<CartMenu> menus) {
         User user = AuthContextHolder.getContext().getUser();
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
@@ -34,6 +36,7 @@ public class CartService {
         cartRepository.save(cart);
     }
 
+    @Transactional(readOnly = true)
     public Cart getCart(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
@@ -41,6 +44,7 @@ public class CartService {
         return cart;
     }
 
+    @Transactional
     public void updateMenuQuantity(Long cartId, Long menuId, int quantity) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
@@ -49,6 +53,7 @@ public class CartService {
         cartRepository.save(updatedCart);
     }
 
+    @Transactional
     public void deleteCartMenu(Long cartId, Long menuId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
@@ -57,6 +62,7 @@ public class CartService {
         cartRepository.save(updatedCart);
     }
 
+    @Transactional
     public void deleteCart(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
@@ -64,6 +70,7 @@ public class CartService {
         cartRepository.deleteById(cartId);
     }
 
+    @Transactional
     public void addCartMenu(Long cartId, CartMenu cartMenu) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);

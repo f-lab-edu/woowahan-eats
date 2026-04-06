@@ -15,6 +15,7 @@ import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInf
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class RestaurantService {
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
     private final NotificationService notificationService;
 
+    @Transactional
     public void registerRestaurant(RestaurantRequest restaurantRequest) {
 
         Owner owner = AuthContextHolder.getContext().getOwner();
@@ -55,6 +57,7 @@ public class RestaurantService {
         );
     }
 
+    @Transactional(readOnly = true)
     public RestaurantResponse getRestaurant(Long restaurantId) {
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
@@ -65,6 +68,7 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 
+    @Transactional
     public void openRestaurant(Long restaurantId) {
 
         Owner owner = AuthContextHolder.getContext().getOwner();
@@ -86,6 +90,7 @@ public class RestaurantService {
         restaurantOperationInfoRepository.save(updateRestaurantOperationInfo);
     }
 
+    @Transactional(readOnly = true)
     public List<RestaurantResponse> getAllRestaurants() {
 
         List<Restaurant> restaurants = restaurantRepository.findAll();
@@ -102,6 +107,7 @@ public class RestaurantService {
         return restaurantResponses;
     }
 
+    @Transactional(readOnly = true)
     public RestaurantResponse searchRestaurant(String name) {
         Restaurant restaurant = restaurantRepository.findFirstByNameContaining(name)
                 .orElseThrow(RestaurantNotFoundException::new);
@@ -113,10 +119,12 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 
+    @Transactional
     public void approveRestaurant(Long restaurantId) {
         updateApprovalStatus(restaurantId, RestaurantApprovalStatus.APPROVED);
     }
 
+    @Transactional
     public void rejectRestaurant(Long restaurantId) {
         updateApprovalStatus(restaurantId, RestaurantApprovalStatus.REJECTED);
     }

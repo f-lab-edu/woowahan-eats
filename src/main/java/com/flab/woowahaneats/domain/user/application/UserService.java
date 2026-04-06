@@ -12,6 +12,7 @@ import com.flab.woowahaneats.domain.user.repository.UserRepository;
 import com.flab.woowahaneats.global.util.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
 
+    @Transactional
     public void signUpUser(UserSignUpRequest userSignUpRequest) {
         Account existingAccount = accountRepository.findByEmail(userSignUpRequest.email());
 
@@ -48,6 +50,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public UserResponse getUserProfile(){
 
         User user = AuthContextHolder.getContext().getUser();

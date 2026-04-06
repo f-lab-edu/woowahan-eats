@@ -14,6 +14,7 @@ import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final RestaurantRepository restaurantRepository;
 
+    @Transactional
     public void registerMenu(Long restaurantId, MenuRequest menuRequest) {
 
         Restaurant restaurant = validateRestaurantOwnership(restaurantId);
@@ -39,6 +41,7 @@ public class MenuService {
         menuRepository.save(menu);
     }
 
+    @Transactional
     public void updateMenu(Long restaurantId, Long menuId, MenuUpdateRequest request) {
 
         validateRestaurantOwnership(restaurantId);
@@ -62,6 +65,7 @@ public class MenuService {
         menuRepository.save(updatedMenu);
     }
 
+    @Transactional
     public void deleteMenu(Long restaurantId, Long menuId) {
 
         validateRestaurantOwnership(restaurantId);

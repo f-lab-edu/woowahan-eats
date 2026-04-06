@@ -10,6 +10,7 @@ import com.flab.woowahaneats.domain.rider.repository.RiderRepository;
 import com.flab.woowahaneats.global.util.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class RiderService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void signUpRider(RiderSignUpRequest riderSignUpRequest) {
         Account existingAccount = accountRepository.findByEmail(riderSignUpRequest.email());
 
@@ -44,24 +46,28 @@ public class RiderService {
         riderRepository.save(rider);
     }
 
+    @Transactional
     public void startWork(Long riderId) {
         Rider rider = getRider(riderId);
         rider.startWork();
         riderRepository.save(rider);
     }
 
+    @Transactional
     public void endWork(Long riderId) {
         Rider rider = getRider(riderId);
         rider.endWork();
         riderRepository.save(rider);
     }
 
+    @Transactional
     public void startDelivering(Long riderId) {
         Rider rider = getRider(riderId);
         rider.startDelivering();
         riderRepository.save(rider);
     }
 
+    @Transactional
     public void finishDelivering(Long riderId) {
         Rider rider = getRider(riderId);
         rider.finishDelivering();

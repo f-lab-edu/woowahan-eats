@@ -16,6 +16,7 @@ import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +29,7 @@ public class OwnerOrderService {
     private final UserOrderRepository userOrderRepository;
     private final ApplicationEventPublisher eventPublisher;
 
+    @Transactional
     public void createOrder(
             Long userOrderId,
             List<OrderMenu> orderMenus,
@@ -53,6 +55,7 @@ public class OwnerOrderService {
         ownerOrderRepository.save(ownerOrder);
     }
 
+    @Transactional
     public void approveOrder(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
@@ -63,6 +66,7 @@ public class OwnerOrderService {
         eventPublisher.publishEvent(new OwnerOrderAcceptedEvent(userOrderId));
     }
 
+    @Transactional
     public void startCooking(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
@@ -73,6 +77,7 @@ public class OwnerOrderService {
         eventPublisher.publishEvent(new OwnerOrderCookingStartedEvent(userOrderId));
     }
 
+    @Transactional
     public void completeCooking(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
@@ -83,6 +88,7 @@ public class OwnerOrderService {
         eventPublisher.publishEvent(new OwnerOrderCookingCompletedEvent(userOrderId));
     }
 
+    @Transactional
     public void cancelOrder(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);

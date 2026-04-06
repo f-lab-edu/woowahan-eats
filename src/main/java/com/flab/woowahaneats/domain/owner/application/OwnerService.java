@@ -9,6 +9,7 @@ import com.flab.woowahaneats.domain.owner.repository.OwnerRepository;
 import com.flab.woowahaneats.global.util.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class OwnerService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void signUpOwner(OwnerSignUpRequest ownerSignUpRequest) {
 
         Account existingAccount = accountRepository.findByEmail(ownerSignUpRequest.email());

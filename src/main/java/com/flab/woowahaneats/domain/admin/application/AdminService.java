@@ -9,6 +9,7 @@ import com.flab.woowahaneats.domain.admin.repository.AdminRepository;
 import com.flab.woowahaneats.global.util.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class AdminService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void signUpAdmin(AdminSignUpRequest adminSignUpRequest) {
         Account existingAccount = accountRepository.findByEmail(adminSignUpRequest.email());
 

@@ -29,6 +29,7 @@ import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInf
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class UserOrderService {
     private final PaymentService paymentService;
     private final ApplicationEventPublisher eventPublisher;
 
+    @Transactional
     public CreateOrderResponse createOrder(CreateOrderRequest request) {
         User user = AuthContextHolder.getContext().getUser();
         Cart cart = cartRepository.findById(request.cartId())
@@ -89,6 +91,7 @@ public class UserOrderService {
         );
     }
 
+    @Transactional
     public void cancelOrder(Long orderId){
         User user = AuthContextHolder.getContext().getUser();
         UserOrder order = orderRepository.findById(orderId)
@@ -106,6 +109,7 @@ public class UserOrderService {
         eventPublisher.publishEvent(new UserOrderCancelledEvent(orderId));
     }
 
+    @Transactional
     public void approveOrder(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
@@ -114,6 +118,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
+    @Transactional
     public void startCooking(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
@@ -122,6 +127,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
+    @Transactional
     public void completeCooking(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
@@ -130,6 +136,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
+    @Transactional
     public void startDelivering(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
@@ -138,6 +145,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
+    @Transactional
     public void completeOrder(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
@@ -146,6 +154,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
+    @Transactional
     public void resetOrderToReady(Long orderId) {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
@@ -154,6 +163,7 @@ public class UserOrderService {
         orderRepository.save(order);
     }
 
+    @Transactional(readOnly = true)
     public List<OrderResponse> getOrderList(){
         User user = AuthContextHolder.getContext().getUser();
         List<UserOrder> orders = orderRepository.findActiveOrdersByUserId(user.getId());
