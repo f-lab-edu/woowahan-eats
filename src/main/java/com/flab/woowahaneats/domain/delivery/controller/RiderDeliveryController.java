@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class RiderDeliveryController {
     }
 
     @PostMapping("/{deliveryId}")
-    public ResponseEntity<Void> cancelDelivery(@PathVariable UUID deliveryId) {
+    public ResponseEntity<Void> cancelDelivery(@PathVariable Long deliveryId) {
         deliveryService.cancelDelivery(deliveryId);
         return ResponseEntity.ok().build();
     }
@@ -42,7 +41,7 @@ public class RiderDeliveryController {
 
     @PostMapping("/{deliveryId}/accept")
     public ResponseEntity<Void> acceptDelivery(
-            @PathVariable UUID deliveryId,
+            @PathVariable Long deliveryId,
             @RequestBody AcceptDeliveryRequest request
     ) {
         deliveryService.acceptDelivery(deliveryId, request.riderId());
@@ -50,25 +49,25 @@ public class RiderDeliveryController {
     }
 
     @PostMapping("/{deliveryId}/start-pickup")
-    public ResponseEntity<Void> startPickup(@PathVariable UUID deliveryId) {
+    public ResponseEntity<Void> startPickup(@PathVariable Long deliveryId) {
         deliveryService.startPickup(deliveryId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{deliveryId}/complete-pickup")
-    public ResponseEntity<Void> completePickup(@PathVariable UUID deliveryId) {
+    public ResponseEntity<Void> completePickup(@PathVariable Long deliveryId) {
         deliveryService.completePickup(deliveryId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{deliveryId}/start-delivery")
-    public ResponseEntity<Void> startDelivery(@PathVariable UUID deliveryId) {
+    public ResponseEntity<Void> startDelivery(@PathVariable Long deliveryId) {
         deliveryService.startDelivery(deliveryId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{deliveryId}/complete")
-    public ResponseEntity<Void> completeDelivery(@PathVariable UUID deliveryId) {
+    public ResponseEntity<Void> completeDelivery(@PathVariable Long deliveryId) {
         deliveryService.completeDelivery(deliveryId);
         return ResponseEntity.ok().build();
     }

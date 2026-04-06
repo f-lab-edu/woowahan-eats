@@ -19,7 +19,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +42,7 @@ public class DeliveryService {
         eventPublisher.publishEvent(new DeliveryCreatedEvent(this, delivery.getId(), userOrderId));
     }
 
-    public void cancelDelivery(UUID deliveryId) {
+    public void cancelDelivery(Long deliveryId) {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
@@ -62,7 +61,7 @@ public class DeliveryService {
                 .toList();
     }
 
-    public void acceptDelivery(UUID deliveryId, Long riderId) {
+    public void acceptDelivery(Long deliveryId, Long riderId) {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
@@ -72,7 +71,7 @@ public class DeliveryService {
         eventPublisher.publishEvent(new DeliveryAcceptedEvent(this, delivery.getId(), delivery.getOrderId(), riderId));
     }
 
-    public void startPickup(UUID deliveryId) {
+    public void startPickup(Long deliveryId) {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
@@ -80,7 +79,7 @@ public class DeliveryService {
         deliveryRepository.save(delivery);
     }
 
-    public void completePickup(UUID deliveryId) {
+    public void completePickup(Long deliveryId) {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
@@ -88,7 +87,7 @@ public class DeliveryService {
         deliveryRepository.save(delivery);
     }
 
-    public void startDelivery(UUID deliveryId) {
+    public void startDelivery(Long deliveryId) {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
@@ -96,7 +95,7 @@ public class DeliveryService {
         deliveryRepository.save(delivery);
     }
 
-    public void completeDelivery(UUID deliveryId) {
+    public void completeDelivery(Long deliveryId) {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
