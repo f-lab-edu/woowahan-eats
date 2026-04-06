@@ -24,10 +24,10 @@ public class MenuService {
 
     public void registerMenu(Long restaurantId, MenuRequest menuRequest) {
 
-        validateRestaurantOwnership(restaurantId);
+        Restaurant restaurant = validateRestaurantOwnership(restaurantId);
 
         Menu menu = Menu.create(
-                restaurantId,
+                restaurant,
                 menuRequest.internalName(),
                 menuRequest.displayName(),
                 menuRequest.description(),
@@ -46,7 +46,7 @@ public class MenuService {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(MenuNotFoundException::new);
 
-        if (!menu.getRestaurantId().equals(restaurantId)) {
+        if (!menu.getRestaurant().getId().equals(restaurantId)) {
             throw new MenuNotBelongToRestaurantException();
         }
 
@@ -69,21 +69,23 @@ public class MenuService {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(MenuNotFoundException::new);
 
-        if (!menu.getRestaurantId().equals(restaurantId)) {
+        if (!menu.getRestaurant().getId().equals(restaurantId)) {
             throw new MenuNotBelongToRestaurantException();
         }
 
         menuRepository.deleteById(menuId);
     }
 
-    private void validateRestaurantOwnership(Long restaurantId) {
+    private Restaurant validateRestaurantOwnership(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
 
         Owner owner = AuthContextHolder.getContext().getOwner();
 
-        if (!restaurant.getOwnerId().equals(owner.getId())) {
+        if (!restaurant.getOwner().getId().equals(owner.getId())) {
             throw new RestaurantNotOwnedException();
         }
+
+        return restaurant;
     }
 }

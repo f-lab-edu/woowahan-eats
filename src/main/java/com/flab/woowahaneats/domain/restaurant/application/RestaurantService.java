@@ -32,7 +32,7 @@ public class RestaurantService {
         Owner owner = AuthContextHolder.getContext().getOwner();
 
         Restaurant restaurant = restaurantRepository.save(Restaurant.create(
-                owner.getId(),
+                owner,
                 restaurantRequest.name(),
                 restaurantRequest.description(),
                 restaurantRequest.address(),
@@ -72,7 +72,7 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
 
-        if (!restaurant.getOwnerId().equals(owner.getId())) {
+        if (!restaurant.getOwner().getId().equals(owner.getId())) {
             throw new RestaurantNotOwnedException();
         }
 
@@ -137,7 +137,7 @@ public class RestaurantService {
                 ? String.format("음식점 '%s'의 등록이 승인되었습니다.", restaurant.getName())
                 : String.format("음식점 '%s'의 등록이 거절되었습니다.", restaurant.getName());
 
-        notificationService.sendToOwner(restaurant.getOwnerId(), message, restaurant);
+        notificationService.sendToOwner(restaurant.getOwner().getId(), message, restaurant);
     }
 
 }

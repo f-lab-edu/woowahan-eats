@@ -16,7 +16,6 @@ public class OwnerOrderEventHandler {
     public void handlePaymentCompleted(PaymentCompletedEvent event) {
         ownerOrderService.createOrder(
                 event.userOrderId(),
-                event.restaurantId(),
                 event.orderMenus(),
                 event.orderRequest(),
                 event.orderPrice(),

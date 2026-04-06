@@ -33,7 +33,7 @@ public class RiderService {
         ));
 
         Rider rider = Rider.create(
-                account.getId(),
+                account,
                 riderSignUpRequest.name(),
                 riderSignUpRequest.phoneNumber(),
                 riderSignUpRequest.location(),

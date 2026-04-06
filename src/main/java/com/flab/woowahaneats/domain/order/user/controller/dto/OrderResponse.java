@@ -23,7 +23,7 @@ public record OrderResponse(
     public static OrderResponse from(UserOrder order) {
         return new OrderResponse(
                 order.getId(),
-                order.getRestaurantId(),
+                order.getRestaurant().getId(),
                 order.getStatus(),
                 order.getOrderMenus(),
                 order.getOrderPrice(),

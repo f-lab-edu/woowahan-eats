@@ -47,12 +47,12 @@ public class UserOrderService {
         Cart cart = cartRepository.findById(request.cartId())
                 .orElseThrow(CartNotFoundException::new);
 
-        if (!cart.getUserId().equals(user.getId())) {
+        if (!cart.getUser().getId().equals(user.getId())) {
             throw new CartNotBelongToUserException();
         }
 
         RestaurantOperationInfo operationInfo = restaurantOperationInfoRepository
-                .findById(cart.getRestaurantId())
+                .findById(cart.getRestaurant().getId())
                 .orElseThrow(RestaurantOperationInfoNotFoundException::new);
 
         if (!operationInfo.isOpen()) {
@@ -62,8 +62,8 @@ public class UserOrderService {
         List<OrderMenu> orderMenus = convertToOrderMenus(cart);
 
         UserOrder order = UserOrder.create(
-                user.getId(),
-                cart.getRestaurantId(),
+                user,
+                cart.getRestaurant(),
                 orderMenus,
                 request.deliveryAddress(),
                 request.requestToStore(),
@@ -75,7 +75,7 @@ public class UserOrderService {
         orderRepository.save(order);
 
         Payment payment = paymentService.preparePayment(
-                order.getId(),
+                order,
                 order.getOrderPrice().totalPrice(),
                 request.paymentProvider()
         );
@@ -94,7 +94,7 @@ public class UserOrderService {
         UserOrder order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
 
-        if (!order.getUserId().equals(user.getId())) {
+        if (!order.getUser().getId().equals(user.getId())) {
             throw new OrderNotBelongToUserException();
         }
 

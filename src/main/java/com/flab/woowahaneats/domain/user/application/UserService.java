@@ -36,7 +36,7 @@ public class UserService {
         ));
 
         User user = User.create(
-                account.getId(),
+                account,
                 userSignUpRequest.name(),
                 userSignUpRequest.phoneNumber(),
                 userSignUpRequest.address(),
@@ -51,7 +51,7 @@ public class UserService {
     public UserResponse getUserProfile(){
 
         User user = AuthContextHolder.getContext().getUser();
-        Account account = accountRepository.findById(user.getAccountId())
+        Account account = accountRepository.findById(user.getAccount().getId())
                 .orElseThrow(AccountNotFoundException::new);
 
         return UserResponse.from(user, account);

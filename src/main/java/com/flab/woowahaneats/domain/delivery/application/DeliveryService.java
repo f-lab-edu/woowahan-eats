@@ -14,6 +14,11 @@ import com.flab.woowahaneats.domain.order.exception.OrderNotFoundException;
 import com.flab.woowahaneats.domain.order.owner.domain.OwnerOrder;
 import com.flab.woowahaneats.domain.order.owner.domain.OwnerOrderStatus;
 import com.flab.woowahaneats.domain.order.owner.repository.OwnerOrderRepository;
+import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
+import com.flab.woowahaneats.domain.rider.domain.Rider;
+import com.flab.woowahaneats.domain.rider.repository.RiderRepository;
+import com.flab.woowahaneats.domain.rider.exception.RiderNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -26,6 +31,8 @@ public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final OwnerOrderRepository ownerOrderRepository;
+    private final UserOrderRepository userOrderRepository;
+    private final RiderRepository riderRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     public void createDelivery(Long userOrderId) {
@@ -36,7 +43,10 @@ public class DeliveryService {
             throw new OrderNotReadyForDeliveryException();
         }
 
-        Delivery delivery = Delivery.create(userOrderId);
+        UserOrder userOrder = userOrderRepository.findById(userOrderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        Delivery delivery = Delivery.create(userOrder);
         deliveryRepository.save(delivery);
 
         eventPublisher.publishEvent(new DeliveryCreatedEvent(this, delivery.getId(), userOrderId));
@@ -46,11 +56,11 @@ public class DeliveryService {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
-        Long riderId = delivery.getRiderId();
+        Long riderId = delivery.getRider() != null ? delivery.getRider().getId() : null;
         delivery.cancel();
         deliveryRepository.save(delivery);
 
-        eventPublisher.publishEvent(new DeliveryCancelledEvent(this, delivery.getId(), delivery.getOrderId(), riderId));
+        eventPublisher.publishEvent(new DeliveryCancelledEvent(this, delivery.getId(), delivery.getOrder().getId(), riderId));
     }
 
     public List<DeliveryResponse> getPendingDeliveries() {
@@ -65,10 +75,13 @@ public class DeliveryService {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
-        delivery.accept(riderId);
+        Rider rider = riderRepository.findById(riderId)
+                .orElseThrow(RiderNotFoundException::new);
+
+        delivery.accept(rider);
         deliveryRepository.save(delivery);
 
-        eventPublisher.publishEvent(new DeliveryAcceptedEvent(this, delivery.getId(), delivery.getOrderId(), riderId));
+        eventPublisher.publishEvent(new DeliveryAcceptedEvent(this, delivery.getId(), delivery.getOrder().getId(), riderId));
     }
 
     public void startPickup(Long deliveryId) {
@@ -99,10 +112,10 @@ public class DeliveryService {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(DeliveryNotFoundException::new);
 
-        Long riderId = delivery.getRiderId();
+        Long riderId = delivery.getRider() != null ? delivery.getRider().getId() : null;
         delivery.complete();
         deliveryRepository.save(delivery);
 
-        eventPublisher.publishEvent(new DeliveryCompletedEvent(this, delivery.getId(), delivery.getOrderId(), riderId));
+        eventPublisher.publishEvent(new DeliveryCompletedEvent(this, delivery.getId(), delivery.getOrder().getId(), riderId));
     }
 }

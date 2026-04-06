@@ -7,6 +7,9 @@ import com.flab.woowahaneats.domain.cart.exception.RestaurantMismatchException;
 import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
 import com.flab.woowahaneats.domain.cart.repository.CartRepository;
+import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
+import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
 import com.flab.woowahaneats.domain.user.domain.User;
 import com.flab.woowahaneats.domain.menu.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.domain.Menu;
@@ -21,10 +24,13 @@ import java.util.List;
 public class CartService {
     private final CartRepository cartRepository;
     private final MenuRepository menuRepository;
+    private final RestaurantRepository restaurantRepository;
 
     public void createCart(Long restaurantId, List<CartMenu> menus) {
         User user = AuthContextHolder.getContext().getUser();
-        Cart cart = Cart.create(user.getId(), restaurantId, menus);
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(RestaurantNotFoundException::new);
+        Cart cart = Cart.create(user, restaurant, menus);
         cartRepository.save(cart);
     }
 
@@ -65,7 +71,7 @@ public class CartService {
 
         Menu menu = menuRepository.findById(cartMenu.menuId())
                 .orElseThrow(MenuNotFoundException::new);
-        validateMenuBelongsToRestaurant(menu, cart.getRestaurantId());
+        validateMenuBelongsToRestaurant(menu, cart.getRestaurant().getId());
 
         Cart updatedCart = cart.addMenu(cartMenu);
         cartRepository.save(updatedCart);
@@ -73,13 +79,13 @@ public class CartService {
 
     private void validateCartOwnership(Cart cart) {
         User user = AuthContextHolder.getContext().getUser();
-        if (!cart.getUserId().equals(user.getId())) {
+        if (!cart.getUser().getId().equals(user.getId())) {
             throw new CartNotBelongToUserException();
         }
     }
 
     private void validateMenuBelongsToRestaurant(Menu menu, Long restaurantId) {
-        if (!menu.getRestaurantId().equals(restaurantId)) {
+        if (!menu.getRestaurant().getId().equals(restaurantId)) {
             throw new RestaurantMismatchException();
         }
     }

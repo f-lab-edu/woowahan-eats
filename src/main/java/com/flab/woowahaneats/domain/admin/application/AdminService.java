@@ -32,7 +32,7 @@ public class AdminService {
         ));
 
         Admin admin = Admin.create(
-                account.getId(),
+                account,
                 adminSignUpRequest.name(),
                 adminSignUpRequest.phoneNumber()
         );

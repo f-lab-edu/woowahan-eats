@@ -14,8 +14,8 @@ public record CartResponse(
     public static CartResponse from(Cart cart) {
         return new CartResponse(
                 cart.getId(),
-                cart.getUserId(),
-                cart.getRestaurantId(),
+                cart.getUser().getId(),
+                cart.getRestaurant().getId(),
                 cart.getMenus()
         );
     }

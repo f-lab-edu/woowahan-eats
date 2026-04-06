@@ -33,7 +33,7 @@ public class OwnerService {
         ));
 
         Owner owner = Owner.create(
-                account.getId(),
+                account,
                 ownerSignUpRequest.name(),
                 ownerSignUpRequest.phoneNumber(),
                 ownerSignUpRequest.address(),

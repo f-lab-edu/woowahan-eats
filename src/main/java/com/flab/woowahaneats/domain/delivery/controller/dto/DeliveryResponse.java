@@ -15,8 +15,8 @@ public record DeliveryResponse(
     public static DeliveryResponse from(Delivery delivery) {
         return new DeliveryResponse(
                 delivery.getId(),
-                delivery.getOrderId(),
-                delivery.getRiderId(),
+                delivery.getOrder().getId(),
+                delivery.getRider() != null ? delivery.getRider().getId() : null,
                 delivery.getStatus(),
                 delivery.getCreatedAt()
         );

@@ -11,6 +11,8 @@ import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderAcceptedEvent;
 import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderCookingCompletedEvent;
 import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderCookingStartedEvent;
 import com.flab.woowahaneats.domain.order.owner.repository.OwnerOrderRepository;
+import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -23,20 +25,23 @@ import java.util.List;
 public class OwnerOrderService {
 
     private final OwnerOrderRepository ownerOrderRepository;
+    private final UserOrderRepository userOrderRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     public void createOrder(
             Long userOrderId,
-            Long restaurantId,
             List<OrderMenu> orderMenus,
             OrderRequest orderRequest,
             OrderPrice orderPrice,
             Address deliveryAddress,
             LocalDateTime createdAt
     ) {
+        UserOrder userOrder = userOrderRepository.findById(userOrderId)
+                .orElseThrow(OrderNotFoundException::new);
+
         OwnerOrder ownerOrder = OwnerOrder.builder()
-                .userOrderId(userOrderId)
-                .restaurantId(restaurantId)
+                .userOrder(userOrder)
+                .restaurant(userOrder.getRestaurant())
                 .orderMenus(orderMenus)
                 .orderRequest(orderRequest)
                 .orderPrice(orderPrice)
