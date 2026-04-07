@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.restaurant.application;
+package com.flab.woowahaneats.domain.restaurant.user.service;
 
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RestaurantServiceImpl implements RestaurantService {
+public class UserRestaurantServiceImpl implements UserRestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;

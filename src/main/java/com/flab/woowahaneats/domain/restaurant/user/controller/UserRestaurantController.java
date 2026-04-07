@@ -1,7 +1,7 @@
-package com.flab.woowahaneats.domain.restaurant.controller;
+package com.flab.woowahaneats.domain.restaurant.user.controller;
 
-import com.flab.woowahaneats.domain.restaurant.application.RestaurantService;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
+import com.flab.woowahaneats.domain.restaurant.user.service.UserRestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,23 +14,23 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/restaurant")
-public class RestaurantController {
+@RequestMapping("/user/restaurant")
+public class UserRestaurantController {
 
-    private final RestaurantService restaurantService;
+    private final UserRestaurantService userRestaurantService;
 
     @GetMapping("/{restaurantId}")
     public ResponseEntity<RestaurantResponse> getRestaurant(@PathVariable Long restaurantId) {
-        return ResponseEntity.ok(restaurantService.getRestaurant(restaurantId));
+        return ResponseEntity.ok(userRestaurantService.getRestaurant(restaurantId));
     }
 
     @GetMapping
     public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {
-        return ResponseEntity.ok(restaurantService.getAllRestaurants());
+        return ResponseEntity.ok(userRestaurantService.getAllRestaurants());
     }
 
     @GetMapping("/search")
     public ResponseEntity<RestaurantResponse> searchRestaurant(@RequestParam String name) {
-        return ResponseEntity.ok(restaurantService.searchRestaurant(name));
+        return ResponseEntity.ok(userRestaurantService.searchRestaurant(name));
     }
 }

@@ -1,11 +1,10 @@
-package com.flab.woowahaneats.domain.restaurant.application;
+package com.flab.woowahaneats.domain.restaurant.user.service;
 
-import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
 
 import java.util.List;
 
-public interface RestaurantService {
+public interface UserRestaurantService {
 
     RestaurantResponse getRestaurant(Long restaurantId);
 
