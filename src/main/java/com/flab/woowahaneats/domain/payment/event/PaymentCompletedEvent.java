@@ -7,10 +7,9 @@ import com.flab.woowahaneats.domain.order.common.OrderRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 public record PaymentCompletedEvent(
-        UUID userOrderId,
+        Long userOrderId,
         Long userId,
         Long restaurantId,
         List<OrderMenu> orderMenus,

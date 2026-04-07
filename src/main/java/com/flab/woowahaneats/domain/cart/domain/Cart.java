@@ -1,34 +1,59 @@
 package com.flab.woowahaneats.domain.cart.domain;
 
-import com.flab.woowahaneats.domain.cart.application.exception.InvalidQuantityException;
+import com.flab.woowahaneats.domain.cart.exception.InvalidQuantityException;
+import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import com.flab.woowahaneats.domain.user.domain.User;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
+@Entity
+@Table(name = "carts")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class Cart {
-    private UUID id;
-    private Long userId;
-    private Long restaurantId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cart_id", nullable = false)
+    private Long id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
+    @ElementCollection
+    @CollectionTable(name = "cart_menus", joinColumns = @JoinColumn(name = "cart_id"))
     private List<CartMenu> menus;
 
-    public static Cart create(Long userId, Long restaurantId, List<CartMenu> menus) {
+    public static Cart create(User user, Restaurant restaurant, List<CartMenu> menus) {
         menus.forEach(menu -> validateQuantity(menu.quantity()));
         return Cart.builder()
-                .id(UUID.randomUUID())
-                .userId(userId)
-                .restaurantId(restaurantId)
+                .user(user)
+                .restaurant(restaurant)
                 .menus(menus)
-                .build();
-    }
-
-    public Cart updateRestaurant(Long restaurantId) {
-        return this.toBuilder()
-                .restaurantId(restaurantId)
                 .build();
     }
 

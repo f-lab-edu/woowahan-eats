@@ -5,25 +5,61 @@ import com.flab.woowahaneats.domain.order.common.OrderMenu;
 import com.flab.woowahaneats.domain.order.common.OrderPrice;
 import com.flab.woowahaneats.domain.order.common.OrderRequest;
 import com.flab.woowahaneats.domain.order.exception.InvalidOrderStatusException;
+import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import com.flab.woowahaneats.domain.rider.domain.Rider;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
+@Entity
+@Table(name = "owner_orders")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class OwnerOrder {
-    private UUID id;
-    private Long restaurantId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "owner_order_id")
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
+    @Embedded
     private OrderRequest orderRequest;
+
+    @Embedded
     private Address deliveryAddress;
+
+    @Embedded
     private OrderPrice orderPrice;
+
+    @ElementCollection
+    @CollectionTable(name = "owner_order_menus", joinColumns = @JoinColumn(name = "owner_order_id"))
     private List<OrderMenu> orderMenus;
-    private UUID userOrderId;
-    private UUID riderId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_order_id", nullable = false, unique = true)
+    private UserOrder userOrder;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rider_id")
+    private Rider rider;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OwnerOrderStatus status;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public void approve() {

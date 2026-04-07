@@ -1,15 +1,12 @@
 package com.flab.woowahaneats.domain.restaurant.repository;
 
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 
-public interface RestaurantRepository {
-   void save(Restaurant restaurant);
-   Optional<Restaurant> findById(Long id);
-   List<Restaurant> findAll();
-   Optional<Restaurant> findByName(String name);
+public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
+   Optional<Restaurant> findFirstByNameContaining(String name);
 }

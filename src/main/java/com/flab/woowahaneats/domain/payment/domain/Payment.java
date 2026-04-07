@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.payment.domain;
 
+import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
 import com.flab.woowahaneats.domain.payment.exception.InvalidPaymentStatusException;
 import com.flab.woowahaneats.domain.payment.exception.PaymentAmountMismatchException;
 import jakarta.persistence.*;
@@ -10,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "payments")
@@ -24,8 +24,9 @@ public class Payment {
     @Column(name = "payment_id")
     private Long id;
 
-    @Column(nullable = false)
-    private UUID orderId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
+    private UserOrder order;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -55,9 +56,9 @@ public class Payment {
     @Column(name = "fail_reason")
     private String failReason;
 
-    public static Payment prepare(UUID orderId, int amount, PaymentProvider provider, String gatewayOrderId) {
+    public static Payment prepare(UserOrder order, int amount, PaymentProvider provider, String gatewayOrderId) {
         return Payment.builder()
-                .orderId(orderId)
+                .order(order)
                 .provider(provider)
                 .gatewayOrderId(gatewayOrderId)
                 .amount(amount)

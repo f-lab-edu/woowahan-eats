@@ -2,12 +2,12 @@ package com.flab.woowahaneats.domain.cart.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContext;
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.cart.application.exception.CartNotFoundException;
-import com.flab.woowahaneats.domain.cart.application.exception.InvalidQuantityException;
+import com.flab.woowahaneats.domain.cart.exception.CartNotFoundException;
+import com.flab.woowahaneats.domain.cart.exception.InvalidQuantityException;
 import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
 import com.flab.woowahaneats.domain.cart.repository.CartRepository;
-import com.flab.woowahaneats.domain.member.domain.User;
+import com.flab.woowahaneats.domain.user.domain.User;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -132,7 +131,7 @@ class CartServiceTest {
         void getCart_WithExistingCartId_ReturnsCart(){
 
             // Given
-            UUID cartId = UUID.randomUUID();
+            Long cartId = 1L;
             Long userId = 1L;
             Long restaurantId = 100L;
             List<CartMenu> menus = List.of(new CartMenu(1L, 2));
@@ -163,7 +162,7 @@ class CartServiceTest {
         @DisplayName("존재하지 않는 장바구니 ID로 조회하면 CartNotFoundException이 발생한다")
         void getCart_WithNonExistingCartId_ThrowsException() {
             // Given
-            UUID cartId = UUID.randomUUID();
+            Long cartId = 1L;
 
             when(cartRepository.findById(cartId)).thenReturn(Optional.empty());
 
@@ -184,7 +183,7 @@ class CartServiceTest {
         void updateMenuQuantity_WithValidQuantity_UpdatesSuccessfully() {
 
             // Given
-            UUID cartId = UUID.randomUUID();
+            Long cartId = 1L;
             Long menuId = 1L;
             int newQuantity = 5;
 
@@ -220,7 +219,7 @@ class CartServiceTest {
         @DisplayName("장바구니에서 메뉴를 삭제하면 해당 메뉴가 제거된다.")
         void deleteCartMenu_WithValidMenu_RemovesSuccessfully() {
             // Given
-            UUID cartId = UUID.randomUUID();
+            Long cartId = 1L;
             Long menuIdToDelete = 1L;
 
             Cart mockCart = Cart.builder()
@@ -253,7 +252,7 @@ class CartServiceTest {
         @DisplayName("장바구니를 삭제하면 정상적으로 삭제된다")
         void deleteCart_WithValidCart_DeletesSuccessfully() {
             // Given
-            UUID cartId = UUID.randomUUID();
+            Long cartId = 1L;
             Cart mockCart = Cart.builder()
                     .id(cartId)
                     .userId(1L)

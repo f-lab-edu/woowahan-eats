@@ -1,19 +1,20 @@
 package com.flab.woowahaneats.domain.menu.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.member.domain.Owner;
-import com.flab.woowahaneats.domain.menu.application.exception.MenuNotBelongToRestaurantException;
-import com.flab.woowahaneats.domain.menu.application.exception.MenuNotFoundException;
+import com.flab.woowahaneats.domain.owner.domain.Owner;
+import com.flab.woowahaneats.domain.menu.exception.MenuNotBelongToRestaurantException;
+import com.flab.woowahaneats.domain.menu.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.controller.dto.MenuRequest;
 import com.flab.woowahaneats.domain.menu.controller.dto.MenuUpdateRequest;
 import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
-import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotFoundException;
-import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotOwnedException;
+import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
+import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotOwnedException;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,13 +23,13 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final RestaurantRepository restaurantRepository;
 
+    @Transactional
     public void registerMenu(Long restaurantId, MenuRequest menuRequest) {
 
-        validateRestaurantOwnership(restaurantId);
+        Restaurant restaurant = validateRestaurantOwnership(restaurantId);
 
         Menu menu = Menu.create(
-                menuRequest.id(),
-                restaurantId,
+                restaurant,
                 menuRequest.internalName(),
                 menuRequest.displayName(),
                 menuRequest.description(),
@@ -40,6 +41,7 @@ public class MenuService {
         menuRepository.save(menu);
     }
 
+    @Transactional
     public void updateMenu(Long restaurantId, Long menuId, MenuUpdateRequest request) {
 
         validateRestaurantOwnership(restaurantId);
@@ -47,7 +49,7 @@ public class MenuService {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(MenuNotFoundException::new);
 
-        if (!menu.getRestaurantId().equals(restaurantId)) {
+        if (!menu.getRestaurant().getId().equals(restaurantId)) {
             throw new MenuNotBelongToRestaurantException();
         }
 
@@ -63,6 +65,7 @@ public class MenuService {
         menuRepository.save(updatedMenu);
     }
 
+    @Transactional
     public void deleteMenu(Long restaurantId, Long menuId) {
 
         validateRestaurantOwnership(restaurantId);
@@ -70,21 +73,23 @@ public class MenuService {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(MenuNotFoundException::new);
 
-        if (!menu.getRestaurantId().equals(restaurantId)) {
+        if (!menu.getRestaurant().getId().equals(restaurantId)) {
             throw new MenuNotBelongToRestaurantException();
         }
 
-        menuRepository.delete(menuId);
+        menuRepository.deleteById(menuId);
     }
 
-    private void validateRestaurantOwnership(Long restaurantId) {
+    private Restaurant validateRestaurantOwnership(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
 
         Owner owner = AuthContextHolder.getContext().getOwner();
 
-        if (!restaurant.getOwnerId().equals(owner.getId())) {
+        if (!restaurant.getOwner().getId().equals(owner.getId())) {
             throw new RestaurantNotOwnedException();
         }
+
+        return restaurant;
     }
 }

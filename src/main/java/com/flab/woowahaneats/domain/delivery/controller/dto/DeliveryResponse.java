@@ -4,11 +4,10 @@ import com.flab.woowahaneats.domain.delivery.domain.Delivery;
 import com.flab.woowahaneats.domain.delivery.domain.DeliveryStatus;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public record DeliveryResponse(
-        UUID deliveryId,
-        UUID orderId,
+        Long deliveryId,
+        Long orderId,
         Long riderId,
         DeliveryStatus status,
         LocalDateTime createdAt
@@ -16,8 +15,8 @@ public record DeliveryResponse(
     public static DeliveryResponse from(Delivery delivery) {
         return new DeliveryResponse(
                 delivery.getId(),
-                delivery.getOrderId(),
-                delivery.getRiderId(),
+                delivery.getOrder().getId(),
+                delivery.getRider() != null ? delivery.getRider().getId() : null,
                 delivery.getStatus(),
                 delivery.getCreatedAt()
         );

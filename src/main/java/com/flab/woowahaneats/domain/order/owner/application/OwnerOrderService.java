@@ -11,34 +11,39 @@ import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderAcceptedEvent;
 import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderCookingCompletedEvent;
 import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderCookingStartedEvent;
 import com.flab.woowahaneats.domain.order.owner.repository.OwnerOrderRepository;
+import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class OwnerOrderService {
 
     private final OwnerOrderRepository ownerOrderRepository;
+    private final UserOrderRepository userOrderRepository;
     private final ApplicationEventPublisher eventPublisher;
 
+    @Transactional
     public void createOrder(
-            UUID userOrderId,
-            Long restaurantId,
+            Long userOrderId,
             List<OrderMenu> orderMenus,
             OrderRequest orderRequest,
             OrderPrice orderPrice,
             Address deliveryAddress,
             LocalDateTime createdAt
     ) {
+        UserOrder userOrder = userOrderRepository.findById(userOrderId)
+                .orElseThrow(OrderNotFoundException::new);
+
         OwnerOrder ownerOrder = OwnerOrder.builder()
-                .id(UUID.randomUUID())
-                .userOrderId(userOrderId)
-                .restaurantId(restaurantId)
+                .userOrder(userOrder)
+                .restaurant(userOrder.getRestaurant())
                 .orderMenus(orderMenus)
                 .orderRequest(orderRequest)
                 .orderPrice(orderPrice)
@@ -50,7 +55,8 @@ public class OwnerOrderService {
         ownerOrderRepository.save(ownerOrder);
     }
 
-    public void approveOrder(UUID userOrderId) {
+    @Transactional
+    public void approveOrder(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -60,7 +66,8 @@ public class OwnerOrderService {
         eventPublisher.publishEvent(new OwnerOrderAcceptedEvent(userOrderId));
     }
 
-    public void startCooking(UUID userOrderId) {
+    @Transactional
+    public void startCooking(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -70,7 +77,8 @@ public class OwnerOrderService {
         eventPublisher.publishEvent(new OwnerOrderCookingStartedEvent(userOrderId));
     }
 
-    public void completeCooking(UUID userOrderId) {
+    @Transactional
+    public void completeCooking(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
 
@@ -80,7 +88,8 @@ public class OwnerOrderService {
         eventPublisher.publishEvent(new OwnerOrderCookingCompletedEvent(userOrderId));
     }
 
-    public void cancelOrder(UUID userOrderId) {
+    @Transactional
+    public void cancelOrder(Long userOrderId) {
         OwnerOrder ownerOrder = ownerOrderRepository.findByUserOrderId(userOrderId)
                 .orElseThrow(OrderNotFoundException::new);
 

@@ -1,7 +1,10 @@
 package com.flab.woowahaneats.domain.delivery.domain;
 
+import jakarta.persistence.Embeddable;
+
 import java.time.LocalDateTime;
 
+@Embeddable
 public record DeliveryTimeline(
         LocalDateTime assignedAt,
         LocalDateTime pickedUpAt,

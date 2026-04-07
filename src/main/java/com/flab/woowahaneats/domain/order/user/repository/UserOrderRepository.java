@@ -1,13 +1,15 @@
 package com.flab.woowahaneats.domain.order.user.repository;
 
 import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
-public interface UserOrderRepository {
-    void save(UserOrder order);
-    Optional<UserOrder> findById(UUID orderId);
-    List<UserOrder> findActiveOrdersByUserId(Long userId);
+@Repository
+public interface UserOrderRepository extends JpaRepository<UserOrder, Long> {
+    @Query("SELECT o FROM UserOrder o WHERE o.user.id = :userId AND (o.status != 'CANCELLED' AND o.status != 'COMPLETED')")
+    List<UserOrder> findActiveOrdersByUserId(@Param("userId") Long userId);
 }

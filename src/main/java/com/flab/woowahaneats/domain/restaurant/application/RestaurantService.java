@@ -1,11 +1,11 @@
 package com.flab.woowahaneats.domain.restaurant.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.member.domain.Owner;
+import com.flab.woowahaneats.domain.owner.domain.Owner;
 import com.flab.woowahaneats.domain.notification.application.NotificationService;
-import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotFoundException;
-import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantNotOwnedException;
-import com.flab.woowahaneats.domain.restaurant.application.exception.RestaurantOperationInfoNotFoundException;
+import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
+import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotOwnedException;
+import com.flab.woowahaneats.domain.restaurant.exception.RestaurantOperationInfoNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
@@ -15,6 +15,7 @@ import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInf
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,29 +28,25 @@ public class RestaurantService {
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
     private final NotificationService notificationService;
 
+    @Transactional
     public void registerRestaurant(RestaurantRequest restaurantRequest) {
 
         Owner owner = AuthContextHolder.getContext().getOwner();
 
-        Restaurant restaurant = Restaurant.builder()
-                .id(restaurantRequest.id())
-                .ownerId(owner.getId())
-                .name(restaurantRequest.name())
-                .description(restaurantRequest.description())
-                .address(restaurantRequest.address())
-                .location(restaurantRequest.location())
-                .avgRating(0.0)
-                .approvalStatus(RestaurantApprovalStatus.PENDING)
-                .build();
+        Restaurant restaurant = restaurantRepository.save(Restaurant.create(
+                owner,
+                restaurantRequest.name(),
+                restaurantRequest.description(),
+                restaurantRequest.address(),
+                restaurantRequest.location()
+        ));
 
-        RestaurantOperationInfo restaurantOperationInfo = RestaurantOperationInfo.builder()
-                .restaurantId(restaurant.getId())
-                .deliveryFee(restaurantRequest.deliveryFee())
-                .minOrderAmt(restaurantRequest.minOrderAmt())
-                .open(false)
-                .build();
+        RestaurantOperationInfo restaurantOperationInfo = RestaurantOperationInfo.create(
+                restaurant.getId(),
+                restaurantRequest.minOrderAmt(),
+                restaurantRequest.deliveryFee()
+        );
 
-        restaurantRepository.save(restaurant);
         restaurantOperationInfoRepository.save(restaurantOperationInfo);
 
         notificationService.sendToRole(
@@ -60,6 +57,7 @@ public class RestaurantService {
         );
     }
 
+    @Transactional(readOnly = true)
     public RestaurantResponse getRestaurant(Long restaurantId) {
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
@@ -70,6 +68,7 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 
+    @Transactional
     public void openRestaurant(Long restaurantId) {
 
         Owner owner = AuthContextHolder.getContext().getOwner();
@@ -77,7 +76,7 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
 
-        if (!restaurant.getOwnerId().equals(owner.getId())) {
+        if (!restaurant.getOwner().getId().equals(owner.getId())) {
             throw new RestaurantNotOwnedException();
         }
 
@@ -91,6 +90,7 @@ public class RestaurantService {
         restaurantOperationInfoRepository.save(updateRestaurantOperationInfo);
     }
 
+    @Transactional(readOnly = true)
     public List<RestaurantResponse> getAllRestaurants() {
 
         List<Restaurant> restaurants = restaurantRepository.findAll();
@@ -107,8 +107,9 @@ public class RestaurantService {
         return restaurantResponses;
     }
 
+    @Transactional(readOnly = true)
     public RestaurantResponse searchRestaurant(String name) {
-        Restaurant restaurant = restaurantRepository.findByName(name)
+        Restaurant restaurant = restaurantRepository.findFirstByNameContaining(name)
                 .orElseThrow(RestaurantNotFoundException::new);
 
         RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository
@@ -118,10 +119,12 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 
+    @Transactional
     public void approveRestaurant(Long restaurantId) {
         updateApprovalStatus(restaurantId, RestaurantApprovalStatus.APPROVED);
     }
 
+    @Transactional
     public void rejectRestaurant(Long restaurantId) {
         updateApprovalStatus(restaurantId, RestaurantApprovalStatus.REJECTED);
     }
@@ -142,7 +145,7 @@ public class RestaurantService {
                 ? String.format("음식점 '%s'의 등록이 승인되었습니다.", restaurant.getName())
                 : String.format("음식점 '%s'의 등록이 거절되었습니다.", restaurant.getName());
 
-        notificationService.sendToOwner(restaurant.getOwnerId(), message, restaurant);
+        notificationService.sendToOwner(restaurant.getOwner().getId(), message, restaurant);
     }
 
 }

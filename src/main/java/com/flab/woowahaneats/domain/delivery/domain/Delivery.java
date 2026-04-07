@@ -1,37 +1,73 @@
 package com.flab.woowahaneats.domain.delivery.domain;
 
 import com.flab.woowahaneats.domain.delivery.exception.InvalidDeliveryStatusException;
+import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import com.flab.woowahaneats.domain.rider.domain.Rider;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
+@Entity
+@Table(name = "deliveries")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class Delivery {
 
-    private UUID id;
-    private UUID orderId;
-    private Long riderId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "delivery_id")
+    private Long id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
+    private UserOrder order;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rider_id")
+    private Rider rider;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private DeliveryStatus status;
+
+    @Embedded
     private DeliveryTimeline timeline;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public static Delivery create(UUID orderId) {
+    public static Delivery create(UserOrder order) {
         return Delivery.builder()
-                .id(UUID.randomUUID())
-                .orderId(orderId)
+                .order(order)
                 .status(DeliveryStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public void accept(Long riderId) {
+    public void accept(Rider rider) {
         if (this.status != DeliveryStatus.PENDING) {
             throw new InvalidDeliveryStatusException("대기 중인 배달만 수락할 수 있습니다.");
         }
-        this.riderId = riderId;
+        this.rider = rider;
         this.status = DeliveryStatus.ASSIGNED;
         this.timeline = new DeliveryTimeline(LocalDateTime.now(), null, null);
     }

@@ -5,11 +5,9 @@ import com.flab.woowahaneats.domain.payment.domain.PaymentProvider;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.UUID;
-
 public record CreateOrderRequest(
         @NotNull
-        UUID cartId,
+        Long cartId,
 
         @Valid
         @NotNull

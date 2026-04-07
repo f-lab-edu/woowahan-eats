@@ -1,10 +1,7 @@
 package com.flab.woowahaneats.domain.restaurant.repository;
 
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-
-public interface RestaurantOperationInfoRepository {
-    void save(RestaurantOperationInfo restaurantOperationInfo);
-    Optional<RestaurantOperationInfo> findById(Long id);
+public interface RestaurantOperationInfoRepository extends JpaRepository<RestaurantOperationInfo, Long> {
 }

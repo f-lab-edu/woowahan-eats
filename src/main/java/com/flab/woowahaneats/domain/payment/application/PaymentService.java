@@ -1,7 +1,7 @@
 package com.flab.woowahaneats.domain.payment.application;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.member.domain.User;
+import com.flab.woowahaneats.domain.user.domain.User;
 import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
 import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
 import com.flab.woowahaneats.domain.payment.domain.Payment;
@@ -20,8 +20,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
@@ -33,11 +31,11 @@ public class PaymentService {
     private final PaymentFailureRecorder failureRecorder;
 
     @Transactional
-    public Payment preparePayment(UUID orderId, int amount, PaymentProvider provider) {
+    public Payment preparePayment(UserOrder order, int amount, PaymentProvider provider) {
         PaymentGateway gateway = gatewayRegistry.getGateway(provider);
-        String gatewayOrderId = gateway.generateGatewayOrderId(orderId);
+        String gatewayOrderId = gateway.generateGatewayOrderId(order.getId());
 
-        Payment payment = Payment.prepare(orderId, amount, provider, gatewayOrderId);
+        Payment payment = Payment.prepare(order, amount, provider, gatewayOrderId);
         paymentRepository.save(payment);
         return payment;
     }
@@ -47,10 +45,9 @@ public class PaymentService {
         User user = AuthContextHolder.getContext().getUser();
         Payment payment = paymentRepository.findByGatewayOrderId(gatewayOrderId)
                 .orElseThrow(PaymentNotFoundException::new);
-        UserOrder order = userOrderRepository.findById(payment.getOrderId())
-                .orElseThrow(PaymentOrderNotFoundException::new);
+        UserOrder order = payment.getOrder();
 
-        if (!order.getUserId().equals(user.getId())) {
+        if (!order.getUser().getId().equals(user.getId())) {
             throw new PaymentNotBelongToUserException();
         }
 
@@ -62,8 +59,8 @@ public class PaymentService {
 
             eventPublisher.publishEvent(new PaymentCompletedEvent(
                     order.getId(),
-                    order.getUserId(),
-                    order.getRestaurantId(),
+                    order.getUser().getId(),
+                    order.getRestaurant().getId(),
                     order.getOrderMenus(),
                     order.getOrderRequest(),
                     order.getOrderPrice(),
@@ -86,7 +83,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public void refundPayment(UUID orderId, String reason) {
+    public void refundPayment(Long orderId, String reason) {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(PaymentNotFoundException::new);
 

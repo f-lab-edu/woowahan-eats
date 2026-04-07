@@ -9,10 +9,9 @@ import com.flab.woowahaneats.domain.order.common.OrderRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 public record OrderResponse(
-        UUID orderId,
+        Long orderId,
         Long restaurantId,
         UserOrderStatus status,
         List<OrderMenu> orderMenus,
@@ -24,7 +23,7 @@ public record OrderResponse(
     public static OrderResponse from(UserOrder order) {
         return new OrderResponse(
                 order.getId(),
-                order.getRestaurantId(),
+                order.getRestaurant().getId(),
                 order.getStatus(),
                 order.getOrderMenus(),
                 order.getOrderPrice(),

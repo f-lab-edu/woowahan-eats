@@ -1,5 +1,8 @@
 package com.flab.woowahaneats.domain.order.common;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public record OrderPrice(
         int menuTotalPrice,
         int deliveryFee,

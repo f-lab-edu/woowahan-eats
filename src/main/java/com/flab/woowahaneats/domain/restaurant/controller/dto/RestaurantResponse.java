@@ -20,7 +20,7 @@ public record RestaurantResponse (
     public static RestaurantResponse of(Restaurant restaurant, RestaurantOperationInfo restaurantOperationInfo) {
         return new RestaurantResponse(
                 restaurant.getId(),
-                restaurant.getOwnerId(),
+                restaurant.getOwner().getId(),
                 restaurant.getName(),
                 restaurant.getDescription(),
                 restaurant.getAddress(),

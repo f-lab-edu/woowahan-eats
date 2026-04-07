@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class UserOrderController {
     }
 
     @PostMapping("/{orderId}")
-    public ResponseEntity<Void> cancelOrder(@PathVariable UUID orderId) {
+    public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId) {
         orderService.cancelOrder(orderId);
         return ResponseEntity.noContent().build();
     }
