@@ -12,12 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class CartController {
     private final CartService cartService;
 
-    @PostMapping("/create/{restaurantId}")
+    @PostMapping("/restaurants/{restaurantId}/carts")
     public ResponseEntity<Void> createCart(@PathVariable Long restaurantId,
                                            @Valid @RequestBody CreateCartRequest request) {
         cartService.createCart(
@@ -29,12 +29,12 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{cartId}")
+    @GetMapping("/carts/{cartId}")
     public ResponseEntity<CartResponse> getCart(@PathVariable Long cartId) {
         return ResponseEntity.ok().body(CartResponse.from(cartService.getCart(cartId)));
     }
 
-    @PatchMapping("/{cartId}/menu/{menuId}")
+    @PatchMapping("/carts/{cartId}/menus/{menuId}")
     public ResponseEntity<Void> updateMenuQuantity(@PathVariable Long cartId,
                                                    @PathVariable Long menuId,
                                                    @Valid @RequestBody UpdateCartMenuQuantityRequest request) {
@@ -42,20 +42,20 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{cartId}/{menuId}")
+    @DeleteMapping("/carts/{cartId}/menus/{menuId}")
     public ResponseEntity<Void> deleteCartMenu(@PathVariable Long cartId,
                                                @PathVariable Long menuId) {
         cartService.deleteCartMenu(cartId, menuId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{cartId}")
+    @DeleteMapping("/carts/{cartId}")
     public ResponseEntity<Void> deleteCart(@PathVariable Long cartId) {
         cartService.deleteCart(cartId);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{cartId}")
+    @PostMapping("/carts/{cartId}/menus")
     public ResponseEntity<Void> addCartMenu(@PathVariable Long cartId,
                                             @Valid @RequestBody CartMenuRequest request) {
         cartService.addCartMenu(cartId, new CartMenu(request.menuId(), request.quantity()));
