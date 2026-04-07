@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/restaurant/{restaurantId}/menu")
+@RequestMapping("/owner/restaurants/{restaurantId}/menus")
 public class MenuController {
 
     private final MenuService menuService;
 
-    @PostMapping("/register")
+    @PostMapping
     public ResponseEntity<Void> registerMenu (
             @PathVariable Long restaurantId,
             @Valid @RequestBody MenuRequest menuRequest) {
@@ -26,7 +26,7 @@ public class MenuController {
 
     }
 
-    @PatchMapping("/{menuId}/update")
+    @PatchMapping("/{menuId}")
     public ResponseEntity<Void> updateMenu (
             @PathVariable Long restaurantId,
             @PathVariable Long menuId,
@@ -36,7 +36,7 @@ public class MenuController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{menuId}/delete")
+    @DeleteMapping("/{menuId}")
     public ResponseEntity<Void> deleteMenu(
             @PathVariable Long restaurantId,
             @PathVariable Long menuId) {
