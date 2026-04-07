@@ -7,11 +7,7 @@ import java.util.List;
 
 public interface RestaurantService {
 
-    void registerRestaurant(RestaurantRequest restaurantRequest);
-
     RestaurantResponse getRestaurant(Long restaurantId);
-
-    void openRestaurant(Long restaurantId);
 
     List<RestaurantResponse> getAllRestaurants();
 
