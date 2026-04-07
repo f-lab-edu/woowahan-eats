@@ -34,6 +34,9 @@ public class CartServiceImpl implements CartService {
         User user = AuthContextHolder.getContext().getUser();
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
+
+        validateMenus(menus, restaurantId);
+
         Cart cart = Cart.create(user, restaurant, menus);
         cartRepository.save(cart);
     }
@@ -102,5 +105,20 @@ public class CartServiceImpl implements CartService {
         if (!menu.getRestaurant().getId().equals(restaurantId)) {
             throw new RestaurantMismatchException();
         }
+    }
+
+    private void validateMenus(List<CartMenu> menus, Long restaurantId) {
+        List<Long> menuIds = menus.stream()
+                .map(CartMenu::menuId)
+                .distinct()
+                .toList();
+
+        List<Menu> foundMenus = menuRepository.findAllByIdWithRestaurant(menuIds);
+
+        if (foundMenus.size() != menuIds.size()) {
+            throw new MenuNotFoundException();
+        }
+
+        foundMenus.forEach(menu -> validateMenuBelongsToRestaurant(menu, restaurantId));
     }
 }
