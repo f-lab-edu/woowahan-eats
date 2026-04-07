@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.restaurant.controller.dto;
+package com.flab.woowahaneats.domain.restaurant.owner.controller.dto;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.common.vo.Location;
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record RestaurantRequest(
+public record RegisterRestaurantRequest(
         @NotBlank
         String name,
 
@@ -27,5 +27,5 @@ public record RestaurantRequest(
 
         @NotNull
         int deliveryFee
- ) {
+) {
 }

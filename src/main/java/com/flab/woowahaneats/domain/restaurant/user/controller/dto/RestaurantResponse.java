@@ -1,11 +1,11 @@
-package com.flab.woowahaneats.domain.restaurant.controller.dto;
+package com.flab.woowahaneats.domain.restaurant.user.controller.dto;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.common.vo.Location;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 
-public record RestaurantResponse (
+public record RestaurantResponse(
         Long id,
         Long ownerId,
         String name,
@@ -16,7 +16,7 @@ public record RestaurantResponse (
         int minOrderAmt,
         int deliveryFee,
         boolean open
-){
+) {
     public static RestaurantResponse of(Restaurant restaurant, RestaurantOperationInfo restaurantOperationInfo) {
         return new RestaurantResponse(
                 restaurant.getId(),
@@ -30,6 +30,5 @@ public record RestaurantResponse (
                 restaurantOperationInfo.getDeliveryFee(),
                 restaurantOperationInfo.isOpen()
         );
-
     }
 }
