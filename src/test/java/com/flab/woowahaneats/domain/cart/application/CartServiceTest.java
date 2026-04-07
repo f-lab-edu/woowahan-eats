@@ -7,6 +7,8 @@ import com.flab.woowahaneats.domain.cart.exception.InvalidQuantityException;
 import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
 import com.flab.woowahaneats.domain.cart.repository.CartRepository;
+import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
 import com.flab.woowahaneats.domain.user.domain.User;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -30,20 +32,34 @@ import static org.mockito.Mockito.*;
 @DisplayName("CartService 테스트")
 class CartServiceTest {
 
+    private static final Long USER_ID = 1L;
+    private static final Long RESTAURANT_ID = 100L;
+
     @Mock
     private CartRepository cartRepository;
 
     @Mock
     private MenuRepository menuRepository;
 
-    private CartService cartService;
+    @Mock
+    private RestaurantRepository restaurantRepository;
+
+    private CartServiceImpl cartService;
+    private User mockUser;
+    private Restaurant mockRestaurant;
 
     @BeforeEach
     void setUp() {
-        cartService = new CartService(cartRepository, menuRepository);
-        User mockUser = User.builder()
-                .id(1L)
+        cartService = new CartServiceImpl(cartRepository, menuRepository, restaurantRepository);
+        mockUser = User.builder()
+                .id(USER_ID)
                 .name("테스트 사용자")
+                .phoneNumber("01012345678")
+                .build();
+        mockRestaurant = Restaurant.builder()
+                .id(RESTAURANT_ID)
+                .name("테스트 식당")
+                .description("설명")
                 .build();
         AuthContext authContext = new AuthContext(mockUser, "USER");
         AuthContextHolder.setContext(authContext);
@@ -67,6 +83,7 @@ class CartServiceTest {
                     new CartMenu(1L, 2),
                     new CartMenu(2L, 3)
             );
+            when(restaurantRepository.findById(restaurantId)).thenReturn(Optional.of(mockRestaurant));
 
             // When
             cartService.createCart(restaurantId, menus);
@@ -77,9 +94,8 @@ class CartServiceTest {
 
             Cart savedCart = cartCaptor.getValue();
             assertThat(savedCart).isNotNull();
-            assertThat(savedCart.getId()).isNotNull();
-            assertThat(savedCart.getUserId()).isEqualTo(1L);
-            assertThat(savedCart.getRestaurantId()).isEqualTo(restaurantId);
+            assertThat(savedCart.getUser().getId()).isEqualTo(USER_ID);
+            assertThat(savedCart.getRestaurant().getId()).isEqualTo(restaurantId);
             assertThat(savedCart.getMenus())
                     .hasSize(2)
                     .extracting(CartMenu::menuId)
@@ -94,6 +110,7 @@ class CartServiceTest {
             List<CartMenu> menus = List.of(
                     new CartMenu(1L, 0)
             );
+            when(restaurantRepository.findById(restaurantId)).thenReturn(Optional.of(mockRestaurant));
 
             // When & Then
             assertThatThrownBy(() -> cartService.createCart(restaurantId, menus))
@@ -111,6 +128,7 @@ class CartServiceTest {
             List<CartMenu> menus = List.of(
                     new CartMenu(1L, 100)
             );
+            when(restaurantRepository.findById(restaurantId)).thenReturn(Optional.of(mockRestaurant));
 
             // When & Then
             assertThatThrownBy(() -> cartService.createCart(restaurantId, menus))
@@ -132,14 +150,14 @@ class CartServiceTest {
 
             // Given
             Long cartId = 1L;
-            Long userId = 1L;
+            Long userId = USER_ID;
             Long restaurantId = 100L;
             List<CartMenu> menus = List.of(new CartMenu(1L, 2));
 
             Cart mockCart = Cart.builder()
                     .id(cartId)
-                    .userId(userId)
-                    .restaurantId(restaurantId)
+                    .user(mockUser)
+                    .restaurant(mockRestaurant)
                     .menus(menus)
                     .build();
 
@@ -151,8 +169,8 @@ class CartServiceTest {
             // Then
             assertThat(result).isNotNull();
             assertThat(result.getId()).isEqualTo(cartId);
-            assertThat(result.getUserId()).isEqualTo(userId);
-            assertThat(result.getRestaurantId()).isEqualTo(restaurantId);
+            assertThat(result.getUser().getId()).isEqualTo(userId);
+            assertThat(result.getRestaurant().getId()).isEqualTo(restaurantId);
             assertThat(result.getMenus()).hasSize(1);
 
             verify(cartRepository).findById(cartId);
@@ -189,8 +207,8 @@ class CartServiceTest {
 
             Cart mockCart = Cart.builder()
                     .id(cartId)
-                    .userId(1L)
-                    .restaurantId(100L)
+                    .user(mockUser)
+                    .restaurant(mockRestaurant)
                     .menus(List.of(new CartMenu(menuId, 2)))
                     .build();
 
@@ -224,8 +242,8 @@ class CartServiceTest {
 
             Cart mockCart = Cart.builder()
                     .id(cartId)
-                    .userId(1L)
-                    .restaurantId(100L)
+                    .user(mockUser)
+                    .restaurant(mockRestaurant)
                     .menus(List.of(
                             new CartMenu(1L, 2),
                             new CartMenu(2L, 3)
@@ -255,8 +273,8 @@ class CartServiceTest {
             Long cartId = 1L;
             Cart mockCart = Cart.builder()
                     .id(cartId)
-                    .userId(1L)
-                    .restaurantId(100L)
+                    .user(mockUser)
+                    .restaurant(mockRestaurant)
                     .menus(List.of(new CartMenu(1L, 2)))
                     .build();
 
