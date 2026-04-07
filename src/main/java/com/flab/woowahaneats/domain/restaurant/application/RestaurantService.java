@@ -16,8 +16,4 @@ public interface RestaurantService {
     List<RestaurantResponse> getAllRestaurants();
 
     RestaurantResponse searchRestaurant(String name);
-
-    void approveRestaurant(Long restaurantId);
-
-    void rejectRestaurant(Long restaurantId);
 }
