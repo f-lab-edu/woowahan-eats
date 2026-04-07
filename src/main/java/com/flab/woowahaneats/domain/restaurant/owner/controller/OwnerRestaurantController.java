@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.restaurant.owner.controller;
 
-import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
+import com.flab.woowahaneats.domain.restaurant.owner.controller.dto.RegisterRestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.owner.service.OwnerRestaurantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,8 @@ public class OwnerRestaurantController {
     private final OwnerRestaurantService ownerRestaurantService;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> registerRestaurant(@Valid @RequestBody RestaurantRequest restaurantRequest) {
-        ownerRestaurantService.registerRestaurant(restaurantRequest);
+    public ResponseEntity<Void> registerRestaurant(@Valid @RequestBody RegisterRestaurantRequest registerRestaurantRequest) {
+        ownerRestaurantService.registerRestaurant(registerRestaurantRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

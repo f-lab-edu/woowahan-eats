@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.restaurant.user.controller;
 
-import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
+import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.user.service.UserRestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -3,7 +3,7 @@ package com.flab.woowahaneats.domain.restaurant.owner.service;
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.notification.application.NotificationService;
 import com.flab.woowahaneats.domain.owner.domain.Owner;
-import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
+import com.flab.woowahaneats.domain.restaurant.owner.controller.dto.RegisterRestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
@@ -25,7 +25,7 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
 
     @Override
     @Transactional
-    public void registerRestaurant(RestaurantRequest restaurantRequest) {
+    public void registerRestaurant(RegisterRestaurantRequest restaurantRequest) {
         Owner owner = AuthContextHolder.getContext().getOwner();
 
         Restaurant restaurant = restaurantRepository.save(Restaurant.create(

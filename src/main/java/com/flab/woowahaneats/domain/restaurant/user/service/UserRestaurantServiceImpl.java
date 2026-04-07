@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.restaurant.user.service;
 
-import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantResponse;
+import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;

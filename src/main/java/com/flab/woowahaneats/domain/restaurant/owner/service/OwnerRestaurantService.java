@@ -1,10 +1,10 @@
 package com.flab.woowahaneats.domain.restaurant.owner.service;
 
-import com.flab.woowahaneats.domain.restaurant.controller.dto.RestaurantRequest;
+import com.flab.woowahaneats.domain.restaurant.owner.controller.dto.RegisterRestaurantRequest;
 
 public interface OwnerRestaurantService {
 
-    void registerRestaurant(RestaurantRequest restaurantRequest);
+    void registerRestaurant(RegisterRestaurantRequest restaurantRequest);
 
     void openRestaurant(Long restaurantId);
 }
