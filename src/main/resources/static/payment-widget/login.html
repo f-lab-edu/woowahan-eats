@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>결제 테스트 로그인</title>
+  <link rel="stylesheet" href="/payment-widget/style.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <h1>결제 테스트 로그인</h1>
+      <p class="muted">브라우저 세션을 만든 뒤 결제위젯 페이지로 이동합니다.</p>
+
+      <div class="field-grid">
+        <div class="field full">
+          <label for="email">이메일</label>
+          <input id="email" type="email" placeholder="user@example.com" />
+        </div>
+        <div class="field full">
+          <label for="password">비밀번호</label>
+          <input id="password" type="password" placeholder="비밀번호" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="login-button" class="button">로그인</button>
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+  </main>
+
+  <script>
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginButton = document.getElementById("login-button");
+    const statusElement = document.getElementById("status");
+    const query = new URLSearchParams(window.location.search);
+
+    emailInput.value = query.get("email") ?? "";
+
+    loginButton.addEventListener("click", login);
+    passwordInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        login();
+      }
+    });
+
+    async function login() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        setStatus("이메일과 비밀번호를 입력하세요.", true);
+        return;
+      }
+
+      loginButton.disabled = true;
+      setStatus("로그인 중입니다.");
+
+      try {
+        const response = await fetch("/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "same-origin",
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
+
+        if (!response.ok) {
+          const raw = await response.text();
+          setStatus(`로그인 실패 (HTTP ${response.status}) ${raw}`, true);
+          return;
+        }
+
+        const redirectUrl = query.get("redirect") || "/payment-widget/checkout.html";
+        window.location.href = redirectUrl;
+      } catch (error) {
+        setStatus(error.message || "로그인 요청 중 오류가 발생했습니다.", true);
+      } finally {
+        loginButton.disabled = false;
+      }
+    }
+
+    function setStatus(message, isError = false) {
+      statusElement.textContent = message;
+      statusElement.className = isError ? "status error" : "status";
+    }
+  </script>
+</body>
+</html>

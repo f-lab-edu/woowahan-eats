@@ -20,7 +20,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/user/sign-up",
                         "/owner/sign-up",
                         "/rider/sign-up",
-                        "/admin/sign-up"
+                        "/admin/sign-up",
+                        "/payment-widget/**"
                 );
 
     }

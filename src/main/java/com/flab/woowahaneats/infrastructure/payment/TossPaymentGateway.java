@@ -20,7 +20,7 @@ public class TossPaymentGateway implements PaymentGateway {
 
     @Override
     public String generateGatewayOrderId(Long orderId) {
-        return String.valueOf(orderId);
+        return "order_" + orderId + "_" + System.currentTimeMillis();
     }
 
     @Override
