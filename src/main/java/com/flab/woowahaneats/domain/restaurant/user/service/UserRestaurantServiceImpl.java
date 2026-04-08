@@ -2,6 +2,7 @@ package com.flab.woowahaneats.domain.restaurant.user.service;
 
 import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import com.flab.woowahaneats.domain.restaurant.domain.RestaurantApprovalStatus;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantOperationInfoNotFoundException;
@@ -24,7 +25,7 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
     @Override
     @Transactional(readOnly = true)
     public RestaurantResponse getRestaurant(Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        Restaurant restaurant = restaurantRepository.findByIdAndApprovalStatus(restaurantId, RestaurantApprovalStatus.APPROVED)
                 .orElseThrow(RestaurantNotFoundException::new);
         RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId)
                 .orElseThrow(RestaurantOperationInfoNotFoundException::new);
@@ -35,7 +36,7 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
     @Override
     @Transactional(readOnly = true)
     public List<RestaurantResponse> getAllRestaurants() {
-        List<Restaurant> restaurants = restaurantRepository.findAll();
+        List<Restaurant> restaurants = restaurantRepository.findAllByApprovalStatus(RestaurantApprovalStatus.APPROVED);
         List<RestaurantResponse> restaurantResponses = new ArrayList<>();
 
         for (Restaurant restaurant : restaurants) {
@@ -50,7 +51,7 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
     @Override
     @Transactional(readOnly = true)
     public RestaurantResponse searchRestaurant(String name) {
-        Restaurant restaurant = restaurantRepository.findFirstByNameContaining(name)
+        Restaurant restaurant = restaurantRepository.findFirstByNameContainingAndApprovalStatus(name, RestaurantApprovalStatus.APPROVED)
                 .orElseThrow(RestaurantNotFoundException::new);
 
         RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository

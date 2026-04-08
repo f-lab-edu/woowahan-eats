@@ -6,6 +6,8 @@ import com.flab.woowahaneats.domain.owner.domain.Owner;
 import com.flab.woowahaneats.domain.restaurant.owner.controller.dto.RegisterRestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
+import com.flab.woowahaneats.domain.restaurant.domain.RestaurantApprovalStatus;
+import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotApprovedException;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotOwnedException;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantOperationInfoNotFoundException;
@@ -62,6 +64,10 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
 
         if (!restaurant.getOwner().getId().equals(owner.getId())) {
             throw new RestaurantNotOwnedException();
+        }
+
+        if (restaurant.getApprovalStatus() != RestaurantApprovalStatus.APPROVED) {
+            throw new RestaurantNotApprovedException();
         }
 
         RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId)
