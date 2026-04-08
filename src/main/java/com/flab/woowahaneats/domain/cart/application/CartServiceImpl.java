@@ -73,7 +73,8 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         validateCartOwnership(cart);
-        cartRepository.deleteById(cartId);
+        Cart deletedCart = cart.softDelete();
+        cartRepository.save(deletedCart);
     }
 
     @Override
@@ -89,6 +90,15 @@ public class CartServiceImpl implements CartService {
 
         Cart updatedCart = cart.addMenu(cartMenu);
         cartRepository.save(updatedCart);
+    }
+
+    @Override
+    @Transactional
+    public void softDeleteCart(Long cartId) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(CartNotFoundException::new);
+        Cart deletedCart = cart.softDelete();
+        cartRepository.save(deletedCart);
     }
 
     private void validateCartOwnership(Cart cart) {

@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +48,9 @@ public class Cart {
     @ElementCollection
     @CollectionTable(name = "cart_menus", joinColumns = @JoinColumn(name = "cart_id"))
     private List<CartMenu> menus;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public static Cart create(User user, Restaurant restaurant, List<CartMenu> menus) {
         menus.forEach(menu -> validateQuantity(menu.quantity()));
@@ -111,5 +115,11 @@ public class Cart {
         if (quantity < 1 || quantity > 99) {
             throw new InvalidQuantityException();
         }
+    }
+
+    public Cart softDelete() {
+        return this.toBuilder()
+                .deletedAt(LocalDateTime.now())
+                .build();
     }
 }

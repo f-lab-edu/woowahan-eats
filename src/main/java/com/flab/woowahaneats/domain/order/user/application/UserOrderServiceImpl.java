@@ -19,6 +19,7 @@ import com.flab.woowahaneats.domain.order.user.controller.dto.CreateOrderRequest
 import com.flab.woowahaneats.domain.order.user.controller.dto.CreateOrderResponse;
 import com.flab.woowahaneats.domain.order.user.controller.dto.OrderResponse;
 import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
+import com.flab.woowahaneats.domain.order.user.event.OrderCreatedEvent;
 import com.flab.woowahaneats.domain.order.user.event.UserOrderCancelledEvent;
 import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
 import com.flab.woowahaneats.domain.payment.application.PaymentService;
@@ -77,6 +78,8 @@ public class UserOrderServiceImpl implements UserOrderService {
         );
 
         orderRepository.save(order);
+
+        eventPublisher.publishEvent(new OrderCreatedEvent(order.getId(), cart.getId()));
 
         Payment payment = paymentService.preparePayment(
                 order,

@@ -18,4 +18,6 @@ public interface CartService {
     void deleteCart(Long cartId);
 
     void addCartMenu(Long cartId, CartMenu cartMenu);
+
+    void softDeleteCart(Long cartId);
 }
