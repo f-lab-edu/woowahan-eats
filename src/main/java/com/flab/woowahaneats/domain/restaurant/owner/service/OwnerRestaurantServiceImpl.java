@@ -1,7 +1,7 @@
 package com.flab.woowahaneats.domain.restaurant.owner.service;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.notification.application.NotificationService;
+import com.flab.woowahaneats.domain.notification.admin.service.AdminNotificationService;
 import com.flab.woowahaneats.domain.owner.domain.Owner;
 import com.flab.woowahaneats.domain.restaurant.owner.controller.dto.RegisterRestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
@@ -23,7 +23,7 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
-    private final NotificationService notificationService;
+    private final AdminNotificationService adminNotificationService;
 
     @Override
     @Transactional
@@ -46,8 +46,7 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
 
         restaurantOperationInfoRepository.save(restaurantOperationInfo);
 
-        notificationService.sendToRole(
-                "ADMIN",
+        adminNotificationService.notify(
                 String.format("새로운 음식점 '%s'의 승인 요청이 있습니다.", restaurant.getName()),
                 restaurant,
                 owner
