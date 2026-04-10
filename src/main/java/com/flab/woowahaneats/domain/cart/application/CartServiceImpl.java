@@ -56,8 +56,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         validateCartOwnership(cart);
-        Cart updatedCart = cart.updateMenuQuantity(menuId, quantity);
-        cartRepository.save(updatedCart);
+        cart.updateMenuQuantity(menuId, quantity);
     }
 
     @Override
@@ -66,8 +65,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         validateCartOwnership(cart);
-        Cart updatedCart = cart.removeMenu(menuId);
-        cartRepository.save(updatedCart);
+        cart.removeMenu(menuId);
     }
 
     @Override
@@ -91,8 +89,7 @@ public class CartServiceImpl implements CartService {
         validateMenuBelongsToRestaurant(menu, cart.getRestaurant().getId());
         menu.validateAvailable();
 
-        Cart updatedCart = cart.addMenu(cartMenu);
-        cartRepository.save(updatedCart);
+        cart.addMenu(cartMenu);
     }
 
     private void validateCartOwnership(Cart cart) {
