@@ -284,7 +284,7 @@ class CartServiceTest {
             cartService.deleteCart(cartId);
 
             // Then
-            verify(cartRepository).deleteById(cartId);
+            verify(cartRepository).delete(mockCart);
         }
     }
 }
