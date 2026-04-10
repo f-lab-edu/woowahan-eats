@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.woowahaneats.infrastructure.payment.dto.TossPaymentResponse;
 import com.flab.woowahaneats.domain.payment.exception.PaymentException;
 import com.flab.woowahaneats.global.config.TossPaymentsProperties;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,7 @@ import java.util.Base64;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class TossPaymentClient {
 
     private final TossPaymentsProperties tossPaymentsProperties;
@@ -27,6 +30,16 @@ public class TossPaymentClient {
         this.restClient = restClientBuilder
                 .baseUrl(tossPaymentsProperties.baseUrl())
                 .build();
+    }
+
+    @PostConstruct
+    void logLoadedConfiguration() {
+        log.info(
+                "TossPayments config loaded. baseUrl={}, clientKeyPrefix={}, secretKeyPrefix={}",
+                tossPaymentsProperties.baseUrl(),
+                maskKey(tossPaymentsProperties.clientKey()),
+                maskKey(tossPaymentsProperties.secretKey())
+        );
     }
 
     public TossPaymentResponse confirmPayment(String paymentKey, String orderId, int amount) {
@@ -87,5 +100,14 @@ public class TossPaymentClient {
         } catch (Exception e) {
             return "결제 처리 중 오류가 발생했습니다.";
         }
+    }
+
+    private String maskKey(String key) {
+        if (key == null || key.isBlank()) {
+            return "empty";
+        }
+
+        int visibleLength = Math.min(6, key.length());
+        return key.substring(0, visibleLength) + "****";
     }
 }

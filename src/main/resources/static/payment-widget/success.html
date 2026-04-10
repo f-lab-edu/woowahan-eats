@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>결제 성공</title>
+  <link rel="stylesheet" href="/payment-widget/style.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <h1>결제 승인 결과</h1>
+      <p class="muted">리다이렉트로 받은 <code>paymentKey</code>를 서버 승인 API에 전달합니다.</p>
+      <div id="status" class="status">승인 요청을 처리하는 중입니다.</div>
+      <div class="summary" id="summary"></div>
+    </section>
+
+    <section class="card">
+      <h2>응답</h2>
+      <pre id="response"></pre>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const statusElement = document.getElementById("status");
+    const summaryElement = document.getElementById("summary");
+    const responseElement = document.getElementById("response");
+
+    const requestData = {
+      paymentKey: params.get("paymentKey"),
+      orderId: params.get("orderId"),
+      amount: Number(params.get("amount")),
+    };
+
+    summaryElement.innerHTML = `
+      <div class="summary-row"><strong>paymentKey</strong><span>${escapeHtml(requestData.paymentKey ?? "")}</span></div>
+      <div class="summary-row"><strong>orderId</strong><span>${escapeHtml(requestData.orderId ?? "")}</span></div>
+      <div class="summary-row"><strong>amount</strong><span>${Number.isFinite(requestData.amount) ? requestData.amount.toLocaleString("ko-KR") + "원" : ""}</span></div>
+    `;
+
+    confirmPayment();
+
+    async function confirmPayment() {
+      if (!requestData.paymentKey || !requestData.orderId || !Number.isFinite(requestData.amount)) {
+        setResult("필수 쿼리 파라미터가 없습니다.", true);
+        return;
+      }
+
+      try {
+        const response = await fetch("/user/payments/confirm", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "same-origin",
+          body: JSON.stringify(requestData),
+        });
+
+        const raw = await response.text();
+        const parsed = tryParseJson(raw);
+
+        if (!response.ok) {
+          const message = parsed?.message || `결제 승인에 실패했습니다. (HTTP ${response.status})`;
+          setResult(message, true, {
+            status: response.status,
+            statusText: response.statusText,
+            body: parsed ?? raw,
+          });
+          return;
+        }
+
+        setResult("결제 승인 테스트가 완료되었습니다.", false, parsed ?? { success: true });
+      } catch (error) {
+        setResult(error.message || "결제 승인 요청 중 오류가 발생했습니다.", true, {
+          name: error.name,
+          message: error.message,
+        });
+      }
+    }
+
+    function setResult(message, isError, payload) {
+      statusElement.textContent = message;
+      statusElement.className = isError ? "status error" : "status";
+      responseElement.textContent = JSON.stringify(payload ?? { message }, null, 2);
+    }
+
+    function tryParseJson(value) {
+      if (!value) {
+        return null;
+      }
+
+      try {
+        return JSON.parse(value);
+      } catch {
+        return null;
+      }
+    }
+
+    function escapeHtml(value) {
+      return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>결제 실패</title>
+  <link rel="stylesheet" href="/payment-widget/style.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <h1>결제에 실패했습니다</h1>
+      <p class="muted">토스페이먼츠가 전달한 실패 정보를 그대로 표시합니다.</p>
+      <div class="summary" id="summary"></div>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const summaryElement = document.getElementById("summary");
+
+    summaryElement.innerHTML = `
+      <div class="summary-row"><strong>에러 코드</strong><span>${escapeHtml(params.get("code") ?? "")}</span></div>
+      <div class="summary-row"><strong>메시지</strong><span>${escapeHtml(params.get("message") ?? "")}</span></div>
+      <div class="summary-row"><strong>orderId</strong><span>${escapeHtml(params.get("orderId") ?? "")}</span></div>
+    `;
+
+    function escapeHtml(value) {
+      return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>토스 결제위젯 테스트</title>
+  <link rel="stylesheet" href="/payment-widget/style.css" />
+  <script src="https://js.tosspayments.com/v2/standard"></script>
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <h1>결제위젯 테스트 페이지</h1>
+      <p class="muted">먼저 로그인과 주문 생성까지 끝낸 뒤, 생성된 <code>orderId</code>, <code>amount</code>, <code>orderName</code>으로 위젯을 렌더링하세요.</p>
+      <div class="notice">
+        예시: <code>/payment-widget/checkout.html?orderId=order_1_171234&amount=18000&orderName=김치찌개%20외%201건</code>
+      </div>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="userId">사용자 ID</label>
+          <input id="userId" placeholder="로그인 사용자 ID" />
+        </div>
+        <div class="field">
+          <label for="orderId">주문 ID</label>
+          <input id="orderId" placeholder="createOrder 응답의 orderId" />
+        </div>
+        <div class="field">
+          <label for="amount">결제 금액</label>
+          <input id="amount" type="number" min="1" placeholder="18000" />
+        </div>
+        <div class="field full">
+          <label for="orderName">주문명</label>
+          <input id="orderName" placeholder="김치찌개 외 1건" />
+        </div>
+        <div class="field">
+          <label for="customerName">구매자 이름</label>
+          <input id="customerName" placeholder="홍길동" value="테스트 사용자" />
+        </div>
+        <div class="field">
+          <label for="customerEmail">구매자 이메일</label>
+          <input id="customerEmail" placeholder="user@example.com" value="test@example.com" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="render-button" class="button">결제위젯 렌더링</button>
+        <button id="pay-button" class="button secondary" disabled>결제 요청</button>
+      </div>
+      <div id="status" class="status"></div>
+      <div class="summary" id="summary" hidden></div>
+    </section>
+
+    <section class="card">
+      <h2>결제 수단</h2>
+      <div id="payment-method"></div>
+      <div id="agreement"></div>
+    </section>
+  </main>
+
+  <script>
+    const userIdInput = document.getElementById("userId");
+    const orderIdInput = document.getElementById("orderId");
+    const amountInput = document.getElementById("amount");
+    const orderNameInput = document.getElementById("orderName");
+    const customerNameInput = document.getElementById("customerName");
+    const customerEmailInput = document.getElementById("customerEmail");
+    const renderButton = document.getElementById("render-button");
+    const payButton = document.getElementById("pay-button");
+    const statusElement = document.getElementById("status");
+    const summaryElement = document.getElementById("summary");
+
+    const query = new URLSearchParams(window.location.search);
+    userIdInput.value = query.get("userId") ?? "";
+    orderIdInput.value = query.get("orderId") ?? "";
+    amountInput.value = query.get("amount") ?? "";
+    orderNameInput.value = query.get("orderName") ?? "";
+    customerNameInput.value = query.get("customerName") ?? customerNameInput.value;
+    customerEmailInput.value = query.get("customerEmail") ?? customerEmailInput.value;
+
+    let widgets;
+    let paymentRequest;
+
+    renderButton.addEventListener("click", async () => {
+      if (widgets) {
+        setStatus("위젯이 이미 렌더링되었습니다. 주문 정보를 바꾸려면 페이지를 새로고침하세요.", true);
+        return;
+      }
+
+      const payload = getPayload();
+      if (!payload) {
+        return;
+      }
+
+      renderButton.disabled = true;
+      payButton.disabled = true;
+      setStatus("결제위젯을 불러오는 중입니다.");
+
+      try {
+        const configResponse = await fetch("/payment-widget/config");
+        if (!configResponse.ok) {
+          throw new Error("결제위젯 설정을 불러오지 못했습니다.");
+        }
+
+        const { clientKey } = await configResponse.json();
+        const tossPayments = TossPayments(clientKey);
+        widgets = tossPayments.widgets({
+          customerKey: `user-${payload.userId}`,
+        });
+
+        await widgets.setAmount({
+          currency: "KRW",
+          value: payload.amount,
+        });
+
+        await widgets.renderPaymentMethods({
+          selector: "#payment-method",
+          variantKey: "DEFAULT",
+        });
+
+        await widgets.renderAgreement({
+          selector: "#agreement",
+          variantKey: "AGREEMENT",
+        });
+
+        paymentRequest = payload;
+        payButton.disabled = false;
+        renderButton.disabled = true;
+        renderSummary(payload);
+        setStatus("결제위젯이 준비되었습니다. 결제 요청을 진행하세요.");
+      } catch (error) {
+        setStatus(error.message || "결제위젯 렌더링에 실패했습니다.", true);
+        widgets = null;
+      } finally {
+        if (!widgets) {
+          renderButton.disabled = false;
+        }
+      }
+    });
+
+    payButton.addEventListener("click", async () => {
+      if (!widgets || !paymentRequest) {
+        setStatus("먼저 결제위젯을 렌더링하세요.", true);
+        return;
+      }
+
+      payButton.disabled = true;
+      setStatus("토스 결제창을 여는 중입니다.");
+
+      try {
+        await widgets.requestPayment({
+          orderId: paymentRequest.orderId,
+          orderName: paymentRequest.orderName,
+          successUrl: `${window.location.origin}/payment-widget/success.html`,
+          failUrl: `${window.location.origin}/payment-widget/fail.html`,
+          customerEmail: paymentRequest.customerEmail,
+          customerName: paymentRequest.customerName,
+        });
+      } catch (error) {
+        payButton.disabled = false;
+        setStatus(error.message || "결제 요청에 실패했습니다.", true);
+      }
+    });
+
+    function getPayload() {
+      const userId = userIdInput.value.trim();
+      const orderId = orderIdInput.value.trim();
+      const orderName = orderNameInput.value.trim();
+      const customerName = customerNameInput.value.trim();
+      const customerEmail = customerEmailInput.value.trim();
+      const amount = Number(amountInput.value);
+
+      if (!userId || !orderId || !orderName || !customerName || !customerEmail || !Number.isFinite(amount) || amount <= 0) {
+        setStatus("userId, orderId, amount, orderName, customerName, customerEmail을 모두 올바르게 입력하세요.", true);
+        return null;
+      }
+
+      return {
+        userId,
+        orderId,
+        amount,
+        orderName,
+        customerName,
+        customerEmail,
+      };
+    }
+
+    function renderSummary(payload) {
+      summaryElement.hidden = false;
+      summaryElement.innerHTML = `
+        <div class="summary-row"><strong>주문 ID</strong><span>${escapeHtml(payload.orderId)}</span></div>
+        <div class="summary-row"><strong>주문명</strong><span>${escapeHtml(payload.orderName)}</span></div>
+        <div class="summary-row"><strong>결제 금액</strong><span>${payload.amount.toLocaleString("ko-KR")}원</span></div>
+      `;
+    }
+
+    function setStatus(message, isError = false) {
+      statusElement.textContent = message;
+      statusElement.className = isError ? "status error" : "status";
+    }
+
+    function escapeHtml(value) {
+      return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+  </script>
+</body>
+</html>
