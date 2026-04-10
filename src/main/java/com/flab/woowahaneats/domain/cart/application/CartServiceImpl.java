@@ -89,6 +89,7 @@ public class CartServiceImpl implements CartService {
         Menu menu = menuRepository.findById(cartMenu.menuId())
                 .orElseThrow(MenuNotFoundException::new);
         validateMenuBelongsToRestaurant(menu, cart.getRestaurant().getId());
+        menu.validateAvailable();
 
         Cart updatedCart = cart.addMenu(cartMenu);
         cartRepository.save(updatedCart);
@@ -119,6 +120,9 @@ public class CartServiceImpl implements CartService {
             throw new MenuNotFoundException();
         }
 
-        foundMenus.forEach(menu -> validateMenuBelongsToRestaurant(menu, restaurantId));
+        foundMenus.forEach(menu -> {
+            validateMenuBelongsToRestaurant(menu, restaurantId);
+            menu.validateAvailable();
+        });
     }
 }
