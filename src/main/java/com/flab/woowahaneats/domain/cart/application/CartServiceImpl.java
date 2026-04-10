@@ -30,14 +30,14 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void createCart(Long restaurantId, List<CartMenu> menus) {
+    public void createCart(Long restaurantId, List<CartMenu> cartMenus) {
         User user = AuthContextHolder.getContext().getUser();
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
 
-        validateMenus(menus, restaurantId);
+        validateMenus(cartMenus, restaurantId);
 
-        Cart cart = Cart.create(user, restaurant, menus);
+        Cart cart = Cart.create(user, restaurant, cartMenus);
         cartRepository.save(cart);
     }
 
@@ -107,15 +107,15 @@ public class CartServiceImpl implements CartService {
         }
     }
 
-    private void validateMenus(List<CartMenu> menus, Long restaurantId) {
-        List<Long> menuIds = menus.stream()
+    private void validateMenus(List<CartMenu> cartMenus, Long restaurantId) {
+        List<Long> requestedMenuIds = cartMenus.stream()
                 .map(CartMenu::menuId)
                 .distinct()
                 .toList();
 
-        List<Menu> foundMenus = menuRepository.findAllByIdWithRestaurant(menuIds);
+        List<Menu> foundMenus = menuRepository.findAllByIdWithRestaurant(requestedMenuIds);
 
-        if (foundMenus.size() != menuIds.size()) {
+        if (foundMenus.size() != requestedMenuIds.size()) {
             throw new MenuNotFoundException();
         }
 

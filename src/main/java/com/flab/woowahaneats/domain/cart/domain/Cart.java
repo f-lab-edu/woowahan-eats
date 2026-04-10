@@ -48,12 +48,12 @@ public class Cart {
     @CollectionTable(name = "cart_menus", joinColumns = @JoinColumn(name = "cart_id"))
     private List<CartMenu> menus;
 
-    public static Cart create(User user, Restaurant restaurant, List<CartMenu> menus) {
-        menus.forEach(menu -> validateQuantity(menu.quantity()));
+    public static Cart create(User user, Restaurant restaurant, List<CartMenu> cartMenus) {
+        cartMenus.forEach(menu -> validateQuantity(menu.quantity()));
         return Cart.builder()
                 .user(user)
                 .restaurant(restaurant)
-                .menus(menus)
+                .menus(cartMenus)
                 .build();
     }
 
