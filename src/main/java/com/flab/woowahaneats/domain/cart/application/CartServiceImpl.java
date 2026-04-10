@@ -93,7 +93,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void softDeleteCart(Long cartId) {
+    public void deleteCartBySystem(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         cartRepository.delete(cart);

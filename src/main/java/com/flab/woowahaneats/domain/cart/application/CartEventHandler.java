@@ -14,6 +14,6 @@ public class CartEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleOrderCreated(OrderCreatedEvent event) {
-            cartService.softDeleteCart(event.cartId());
+            cartService.deleteCartBySystem(event.cartId());
     }
 }
