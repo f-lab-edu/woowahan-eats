@@ -107,7 +107,7 @@ public class TossPaymentClient {
             return "empty";
         }
 
-        int visibleLength = Math.min(12, key.length());
-        return key.substring(0, visibleLength) + "...";
+        int visibleLength = Math.min(6, key.length());
+        return key.substring(0, visibleLength) + "****";
     }
 }
