@@ -12,7 +12,7 @@ public class CartEventHandler {
 
     private final CartService cartService;
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handleOrderCreated(OrderCreatedEvent event) {
             cartService.deleteCartBySystem(event.cartId());
     }
