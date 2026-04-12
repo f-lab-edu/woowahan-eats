@@ -73,7 +73,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         validateCartOwnership(cart);
-        cartRepository.deleteById(cartId);
+        cartRepository.delete(cart);
     }
 
     @Override
@@ -89,6 +89,14 @@ public class CartServiceImpl implements CartService {
 
         Cart updatedCart = cart.addMenu(cartMenu);
         cartRepository.save(updatedCart);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCartBySystem(Long cartId) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(CartNotFoundException::new);
+        cartRepository.delete(cart);
     }
 
     private void validateCartOwnership(Cart cart) {
