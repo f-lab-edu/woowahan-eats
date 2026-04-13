@@ -36,7 +36,8 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
 
-        if (restaurant.getApprovalStatus() == RestaurantApprovalStatus.APPROVED) {
+        if (status == RestaurantApprovalStatus.APPROVED
+                && restaurant.getApprovalStatus() == RestaurantApprovalStatus.APPROVED) {
             throw new RestaurantAlreadyApprovedException();
         }
 
