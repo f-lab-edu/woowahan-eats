@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true)
+@Builder
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,63 +50,41 @@ public class Cart {
     @CollectionTable(name = "cart_menus", joinColumns = @JoinColumn(name = "cart_id"))
     private List<CartMenu> menus;
 
-    public static Cart create(User user, Restaurant restaurant, List<CartMenu> menus) {
-        menus.forEach(menu -> validateQuantity(menu.quantity()));
+    public static Cart create(User user, Restaurant restaurant, List<CartMenu> cartMenus) {
+        cartMenus.forEach(menu -> validateQuantity(menu.quantity()));
         return Cart.builder()
                 .user(user)
                 .restaurant(restaurant)
-                .menus(menus)
+                .menus(new ArrayList<>(cartMenus))
                 .build();
     }
 
-    public Cart updateMenuQuantity(Long menuId, int quantity) {
+    public void updateMenuQuantity(Long menuId, int quantity) {
         validateQuantity(quantity);
-        List<CartMenu> updatedMenus = this.menus.stream()
-                .map(menu -> menu.menuId().equals(menuId)
-                        ? new CartMenu(menuId, quantity)
-                        : menu)
-                .toList();
-
-        return this.toBuilder()
-                .menus(updatedMenus)
-                .build();
-    }
-
-    public Cart removeMenu(Long menuId) {
-        List<CartMenu> updatedMenus = this.menus.stream()
-                .filter(menu -> !menu.menuId().equals(menuId))
-                .toList();
-
-        return this.toBuilder()
-                .menus(updatedMenus)
-                .build();
-    }
-
-    public Cart addMenu(CartMenu newMenu) {
-        validateQuantity(newMenu.quantity());
-        boolean menuExists = this.menus.stream()
-                .anyMatch(menu -> menu.menuId().equals(newMenu.menuId()));
-
-        List<CartMenu> updatedMenus;
-        if (menuExists) {
-            updatedMenus = this.menus.stream()
-                    .map(menu -> {
-                        if (menu.menuId().equals(newMenu.menuId())) {
-                            int totalQuantity = menu.quantity() + newMenu.quantity();
-                            validateQuantity(totalQuantity);
-                            return new CartMenu(menu.menuId(), totalQuantity);
-                        }
-                        return menu;
-                    })
-                    .toList();
-        } else {
-            updatedMenus = new ArrayList<>(this.menus);
-            updatedMenus.add(newMenu);
+        for (int i = 0; i < this.menus.size(); i++) {
+            CartMenu menu = this.menus.get(i);
+            if (menu.menuId().equals(menuId)) {
+                this.menus.set(i, new CartMenu(menuId, quantity));
+            }
         }
+    }
 
-        return this.toBuilder()
-                .menus(updatedMenus)
-                .build();
+    public void removeMenu(Long menuId) {
+        this.menus.removeIf(menu -> menu.menuId().equals(menuId));
+    }
+
+    public void addMenu(CartMenu newMenu) {
+        validateQuantity(newMenu.quantity());
+        for (int i = 0; i < this.menus.size(); i++) {
+            CartMenu menu = this.menus.get(i);
+            if (menu.menuId().equals(newMenu.menuId())) {
+                int totalQuantity = menu.quantity() + newMenu.quantity();
+                validateQuantity(totalQuantity);
+                this.menus.set(i, new CartMenu(menu.menuId(), totalQuantity));
+                return;
+            }
+        }
+        this.menus.add(newMenu);
     }
 
     private static void validateQuantity(int quantity) {

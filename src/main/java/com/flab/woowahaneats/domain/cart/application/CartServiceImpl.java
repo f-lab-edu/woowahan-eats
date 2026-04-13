@@ -30,11 +30,14 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void createCart(Long restaurantId, List<CartMenu> menus) {
+    public void createCart(Long restaurantId, List<CartMenu> cartMenus) {
         User user = AuthContextHolder.getContext().getUser();
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
-        Cart cart = Cart.create(user, restaurant, menus);
+
+        validateMenus(cartMenus, restaurantId);
+
+        Cart cart = Cart.create(user, restaurant, cartMenus);
         cartRepository.save(cart);
     }
 
@@ -53,8 +56,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         validateCartOwnership(cart);
-        Cart updatedCart = cart.updateMenuQuantity(menuId, quantity);
-        cartRepository.save(updatedCart);
+        cart.updateMenuQuantity(menuId, quantity);
     }
 
     @Override
@@ -63,8 +65,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(CartNotFoundException::new);
         validateCartOwnership(cart);
-        Cart updatedCart = cart.removeMenu(menuId);
-        cartRepository.save(updatedCart);
+        cart.removeMenu(menuId);
     }
 
     @Override
@@ -86,9 +87,9 @@ public class CartServiceImpl implements CartService {
         Menu menu = menuRepository.findById(cartMenu.menuId())
                 .orElseThrow(MenuNotFoundException::new);
         validateMenuBelongsToRestaurant(menu, cart.getRestaurant().getId());
+        menu.validateAvailable();
 
-        Cart updatedCart = cart.addMenu(cartMenu);
-        cartRepository.save(updatedCart);
+        cart.addMenu(cartMenu);
     }
 
     @Override
@@ -110,5 +111,23 @@ public class CartServiceImpl implements CartService {
         if (!menu.getRestaurant().getId().equals(restaurantId)) {
             throw new RestaurantMismatchException();
         }
+    }
+
+    private void validateMenus(List<CartMenu> cartMenus, Long restaurantId) {
+        List<Long> requestedMenuIds = cartMenus.stream()
+                .map(CartMenu::menuId)
+                .distinct()
+                .toList();
+
+        List<Menu> foundMenus = menuRepository.findAllById(requestedMenuIds);
+
+        if (foundMenus.size() != requestedMenuIds.size()) {
+            throw new MenuNotFoundException();
+        }
+
+        foundMenus.forEach(menu -> {
+            validateMenuBelongsToRestaurant(menu, restaurantId);
+            menu.validateAvailable();
+        });
     }
 }

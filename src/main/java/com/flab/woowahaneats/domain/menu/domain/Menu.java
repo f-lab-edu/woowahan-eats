@@ -1,6 +1,7 @@
 package com.flab.woowahaneats.domain.menu.domain;
 
 import com.flab.woowahaneats.domain.menu.exception.InvalidMenuException;
+import com.flab.woowahaneats.domain.menu.exception.MenuNotAvailableException;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.FetchType;
@@ -54,6 +55,12 @@ public class Menu {
 
     @Column(nullable = false)
     private boolean available;
+
+    public void validateAvailable() {
+        if (!this.available) {
+            throw new MenuNotAvailableException();
+        }
+    }
 
     public Menu update(String internalName, String displayName, String description,
                        List<MenuImage> images, Integer price, Boolean available) {

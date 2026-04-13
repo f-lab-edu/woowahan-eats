@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CartService {
 
-    void createCart(Long restaurantId, List<CartMenu> menus);
+    void createCart(Long restaurantId, List<CartMenu> cartMenus);
 
     Cart getCart(Long cartId);
 
