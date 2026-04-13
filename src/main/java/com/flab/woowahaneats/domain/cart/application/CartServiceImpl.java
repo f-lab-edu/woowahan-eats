@@ -111,7 +111,7 @@ public class CartServiceImpl implements CartService {
                 .distinct()
                 .toList();
 
-        List<Menu> foundMenus = menuRepository.findAllByIdWithRestaurant(requestedMenuIds);
+        List<Menu> foundMenus = menuRepository.findAllById(requestedMenuIds);
 
         if (foundMenus.size() != requestedMenuIds.size()) {
             throw new MenuNotFoundException();
