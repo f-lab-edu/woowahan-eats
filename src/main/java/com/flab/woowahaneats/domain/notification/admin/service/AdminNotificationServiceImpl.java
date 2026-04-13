@@ -4,11 +4,13 @@ import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.admin.domain.Admin;
 import com.flab.woowahaneats.domain.notification.admin.controller.dto.AdminNotificationResponse;
 import com.flab.woowahaneats.domain.notification.admin.domain.AdminNotification;
+import com.flab.woowahaneats.domain.notification.admin.event.AdminNotificationEvent;
 import com.flab.woowahaneats.domain.notification.infrastructure.SseEmitterManager;
 import com.flab.woowahaneats.domain.notification.admin.repository.AdminNotificationRepository;
 import com.flab.woowahaneats.domain.owner.domain.Owner;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -21,6 +23,7 @@ public class AdminNotificationServiceImpl implements AdminNotificationService {
 
     private final AdminNotificationRepository adminNotificationRepository;
     private final SseEmitterManager sseEmitterManager;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
@@ -29,10 +32,7 @@ public class AdminNotificationServiceImpl implements AdminNotificationService {
         adminNotificationRepository.save(notification);
 
         AdminNotificationResponse response = AdminNotificationResponse.from(notification);
-        boolean sent = sseEmitterManager.sendToRole("ADMIN", response);
-        if (sent) {
-            notification.markAsRead();
-        }
+        applicationEventPublisher.publishEvent(new AdminNotificationEvent(response));
     }
 
     @Override

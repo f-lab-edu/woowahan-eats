@@ -2,12 +2,14 @@ package com.flab.woowahaneats.domain.notification.owner.service;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.notification.owner.domain.OwnerNotification;
+import com.flab.woowahaneats.domain.notification.owner.event.OwnerNotificationEvent;
 import com.flab.woowahaneats.domain.notification.infrastructure.SseEmitterManager;
 import com.flab.woowahaneats.domain.notification.owner.controller.dto.OwnerNotificationResponse;
 import com.flab.woowahaneats.domain.notification.owner.repository.OwnerNotificationRepository;
 import com.flab.woowahaneats.domain.owner.domain.Owner;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -20,6 +22,7 @@ public class OwnerNotificationServiceImpl implements OwnerNotificationService {
 
     private final OwnerNotificationRepository ownerNotificationRepository;
     private final SseEmitterManager sseEmitterManager;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
@@ -28,10 +31,7 @@ public class OwnerNotificationServiceImpl implements OwnerNotificationService {
         ownerNotificationRepository.save(notification);
 
         OwnerNotificationResponse response = OwnerNotificationResponse.from(notification);
-        boolean sent = sseEmitterManager.sendToId("OWNER_" + owner.getId(), response);
-        if (sent) {
-            notification.markAsRead();
-        }
+        applicationEventPublisher.publishEvent(new OwnerNotificationEvent(owner.getId(), response));
     }
 
     @Override
