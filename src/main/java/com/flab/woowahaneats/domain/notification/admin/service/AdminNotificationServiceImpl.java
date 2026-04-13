@@ -29,17 +29,26 @@ public class AdminNotificationServiceImpl implements AdminNotificationService {
         adminNotificationRepository.save(notification);
 
         AdminNotificationResponse response = AdminNotificationResponse.from(notification);
-        sseEmitterManager.sendToRole("ADMIN", response);
+        boolean sent = sseEmitterManager.sendToRole("ADMIN", response);
+        if (sent) {
+            notification.markAsRead();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AdminNotificationResponse> getUnreadNotifications() {
+        List<AdminNotification> notifications = adminNotificationRepository.findByReadFalseOrderByCreatedAtDesc();
+        return notifications.stream()
+                .map(AdminNotificationResponse::from)
+                .toList();
     }
 
     @Override
     @Transactional
-    public List<AdminNotificationResponse> getUnreadNotifications() {
+    public void markAllAsRead() {
         List<AdminNotification> notifications = adminNotificationRepository.findByReadFalseOrderByCreatedAtDesc();
         notifications.forEach(AdminNotification::markAsRead);
-        return notifications.stream()
-                .map(AdminNotificationResponse::from)
-                .toList();
     }
 
     @Override

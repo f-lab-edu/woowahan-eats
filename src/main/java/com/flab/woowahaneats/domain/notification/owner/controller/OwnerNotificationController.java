@@ -22,6 +22,12 @@ public class OwnerNotificationController {
         return ResponseEntity.ok(ownerNotificationService.getUnreadNotifications());
     }
 
+    @PatchMapping("/read")
+    public ResponseEntity<Void> markAllAsRead() {
+        ownerNotificationService.markAllAsRead();
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamNotifications() {
         return ownerNotificationService.subscribe();

@@ -28,19 +28,30 @@ public class OwnerNotificationServiceImpl implements OwnerNotificationService {
         ownerNotificationRepository.save(notification);
 
         OwnerNotificationResponse response = OwnerNotificationResponse.from(notification);
-        sseEmitterManager.sendToId("OWNER_" + owner.getId(), response);
+        boolean sent = sseEmitterManager.sendToId("OWNER_" + owner.getId(), response);
+        if (sent) {
+            notification.markAsRead();
+        }
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<OwnerNotificationResponse> getUnreadNotifications() {
         Owner owner = AuthContextHolder.getContext().getOwner();
 
         List<OwnerNotification> notifications = ownerNotificationRepository.findByOwnerAndReadFalseOrderByCreatedAtDesc(owner);
-        notifications.forEach(OwnerNotification::markAsRead);
         return notifications.stream()
                 .map(OwnerNotificationResponse::from)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void markAllAsRead() {
+        Owner owner = AuthContextHolder.getContext().getOwner();
+
+        List<OwnerNotification> notifications = ownerNotificationRepository.findByOwnerAndReadFalseOrderByCreatedAtDesc(owner);
+        notifications.forEach(OwnerNotification::markAsRead);
     }
 
     @Override

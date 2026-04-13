@@ -13,5 +13,7 @@ public interface AdminNotificationService {
 
     List<AdminNotificationResponse> getUnreadNotifications();
 
+    void markAllAsRead();
+
     SseEmitter subscribe();
 }

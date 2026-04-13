@@ -13,5 +13,7 @@ public interface OwnerNotificationService {
 
     List<OwnerNotificationResponse> getUnreadNotifications();
 
+    void markAllAsRead();
+
     SseEmitter subscribe();
 }
