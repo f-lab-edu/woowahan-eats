@@ -1,9 +1,10 @@
 package com.flab.woowahaneats.domain.restaurant.admin.service;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.notification.application.NotificationService;
+import com.flab.woowahaneats.domain.notification.owner.service.OwnerNotificationService;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantApprovalStatus;
+import com.flab.woowahaneats.domain.restaurant.exception.RestaurantAlreadyApprovedException;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminRestaurantServiceImpl implements AdminRestaurantService {
 
     private final RestaurantRepository restaurantRepository;
-    private final NotificationService notificationService;
+    private final OwnerNotificationService ownerNotificationService;
 
     @Override
     @Transactional
@@ -35,6 +36,11 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
 
+        if (status == RestaurantApprovalStatus.APPROVED
+                && restaurant.getApprovalStatus() == RestaurantApprovalStatus.APPROVED) {
+            throw new RestaurantAlreadyApprovedException();
+        }
+
         Restaurant updatedRestaurant = restaurant.toBuilder()
                 .approvalStatus(status)
                 .build();
@@ -45,6 +51,6 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
                 ? String.format("음식점 '%s'의 등록이 승인되었습니다.", restaurant.getName())
                 : String.format("음식점 '%s'의 등록이 거절되었습니다.", restaurant.getName());
 
-        notificationService.sendToOwner(restaurant.getOwner().getId(), message, restaurant);
+        ownerNotificationService.notify(restaurant.getOwner(), message, restaurant);
     }
 }

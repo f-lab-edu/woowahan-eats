@@ -38,24 +38,29 @@ public class SseEmitterManager {
         return emitter;
     }
 
-    public void sendToRole(String role, Object data) {
-        emitters.forEach((id, emitter) -> {
+    public boolean sendToRole(String role, Object data) {
+        boolean anySent = false;
+        for (Map.Entry<String, SseEmitter> entry : emitters.entrySet()) {
+            String id = entry.getKey();
+            SseEmitter emitter = entry.getValue();
             if (id.startsWith(role + "_")) {
                 try {
                     emitter.send(SseEmitter.event()
                             .name("notification")
                             .data(data));
                     log.info("SSE 알림 전송 성공 (role): {}", id);
+                    anySent = true;
                 } catch (IOException e) {
                     log.error("SSE 알림 전송 실패 (role): {}", id, e);
                     emitter.completeWithError(e);
                     emitters.remove(id);
                 }
             }
-        });
+        }
+        return anySent;
     }
 
-    public void sendToId(String id, Object data) {
+    public boolean sendToId(String id, Object data) {
         SseEmitter emitter = emitters.get(id);
         if (emitter != null) {
             try {
@@ -63,6 +68,7 @@ public class SseEmitterManager {
                         .name("notification")
                         .data(data));
                 log.info("SSE 알림 전송 성공 (id): {}", id);
+                return true;
             } catch (IOException e) {
                 log.error("SSE 알림 전송 실패 (id): {}", id, e);
                 emitter.completeWithError(e);
@@ -71,6 +77,7 @@ public class SseEmitterManager {
         } else {
             log.warn("SSE 연결을 찾을 수 없음: {}", id);
         }
+        return false;
     }
 
     public void deleteById(String id) {

@@ -1,11 +1,13 @@
 package com.flab.woowahaneats.domain.restaurant.owner.service;
 
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.notification.application.NotificationService;
+import com.flab.woowahaneats.domain.notification.admin.service.AdminNotificationService;
 import com.flab.woowahaneats.domain.owner.domain.Owner;
 import com.flab.woowahaneats.domain.restaurant.owner.controller.dto.RegisterRestaurantRequest;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
+import com.flab.woowahaneats.domain.restaurant.domain.RestaurantApprovalStatus;
+import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotApprovedException;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotOwnedException;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantOperationInfoNotFoundException;
@@ -21,7 +23,7 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
-    private final NotificationService notificationService;
+    private final AdminNotificationService adminNotificationService;
 
     @Override
     @Transactional
@@ -44,8 +46,7 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
 
         restaurantOperationInfoRepository.save(restaurantOperationInfo);
 
-        notificationService.sendToRole(
-                "ADMIN",
+        adminNotificationService.notify(
                 String.format("새로운 음식점 '%s'의 승인 요청이 있습니다.", restaurant.getName()),
                 restaurant,
                 owner
@@ -62,6 +63,10 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
 
         if (!restaurant.getOwner().getId().equals(owner.getId())) {
             throw new RestaurantNotOwnedException();
+        }
+
+        if (restaurant.getApprovalStatus() != RestaurantApprovalStatus.APPROVED) {
+            throw new RestaurantNotApprovedException();
         }
 
         RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurantId)
