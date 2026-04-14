@@ -12,8 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,15 +38,28 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
     @Transactional(readOnly = true)
     public List<RestaurantResponse> getAllRestaurants() {
         List<Restaurant> restaurants = restaurantRepository.findAllByApprovalStatus(RestaurantApprovalStatus.APPROVED);
-        List<RestaurantResponse> restaurantResponses = new ArrayList<>();
+        Map<Long, RestaurantOperationInfo> operationInfoMap = getOperationInfoMap(restaurants);
 
-        for (Restaurant restaurant : restaurants) {
-            RestaurantOperationInfo restaurantOperationInfo = restaurantOperationInfoRepository.findById(restaurant.getId())
-                    .orElseThrow(RestaurantOperationInfoNotFoundException::new);
+        return restaurants.stream()
+                .map(restaurant -> RestaurantResponse.of(restaurant, getOperationInfo(operationInfoMap, restaurant.getId())))
+                .toList();
+    }
 
-            restaurantResponses.add(RestaurantResponse.of(restaurant, restaurantOperationInfo));
+    private Map<Long, RestaurantOperationInfo> getOperationInfoMap(List<Restaurant> restaurants) {
+        List<Long> restaurantIds = restaurants.stream()
+                .map(Restaurant::getId)
+                .toList();
+        return restaurantOperationInfoRepository.findAllByRestaurantIdIn(restaurantIds)
+                .stream()
+                .collect(Collectors.toMap(RestaurantOperationInfo::getRestaurantId, info -> info));
+    }
+
+    private RestaurantOperationInfo getOperationInfo(Map<Long, RestaurantOperationInfo> map, Long restaurantId) {
+        RestaurantOperationInfo info = map.get(restaurantId);
+        if (info == null) {
+            throw new RestaurantOperationInfoNotFoundException();
         }
-        return restaurantResponses;
+        return info;
     }
 
     @Override
