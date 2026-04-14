@@ -3,7 +3,7 @@ spring:
     name: woowahan-eats
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/woowahan_eats
+    url: jdbc:postgresql://localhost:5433/woowahan_eats
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
