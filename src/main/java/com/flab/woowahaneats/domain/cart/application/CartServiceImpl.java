@@ -5,13 +5,16 @@ import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
 import com.flab.woowahaneats.domain.cart.exception.CartNotBelongToUserException;
 import com.flab.woowahaneats.domain.cart.exception.CartNotFoundException;
+import com.flab.woowahaneats.domain.cart.exception.RestaurantClosedException;
 import com.flab.woowahaneats.domain.cart.exception.RestaurantMismatchException;
 import com.flab.woowahaneats.domain.cart.repository.CartRepository;
 import com.flab.woowahaneats.domain.menu.domain.Menu;
 import com.flab.woowahaneats.domain.menu.exception.MenuNotFoundException;
 import com.flab.woowahaneats.domain.menu.repository.MenuRepository;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
+import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
 import com.flab.woowahaneats.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final MenuRepository menuRepository;
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
 
     @Override
     @Transactional
@@ -34,6 +38,12 @@ public class CartServiceImpl implements CartService {
         User user = AuthContextHolder.getContext().getUser();
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(RestaurantNotFoundException::new);
+
+        RestaurantOperationInfo operationInfo = restaurantOperationInfoRepository.findById(restaurantId)
+                .orElseThrow(RestaurantNotFoundException::new);
+        if (!operationInfo.isOpen()) {
+            throw new RestaurantClosedException();
+        }
 
         validateMenus(cartMenus, restaurantId);
 
