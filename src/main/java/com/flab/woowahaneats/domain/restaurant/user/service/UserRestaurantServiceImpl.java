@@ -84,6 +84,21 @@ private Map<Long, RestaurantOperationInfo> getOperationInfoMap(List<Restaurant> 
 
     @Override
     @Transactional(readOnly = true)
+    public List<RestaurantResponse> getNearbyRestaurantsByCategory(RestaurantCategory category) {
+        Location userLocation = AuthContextHolder.getContext().getUserLocation();
+        double latitude = userLocation.latitude();
+        double longitude = userLocation.longitude();
+
+        List<Restaurant> restaurants = restaurantRepository.findAllByCategoryWithinRadius(category, latitude, longitude, NEARBY_RADIUS_KM);
+        Map<Long, RestaurantOperationInfo> operationInfoMap = getOperationInfoMap(restaurants);
+
+        return restaurants.stream()
+                .map(restaurant -> RestaurantResponse.of(restaurant, getOperationInfo(operationInfoMap, restaurant.getId())))
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public RestaurantResponse searchRestaurant(String name) {
         Restaurant restaurant = restaurantRepository.findFirstByNameContainingAndApprovalStatus(name, RestaurantApprovalStatus.APPROVED)
                 .orElseThrow(RestaurantNotFoundException::new);

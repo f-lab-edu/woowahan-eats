@@ -32,4 +32,17 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
            @Param("longitude") double longitude,
            @Param("radius") double radius
    );
+
+   @Query("SELECT r FROM Restaurant r " +
+           "WHERE r.approvalStatus = 'APPROVED' " +
+           "AND r.category = :category " +
+           "AND (6371 * ACOS(COS(RADIANS(:latitude)) * COS(RADIANS(r.location.latitude)) " +
+           "* COS(RADIANS(r.location.longitude) - RADIANS(:longitude)) " +
+           "+ SIN(RADIANS(:latitude)) * SIN(RADIANS(r.location.latitude)))) <= :radius")
+   List<Restaurant> findAllByCategoryWithinRadius(
+           @Param("category") RestaurantCategory category,
+           @Param("latitude") double latitude,
+           @Param("longitude") double longitude,
+           @Param("radius") double radius
+   );
 }

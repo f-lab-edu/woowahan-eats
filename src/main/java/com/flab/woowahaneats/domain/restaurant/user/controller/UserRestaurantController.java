@@ -35,6 +35,11 @@ public class UserRestaurantController {
         return ResponseEntity.ok(userRestaurantService.getNearbyRestaurants());
     }
 
+    @GetMapping("/nearby/category/{category}")
+    public ResponseEntity<List<RestaurantResponse>> getNearbyRestaurantsByCategory(@PathVariable RestaurantCategory category) {
+        return ResponseEntity.ok(userRestaurantService.getNearbyRestaurantsByCategory(category));
+    }
+
     @GetMapping("/search")
     public ResponseEntity<RestaurantResponse> searchRestaurant(@RequestParam String name) {
         return ResponseEntity.ok(userRestaurantService.searchRestaurant(name));

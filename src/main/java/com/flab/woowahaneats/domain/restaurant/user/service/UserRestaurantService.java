@@ -13,5 +13,7 @@ List<RestaurantResponse> getRestaurantsByCategory(RestaurantCategory category);
 
     List<RestaurantResponse> getNearbyRestaurants();
 
+    List<RestaurantResponse> getNearbyRestaurantsByCategory(RestaurantCategory category);
+
     RestaurantResponse searchRestaurant(String name);
 }
