@@ -17,6 +17,15 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+  metrics:
+    tags:
+      application: woowahan-eats
+
 toss:
   payments:
     client-key: ${TOSS_CLIENT_KEY}
