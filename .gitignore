@@ -38,3 +38,6 @@ out/
 
 ### Environment Variables ###
 .env
+
+k6/
+monitoring/
