@@ -9,9 +9,7 @@ public interface UserRestaurantService {
 
     RestaurantResponse getRestaurant(Long restaurantId);
 
-    List<RestaurantResponse> getAllRestaurants();
-
-    List<RestaurantResponse> getRestaurantsByCategory(RestaurantCategory category);
+List<RestaurantResponse> getRestaurantsByCategory(RestaurantCategory category);
 
     List<RestaurantResponse> getNearbyRestaurants();
 

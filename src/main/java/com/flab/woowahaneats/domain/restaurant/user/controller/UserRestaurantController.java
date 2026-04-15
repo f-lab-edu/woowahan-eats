@@ -25,12 +25,7 @@ public class UserRestaurantController {
         return ResponseEntity.ok(userRestaurantService.getRestaurant(restaurantId));
     }
 
-    @GetMapping
-    public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {
-        return ResponseEntity.ok(userRestaurantService.getAllRestaurants());
-    }
-
-    @GetMapping("/category/{category}")
+@GetMapping("/category/{category}")
     public ResponseEntity<List<RestaurantResponse>> getRestaurantsByCategory(@PathVariable RestaurantCategory category) {
         return ResponseEntity.ok(userRestaurantService.getRestaurantsByCategory(category));
     }

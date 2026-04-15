@@ -37,18 +37,7 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<RestaurantResponse> getAllRestaurants() {
-        List<Restaurant> restaurants = restaurantRepository.findAllByApprovalStatus(RestaurantApprovalStatus.APPROVED);
-        Map<Long, RestaurantOperationInfo> operationInfoMap = getOperationInfoMap(restaurants);
-
-        return restaurants.stream()
-                .map(restaurant -> RestaurantResponse.of(restaurant, getOperationInfo(operationInfoMap, restaurant.getId())))
-                .toList();
-    }
-
-    private Map<Long, RestaurantOperationInfo> getOperationInfoMap(List<Restaurant> restaurants) {
+private Map<Long, RestaurantOperationInfo> getOperationInfoMap(List<Restaurant> restaurants) {
         List<Long> restaurantIds = restaurants.stream()
                 .map(Restaurant::getId)
                 .toList();
