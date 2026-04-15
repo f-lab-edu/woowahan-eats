@@ -1,5 +1,7 @@
 package com.flab.woowahaneats.domain.restaurant.user.service;
 
+import com.flab.woowahaneats.domain.auth.AuthContextHolder;
+import com.flab.woowahaneats.domain.common.vo.Location;
 import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantApprovalStatus;
@@ -67,6 +69,23 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
     @Transactional(readOnly = true)
     public List<RestaurantResponse> getRestaurantsByCategory(RestaurantCategory category) {
         List<Restaurant> restaurants = restaurantRepository.findAllByCategoryAndApprovalStatus(category, RestaurantApprovalStatus.APPROVED);
+        Map<Long, RestaurantOperationInfo> operationInfoMap = getOperationInfoMap(restaurants);
+
+        return restaurants.stream()
+                .map(restaurant -> RestaurantResponse.of(restaurant, getOperationInfo(operationInfoMap, restaurant.getId())))
+                .toList();
+    }
+
+    private static final double NEARBY_RADIUS_KM = 30.0;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantResponse> getNearbyRestaurants() {
+        Location userLocation = AuthContextHolder.getContext().getUserLocation();
+        double latitude = userLocation.latitude();
+        double longitude = userLocation.longitude();
+
+        List<Restaurant> restaurants = restaurantRepository.findAllWithinRadius(latitude, longitude, NEARBY_RADIUS_KM);
         Map<Long, RestaurantOperationInfo> operationInfoMap = getOperationInfoMap(restaurants);
 
         return restaurants.stream()

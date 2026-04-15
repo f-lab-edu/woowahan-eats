@@ -13,5 +13,7 @@ public interface UserRestaurantService {
 
     List<RestaurantResponse> getRestaurantsByCategory(RestaurantCategory category);
 
+    List<RestaurantResponse> getNearbyRestaurants();
+
     RestaurantResponse searchRestaurant(String name);
 }
