@@ -26,6 +26,11 @@ management:
     tags:
       application: woowahan-eats
 
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+
 toss:
   payments:
     client-key: ${TOSS_CLIENT_KEY}
