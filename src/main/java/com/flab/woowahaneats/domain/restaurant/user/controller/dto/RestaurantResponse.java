@@ -3,6 +3,7 @@ package com.flab.woowahaneats.domain.restaurant.user.controller.dto;
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.common.vo.Location;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
+import com.flab.woowahaneats.domain.restaurant.domain.RestaurantCategory;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 
 public record RestaurantResponse(
@@ -15,7 +16,8 @@ public record RestaurantResponse(
         double avgRating,
         int minOrderAmt,
         int deliveryFee,
-        boolean open
+        boolean open,
+        RestaurantCategory category
 ) {
     public static RestaurantResponse of(Restaurant restaurant, RestaurantOperationInfo restaurantOperationInfo) {
         return new RestaurantResponse(
@@ -28,7 +30,8 @@ public record RestaurantResponse(
                 restaurant.getAvgRating(),
                 restaurantOperationInfo.getMinOrderAmt(),
                 restaurantOperationInfo.getDeliveryFee(),
-                restaurantOperationInfo.isOpen()
+                restaurantOperationInfo.isOpen(),
+                restaurant.getCategory()
         );
     }
 }

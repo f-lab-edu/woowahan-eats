@@ -3,6 +3,7 @@ package com.flab.woowahaneats.domain.restaurant.user.service;
 import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantApprovalStatus;
+import com.flab.woowahaneats.domain.restaurant.domain.RestaurantCategory;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantOperationInfoNotFoundException;
@@ -60,6 +61,17 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
             throw new RestaurantOperationInfoNotFoundException();
         }
         return info;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantResponse> getRestaurantsByCategory(RestaurantCategory category) {
+        List<Restaurant> restaurants = restaurantRepository.findAllByCategoryAndApprovalStatus(category, RestaurantApprovalStatus.APPROVED);
+        Map<Long, RestaurantOperationInfo> operationInfoMap = getOperationInfoMap(restaurants);
+
+        return restaurants.stream()
+                .map(restaurant -> RestaurantResponse.of(restaurant, getOperationInfo(operationInfoMap, restaurant.getId())))
+                .toList();
     }
 
     @Override

@@ -35,7 +35,8 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
                 restaurantRequest.name(),
                 restaurantRequest.description(),
                 restaurantRequest.address(),
-                restaurantRequest.location()
+                restaurantRequest.location(),
+                restaurantRequest.category()
         ));
 
         RestaurantOperationInfo restaurantOperationInfo = RestaurantOperationInfo.create(
