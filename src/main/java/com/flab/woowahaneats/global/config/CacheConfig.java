@@ -2,11 +2,13 @@ package com.flab.woowahaneats.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -24,6 +26,16 @@ public class CacheConfig {
 
     private static final long BASE_TTL_MINUTES = 30;
     private static final long JITTER_RANGE_MINUTES = 5;
+    private static final String CACHE_NAME = "nearbyRestaurantsByCategory";
+
+    @Bean
+    public CaffeineCacheManager caffeineCacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager(CACHE_NAME);
+        cacheManager.setCaffeine(Caffeine.newBuilder()
+                .maximumSize(1000)
+                .expireAfterWrite(Duration.ofMinutes(2)));
+        return cacheManager;
+    }
 
     @Bean
     @Primary
@@ -45,7 +57,7 @@ public class CacheConfig {
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(defaultConfig)
-                .initialCacheNames(Set.of("nearbyRestaurantsByCategory"))
+                .initialCacheNames(Set.of(CACHE_NAME))
                 .enableStatistics()
                 .build();
     }

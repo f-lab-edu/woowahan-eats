@@ -35,9 +35,10 @@ dependencies {
 	// GeoHash
 	implementation 'ch.hsr:geohash:1.4.0'
 
-	// Cache - Redis
+	// Cache - Redis + Caffeine
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'com.github.ben-manes.caffeine:caffeine'
 
 	// Monitoring - Prometheus + Grafana
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
