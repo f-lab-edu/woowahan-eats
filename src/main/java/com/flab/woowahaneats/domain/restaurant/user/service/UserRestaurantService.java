@@ -13,7 +13,7 @@ List<RestaurantResponse> getRestaurantsByCategory(RestaurantCategory category);
 
     List<RestaurantResponse> getNearbyRestaurants();
 
-    List<RestaurantResponse> getNearbyRestaurantsByCategory(RestaurantCategory category);
+    List<RestaurantResponse> getNearbyRestaurantsByCategory(RestaurantCategory category, String geoHash);
 
     RestaurantResponse searchRestaurant(String name);
 }

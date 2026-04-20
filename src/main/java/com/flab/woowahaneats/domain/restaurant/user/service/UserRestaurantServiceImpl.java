@@ -11,7 +11,9 @@ import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundExcep
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantOperationInfoNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
+import ch.hsr.geohash.GeoHash;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,10 +86,10 @@ private Map<Long, RestaurantOperationInfo> getOperationInfoMap(List<Restaurant> 
 
     @Override
     @Transactional(readOnly = true)
-    public List<RestaurantResponse> getNearbyRestaurantsByCategory(RestaurantCategory category) {
-        Location userLocation = AuthContextHolder.getContext().getUserLocation();
-        double latitude = userLocation.latitude();
-        double longitude = userLocation.longitude();
+    @Cacheable(value = "nearbyRestaurantsByCategory", key = "#geoHash + ':' + #category", cacheManager = "redisCacheManager")
+    public List<RestaurantResponse> getNearbyRestaurantsByCategory(RestaurantCategory category, String geoHash) {
+        double latitude = GeoHash.fromGeohashString(geoHash).getBoundingBoxCenter().getLatitude();
+        double longitude = GeoHash.fromGeohashString(geoHash).getBoundingBoxCenter().getLongitude();
 
         List<Restaurant> restaurants = restaurantRepository.findAllByCategoryWithinRadius(category, latitude, longitude, NEARBY_RADIUS_KM);
         Map<Long, RestaurantOperationInfo> operationInfoMap = getOperationInfoMap(restaurants);

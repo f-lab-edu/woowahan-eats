@@ -8,6 +8,11 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -21,7 +26,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, prometheus, metrics
+        include: health, info, prometheus, metrics, caches, beans
   metrics:
     tags:
       application: woowahan-eats

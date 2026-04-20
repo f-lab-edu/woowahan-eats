@@ -32,6 +32,13 @@ dependencies {
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 	implementation 'org.mindrot:jbcrypt:0.4'
 
+	// GeoHash
+	implementation 'ch.hsr:geohash:1.4.0'
+
+	// Cache - Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
 	// Monitoring - Prometheus + Grafana
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'

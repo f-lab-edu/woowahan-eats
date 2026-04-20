@@ -8,6 +8,7 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      SPRING_DATA_REDIS_HOST: redis
     deploy:
       resources:
         limits:
@@ -19,6 +20,21 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:7
+    container_name: woowahan-eats-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   postgres:
     image: postgres:18
@@ -74,5 +90,6 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
   prometheus_data:
   grafana_data:
