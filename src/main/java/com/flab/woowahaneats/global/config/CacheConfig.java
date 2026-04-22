@@ -3,11 +3,11 @@ package com.flab.woowahaneats.global.config;
 import ch.hsr.geohash.GeoHash;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
-import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.flab.woowahaneats.domain.restaurant.user.service.UserRestaurantServiceImpl;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.time.Duration;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.cache.CacheManager;
@@ -21,7 +21,7 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter.TtlFunction;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -46,9 +46,13 @@ public class CacheConfig {
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
         ObjectMapper objectMapper = new ObjectMapper();
-        Jackson2JsonRedisSerializer<List<RestaurantResponse>> serializer =
-                new Jackson2JsonRedisSerializer<>(objectMapper,
-                        objectMapper.getTypeFactory().constructCollectionType(List.class, RestaurantResponse.class));
+        objectMapper.activateDefaultTyping(
+                BasicPolymorphicTypeValidator.builder()
+                        .allowIfBaseType(Object.class)
+                        .build(),
+                DefaultTyping.NON_FINAL);
+        GenericJackson2JsonRedisSerializer serializer =
+                new GenericJackson2JsonRedisSerializer(objectMapper);
 
         TtlFunction jitteredTtl = (key, value) -> {
             long jitter = ThreadLocalRandom.current().nextLong(-JITTER_RANGE_MINUTES, JITTER_RANGE_MINUTES + 1);
