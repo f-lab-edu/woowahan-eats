@@ -1,14 +1,18 @@
 package com.flab.woowahaneats.global.config;
 
+import ch.hsr.geohash.GeoHash;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -33,12 +37,12 @@ public class CacheConfig {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(CACHE_NAME);
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(1000)
-                .expireAfterWrite(Duration.ofMinutes(2)));
+                .expireAfterWrite(Duration.ofMinutes(2))
+                .recordStats());
         return cacheManager;
     }
 
     @Bean
-    @Primary
     public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
         ObjectMapper objectMapper = new ObjectMapper();
         Jackson2JsonRedisSerializer<List<RestaurantResponse>> serializer =
@@ -61,4 +65,26 @@ public class CacheConfig {
                 .enableStatistics()
                 .build();
     }
+
+    @Bean
+    @Primary
+    public CacheManager twoLevelCacheManager(CaffeineCacheManager caffeineCacheManager,
+                                              RedisCacheManager redisCacheManager) {
+        return new TwoLevelCacheManager(caffeineCacheManager, redisCacheManager, Set.of(CACHE_NAME));
+    }
+
+    @Bean
+    public KeyGenerator restaurantCacheKeyGenerator() {
+        return (target, method, params) -> {
+            Restaurant restaurant = (Restaurant) params[0];
+            String geoHash = GeoHash.withCharacterPrecision(
+                    restaurant.getLocation().latitude(),
+                    restaurant.getLocation().longitude(),
+                    GEOHASH_PRECISION
+            ).toBase32();
+            return geoHash + ":" + restaurant.getCategory();
+        };
+    }
+
+    private static final int GEOHASH_PRECISION = 5;
 }

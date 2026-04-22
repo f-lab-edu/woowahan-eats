@@ -11,17 +11,12 @@ import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundExcep
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantOperationInfoNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
-import ch.hsr.geohash.GeoHash;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.Cache;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
-import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,10 +25,8 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
-    private final CaffeineCacheManager caffeineCacheManager;
-    private final RedisCacheManager redisCacheManager;
+    private final NearbyRestaurantCacheService nearbyRestaurantCacheService;
 
-    private static final String CACHE_NAME = "nearbyRestaurantsByCategory";
     private static final double NEARBY_RADIUS_KM = 30.0;
 
     @Override
@@ -91,41 +84,8 @@ private Map<Long, RestaurantOperationInfo> getOperationInfoMap(List<Restaurant> 
     }
 
     @Override
-    @Transactional(readOnly = true)
-    @SuppressWarnings("unchecked")
     public List<RestaurantResponse> getNearbyRestaurantsByCategory(RestaurantCategory category, String geoHash) {
-        String cacheKey = geoHash + ":" + category;
-
-        Cache caffeineCache = Objects.requireNonNull(caffeineCacheManager.getCache(CACHE_NAME));
-        Cache.ValueWrapper caffeineValue = caffeineCache.get(cacheKey);
-        if (caffeineValue != null) {
-            return (List<RestaurantResponse>) caffeineValue.get();
-        }
-
-        Cache redisCache = Objects.requireNonNull(redisCacheManager.getCache(CACHE_NAME));
-        Cache.ValueWrapper redisValue = redisCache.get(cacheKey);
-        if (redisValue != null) {
-            List<RestaurantResponse> result = (List<RestaurantResponse>) redisValue.get();
-            caffeineCache.put(cacheKey, result);
-            return result;
-        }
-
-        List<RestaurantResponse> result = findNearbyRestaurantsByCategory(category, geoHash);
-        redisCache.put(cacheKey, result);
-        caffeineCache.put(cacheKey, result);
-        return result;
-    }
-
-    private List<RestaurantResponse> findNearbyRestaurantsByCategory(RestaurantCategory category, String geoHash) {
-        double latitude = GeoHash.fromGeohashString(geoHash).getBoundingBoxCenter().getLatitude();
-        double longitude = GeoHash.fromGeohashString(geoHash).getBoundingBoxCenter().getLongitude();
-
-        List<Restaurant> restaurants = restaurantRepository.findAllByCategoryWithinRadius(category, latitude, longitude, NEARBY_RADIUS_KM);
-        Map<Long, RestaurantOperationInfo> operationInfoMap = getOperationInfoMap(restaurants);
-
-        return restaurants.stream()
-                .map(restaurant -> RestaurantResponse.of(restaurant, getOperationInfo(operationInfoMap, restaurant.getId())))
-                .toList();
+        return nearbyRestaurantCacheService.getNearbyRestaurantsByCategory(category, geoHash);
     }
 
     @Override
