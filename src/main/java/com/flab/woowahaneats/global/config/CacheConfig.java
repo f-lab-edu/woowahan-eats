@@ -4,6 +4,7 @@ import ch.hsr.geohash.GeoHash;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
+import com.flab.woowahaneats.domain.restaurant.user.service.UserRestaurantServiceImpl;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.time.Duration;
 import java.util.List;
@@ -80,11 +81,9 @@ public class CacheConfig {
             String geoHash = GeoHash.withCharacterPrecision(
                     restaurant.getLocation().latitude(),
                     restaurant.getLocation().longitude(),
-                    GEOHASH_PRECISION
+                    UserRestaurantServiceImpl.GEOHASH_PRECISION
             ).toBase32();
             return geoHash + ":" + restaurant.getCategory();
         };
     }
-
-    private static final int GEOHASH_PRECISION = 5;
 }

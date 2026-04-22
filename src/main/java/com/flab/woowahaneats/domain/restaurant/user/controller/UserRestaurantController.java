@@ -1,8 +1,5 @@
 package com.flab.woowahaneats.domain.restaurant.user.controller;
 
-import ch.hsr.geohash.GeoHash;
-import com.flab.woowahaneats.domain.auth.AuthContextHolder;
-import com.flab.woowahaneats.domain.common.vo.Location;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantCategory;
 import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.user.service.UserRestaurantService;
@@ -38,13 +35,9 @@ public class UserRestaurantController {
         return ResponseEntity.ok(userRestaurantService.getNearbyRestaurants());
     }
 
-    private static final int GEOHASH_PRECISION = 5;
-
     @GetMapping("/nearby/category/{category}")
     public ResponseEntity<List<RestaurantResponse>> getNearbyRestaurantsByCategory(@PathVariable RestaurantCategory category) {
-        Location userLocation = AuthContextHolder.getContext().getUserLocation();
-        String geoHash = GeoHash.withCharacterPrecision(userLocation.latitude(), userLocation.longitude(), GEOHASH_PRECISION).toBase32();
-        return ResponseEntity.ok(userRestaurantService.getNearbyRestaurantsByCategory(category, geoHash));
+        return ResponseEntity.ok(userRestaurantService.getNearbyRestaurantsByCategory(category));
     }
 
     @GetMapping("/search")

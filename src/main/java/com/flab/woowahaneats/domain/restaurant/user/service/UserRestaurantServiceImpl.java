@@ -11,6 +11,7 @@ import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundExcep
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantOperationInfoNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
+import ch.hsr.geohash.GeoHash;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
     private final NearbyRestaurantCacheService nearbyRestaurantCacheService;
 
+    public static final int GEOHASH_PRECISION = 5;
     private static final double NEARBY_RADIUS_KM = 30.0;
 
     @Override
@@ -84,7 +86,10 @@ private Map<Long, RestaurantOperationInfo> getOperationInfoMap(List<Restaurant> 
     }
 
     @Override
-    public List<RestaurantResponse> getNearbyRestaurantsByCategory(RestaurantCategory category, String geoHash) {
+    public List<RestaurantResponse> getNearbyRestaurantsByCategory(RestaurantCategory category) {
+        Location userLocation = AuthContextHolder.getContext().getUserLocation();
+        String geoHash = GeoHash.withCharacterPrecision(
+                userLocation.latitude(), userLocation.longitude(), GEOHASH_PRECISION).toBase32();
         return nearbyRestaurantCacheService.getNearbyRestaurantsByCategory(category, geoHash);
     }
 
