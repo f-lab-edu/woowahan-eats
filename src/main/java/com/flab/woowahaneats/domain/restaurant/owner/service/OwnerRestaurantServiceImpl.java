@@ -49,8 +49,6 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
 
         restaurantOperationInfoRepository.save(restaurantOperationInfo);
 
-        restaurantCacheService.evictNearbyRestaurantsByCategory(restaurant);
-
         adminNotificationService.notify(
                 String.format("새로운 음식점 '%s'의 승인 요청이 있습니다.", restaurant.getName()),
                 restaurant,
