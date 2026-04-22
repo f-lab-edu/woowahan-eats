@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.flab.woowahaneats.domain.restaurant.user.service.UserRestaurantServiceImpl;
+import com.flab.woowahaneats.domain.restaurant.service.RestaurantCacheConstants;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.time.Duration;
 import java.util.Set;
@@ -31,7 +31,7 @@ public class CacheConfig {
 
     private static final long BASE_TTL_MINUTES = 30;
     private static final long JITTER_RANGE_MINUTES = 5;
-    private static final String CACHE_NAME = "nearbyRestaurantsByCategory";
+    private static final String CACHE_NAME = RestaurantCacheConstants.NEARBY_BY_CATEGORY;
 
     @Bean
     public CaffeineCacheManager caffeineCacheManager() {
@@ -85,9 +85,9 @@ public class CacheConfig {
             String geoHash = GeoHash.withCharacterPrecision(
                     restaurant.getLocation().latitude(),
                     restaurant.getLocation().longitude(),
-                    UserRestaurantServiceImpl.GEOHASH_PRECISION
+                    RestaurantCacheConstants.GEOHASH_PRECISION
             ).toBase32();
-            return geoHash + ":" + restaurant.getCategory();
+            return RestaurantCacheConstants.buildKey(geoHash, restaurant.getCategory());
         };
     }
 }

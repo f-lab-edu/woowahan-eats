@@ -1,5 +1,7 @@
 package com.flab.woowahaneats.domain.restaurant.user.service;
 
+import static com.flab.woowahaneats.domain.restaurant.service.RestaurantCacheConstants.NEARBY_BY_CATEGORY;
+
 import ch.hsr.geohash.GeoHash;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantCategory;
@@ -26,7 +28,7 @@ public class NearbyRestaurantCacheService {
 
     private static final double NEARBY_RADIUS_KM = 30.0;
 
-    @Cacheable(cacheNames = "nearbyRestaurantsByCategory",
+    @Cacheable(cacheNames = NEARBY_BY_CATEGORY,
                key = "#geoHash + ':' + #category",
                sync = true)
     @Transactional(readOnly = true)
