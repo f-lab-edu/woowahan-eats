@@ -2,6 +2,7 @@ package com.flab.woowahaneats.domain.restaurant.owner.controller.dto;
 
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.common.vo.Location;
+import com.flab.woowahaneats.domain.restaurant.domain.RestaurantCategory;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -26,6 +27,9 @@ public record RegisterRestaurantRequest(
         int minOrderAmt,
 
         @NotNull
-        int deliveryFee
+        int deliveryFee,
+
+        @NotNull
+        RestaurantCategory category
 ) {
 }

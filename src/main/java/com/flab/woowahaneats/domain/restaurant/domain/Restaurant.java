@@ -58,12 +58,17 @@ public class Restaurant {
     @Column(name = "approval_status", nullable = false)
     private RestaurantApprovalStatus approvalStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RestaurantCategory category;
+
     public static Restaurant create(
             Owner owner,
             String name,
             String description,
             Address address,
-            Location location
+            Location location,
+            RestaurantCategory category
     ) {
         return Restaurant.builder()
                 .owner(owner)
@@ -73,6 +78,7 @@ public class Restaurant {
                 .location(location)
                 .avgRating(0.0)
                 .approvalStatus(RestaurantApprovalStatus.PENDING)
+                .category(category)
                 .build();
     }
 }

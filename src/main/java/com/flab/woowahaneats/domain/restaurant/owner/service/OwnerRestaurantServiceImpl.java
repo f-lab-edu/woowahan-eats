@@ -13,6 +13,7 @@ import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotOwnedExcep
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantOperationInfoNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
+import com.flab.woowahaneats.domain.restaurant.service.RestaurantCacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
     private final AdminNotificationService adminNotificationService;
+    private final RestaurantCacheService restaurantCacheService;
 
     @Override
     @Transactional
@@ -35,7 +37,8 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
                 restaurantRequest.name(),
                 restaurantRequest.description(),
                 restaurantRequest.address(),
-                restaurantRequest.location()
+                restaurantRequest.location(),
+                restaurantRequest.category()
         ));
 
         RestaurantOperationInfo restaurantOperationInfo = RestaurantOperationInfo.create(
@@ -77,5 +80,8 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
                 .build();
 
         restaurantOperationInfoRepository.save(updateRestaurantOperationInfo);
+
+        restaurantCacheService.evictNearbyRestaurantsByCategory(restaurant);
     }
+
 }

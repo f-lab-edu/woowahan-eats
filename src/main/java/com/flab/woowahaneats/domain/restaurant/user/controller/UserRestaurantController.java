@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.restaurant.user.controller;
 
+import com.flab.woowahaneats.domain.restaurant.domain.RestaurantCategory;
 import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.user.service.UserRestaurantService;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +25,19 @@ public class UserRestaurantController {
         return ResponseEntity.ok(userRestaurantService.getRestaurant(restaurantId));
     }
 
-    @GetMapping
-    public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {
-        return ResponseEntity.ok(userRestaurantService.getAllRestaurants());
+@GetMapping("/category/{category}")
+    public ResponseEntity<List<RestaurantResponse>> getRestaurantsByCategory(@PathVariable RestaurantCategory category) {
+        return ResponseEntity.ok(userRestaurantService.getRestaurantsByCategory(category));
+    }
+
+    @GetMapping("/nearby")
+    public ResponseEntity<List<RestaurantResponse>> getNearbyRestaurants() {
+        return ResponseEntity.ok(userRestaurantService.getNearbyRestaurants());
+    }
+
+    @GetMapping("/nearby/category/{category}")
+    public ResponseEntity<List<RestaurantResponse>> getNearbyRestaurantsByCategory(@PathVariable RestaurantCategory category) {
+        return ResponseEntity.ok(userRestaurantService.getNearbyRestaurantsByCategory(category));
     }
 
     @GetMapping("/search")

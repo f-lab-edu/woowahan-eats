@@ -2,6 +2,7 @@ package com.flab.woowahaneats.domain.auth;
 
 import com.flab.woowahaneats.domain.auth.exception.InvalidRoleException;
 import com.flab.woowahaneats.domain.admin.domain.Admin;
+import com.flab.woowahaneats.domain.common.vo.Location;
 import com.flab.woowahaneats.domain.owner.domain.Owner;
 import com.flab.woowahaneats.domain.rider.domain.Rider;
 import com.flab.woowahaneats.domain.user.domain.User;
@@ -42,5 +43,9 @@ public class AuthContext {
             throw new InvalidRoleException("RIDER");
         }
         return (Rider) principal;
+    }
+
+    public Location getUserLocation() {
+        return getUser().getLocation();
     }
 }

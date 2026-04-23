@@ -1,13 +1,18 @@
 package com.flab.woowahaneats.domain.restaurant.user.service;
 
+import com.flab.woowahaneats.domain.auth.AuthContextHolder;
+import com.flab.woowahaneats.domain.common.vo.Location;
 import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantApprovalStatus;
+import com.flab.woowahaneats.domain.restaurant.domain.RestaurantCategory;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantOperationInfoNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
+import ch.hsr.geohash.GeoHash;
+import com.flab.woowahaneats.domain.restaurant.service.RestaurantCacheConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +27,9 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
+    private final NearbyRestaurantCacheService nearbyRestaurantCacheService;
+
+    private static final double NEARBY_RADIUS_KM = 30.0;
 
     @Override
     @Transactional(readOnly = true)
@@ -34,18 +42,7 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
         return RestaurantResponse.of(restaurant, restaurantOperationInfo);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<RestaurantResponse> getAllRestaurants() {
-        List<Restaurant> restaurants = restaurantRepository.findAllByApprovalStatus(RestaurantApprovalStatus.APPROVED);
-        Map<Long, RestaurantOperationInfo> operationInfoMap = getOperationInfoMap(restaurants);
-
-        return restaurants.stream()
-                .map(restaurant -> RestaurantResponse.of(restaurant, getOperationInfo(operationInfoMap, restaurant.getId())))
-                .toList();
-    }
-
-    private Map<Long, RestaurantOperationInfo> getOperationInfoMap(List<Restaurant> restaurants) {
+private Map<Long, RestaurantOperationInfo> getOperationInfoMap(List<Restaurant> restaurants) {
         List<Long> restaurantIds = restaurants.stream()
                 .map(Restaurant::getId)
                 .toList();
@@ -60,6 +57,40 @@ public class UserRestaurantServiceImpl implements UserRestaurantService {
             throw new RestaurantOperationInfoNotFoundException();
         }
         return info;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantResponse> getRestaurantsByCategory(RestaurantCategory category) {
+        List<Restaurant> restaurants = restaurantRepository.findAllByCategoryAndApprovalStatus(category, RestaurantApprovalStatus.APPROVED);
+        Map<Long, RestaurantOperationInfo> operationInfoMap = getOperationInfoMap(restaurants);
+
+        return restaurants.stream()
+                .map(restaurant -> RestaurantResponse.of(restaurant, getOperationInfo(operationInfoMap, restaurant.getId())))
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantResponse> getNearbyRestaurants() {
+        Location userLocation = AuthContextHolder.getContext().getUserLocation();
+        double latitude = userLocation.latitude();
+        double longitude = userLocation.longitude();
+
+        List<Restaurant> restaurants = restaurantRepository.findAllWithinRadius(latitude, longitude, NEARBY_RADIUS_KM);
+        Map<Long, RestaurantOperationInfo> operationInfoMap = getOperationInfoMap(restaurants);
+
+        return restaurants.stream()
+                .map(restaurant -> RestaurantResponse.of(restaurant, getOperationInfo(operationInfoMap, restaurant.getId())))
+                .toList();
+    }
+
+    @Override
+    public List<RestaurantResponse> getNearbyRestaurantsByCategory(RestaurantCategory category) {
+        Location userLocation = AuthContextHolder.getContext().getUserLocation();
+        String geoHash = GeoHash.withCharacterPrecision(
+                userLocation.latitude(), userLocation.longitude(), RestaurantCacheConstants.GEOHASH_PRECISION).toBase32();
+        return nearbyRestaurantCacheService.getNearbyRestaurantsByCategory(category, geoHash);
     }
 
     @Override

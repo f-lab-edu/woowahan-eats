@@ -7,6 +7,7 @@ import com.flab.woowahaneats.domain.restaurant.domain.RestaurantApprovalStatus;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantAlreadyApprovedException;
 import com.flab.woowahaneats.domain.restaurant.exception.RestaurantNotFoundException;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
+import com.flab.woowahaneats.domain.restaurant.service.RestaurantCacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final OwnerNotificationService ownerNotificationService;
+    private final RestaurantCacheService restaurantCacheService;
 
     @Override
     @Transactional
@@ -46,6 +48,8 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
                 .build();
 
         restaurantRepository.save(updatedRestaurant);
+
+        restaurantCacheService.evictNearbyRestaurantsByCategory(restaurant);
 
         String message = status == RestaurantApprovalStatus.APPROVED
                 ? String.format("음식점 '%s'의 등록이 승인되었습니다.", restaurant.getName())
