@@ -1,10 +1,7 @@
 package com.flab.woowahaneats.global.config;
 
 import ch.hsr.geohash.GeoHash;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.woowahaneats.domain.restaurant.domain.Restaurant;
-import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.flab.woowahaneats.domain.restaurant.service.RestaurantCacheConstants;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.time.Duration;
@@ -37,22 +34,16 @@ public class CacheConfig {
     public CaffeineCacheManager caffeineCacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(CACHE_NAME);
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .maximumSize(1000)
-                .expireAfterWrite(Duration.ofMinutes(2))
+                .maximumSize(3000)
+                .expireAfterWrite(Duration.ofMinutes(1))
                 .recordStats());
         return cacheManager;
     }
 
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.activateDefaultTyping(
-                BasicPolymorphicTypeValidator.builder()
-                        .allowIfBaseType(Object.class)
-                        .build(),
-                DefaultTyping.NON_FINAL);
         GenericJackson2JsonRedisSerializer serializer =
-                new GenericJackson2JsonRedisSerializer(objectMapper);
+                new GenericJackson2JsonRedisSerializer();
 
         TtlFunction jitteredTtl = (key, value) -> {
             long jitter = ThreadLocalRandom.current().nextLong(-JITTER_RANGE_MINUTES, JITTER_RANGE_MINUTES + 1);
