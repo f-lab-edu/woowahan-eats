@@ -12,6 +12,8 @@ import java.util.Optional;
 
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
+   Optional<Restaurant> findFirstByOwnerId(Long ownerId);
+
    Optional<Restaurant> findFirstByNameContaining(String name);
 
    List<Restaurant> findAllByApprovalStatus(RestaurantApprovalStatus approvalStatus);
@@ -22,23 +24,23 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
    List<Restaurant> findAllByCategoryAndApprovalStatus(RestaurantCategory category, RestaurantApprovalStatus approvalStatus);
 
-   @Query("SELECT r FROM Restaurant r " +
-           "WHERE r.approvalStatus = 'APPROVED' " +
-           "AND (6371 * ACOS(COS(RADIANS(:latitude)) * COS(RADIANS(r.location.latitude)) " +
-           "* COS(RADIANS(r.location.longitude) - RADIANS(:longitude)) " +
-           "+ SIN(RADIANS(:latitude)) * SIN(RADIANS(r.location.latitude)))) <= :radius")
+   @Query(value = "SELECT r.* FROM restaurants r " +
+           "WHERE r.approval_status = 'APPROVED' " +
+           "AND ST_DWithin(r.point, " +
+           "ST_MakePoint(:longitude, :latitude)::geography, :radius * 1000)",
+           nativeQuery = true)
    List<Restaurant> findAllWithinRadius(
            @Param("latitude") double latitude,
            @Param("longitude") double longitude,
            @Param("radius") double radius
    );
 
-   @Query("SELECT r FROM Restaurant r " +
-           "WHERE r.approvalStatus = 'APPROVED' " +
-           "AND r.category = :category " +
-           "AND (6371 * ACOS(COS(RADIANS(:latitude)) * COS(RADIANS(r.location.latitude)) " +
-           "* COS(RADIANS(r.location.longitude) - RADIANS(:longitude)) " +
-           "+ SIN(RADIANS(:latitude)) * SIN(RADIANS(r.location.latitude)))) <= :radius")
+   @Query(value = "SELECT r.* FROM restaurants r " +
+           "WHERE r.approval_status = 'APPROVED' " +
+           "AND r.category = :#{#category.name()} " +
+           "AND ST_DWithin(r.point, " +
+           "ST_MakePoint(:longitude, :latitude)::geography, :radius * 1000)",
+           nativeQuery = true)
    List<Restaurant> findAllByCategoryWithinRadius(
            @Param("category") RestaurantCategory category,
            @Param("latitude") double latitude,

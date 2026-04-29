@@ -10,6 +10,7 @@ import com.flab.woowahaneats.domain.restaurant.exception.RestaurantOperationInfo
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantRepository;
 import com.flab.woowahaneats.domain.restaurant.user.controller.dto.RestaurantResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -45,7 +46,7 @@ public class NearbyRestaurantCacheService {
                 .stream()
                 .collect(Collectors.toMap(RestaurantOperationInfo::getRestaurantId, Function.identity()));
 
-        return restaurants.stream()
+        return new ArrayList<>(restaurants.stream()
                 .map(restaurant -> {
                     RestaurantOperationInfo info = operationInfoMap.get(restaurant.getId());
                     if (info == null) {
@@ -53,6 +54,6 @@ public class NearbyRestaurantCacheService {
                     }
                     return RestaurantResponse.of(restaurant, info);
                 })
-                .toList();
+                .toList());
     }
 }
