@@ -13,6 +13,21 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
 
+  # ──────────────────────────────────────────────
+  # Spring AI - Ollama (로컬 LLM) 설정
+  # ──────────────────────────────────────────────
+  ai:
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      init:
+        timeout: 120s
+        pull-model-strategy: when_missing
+      chat:
+        options:
+          model: llama3.2:3b
+          temperature: 0.0
+          num-predict: 1024
+
   jpa:
     hibernate:
       ddl-auto: update

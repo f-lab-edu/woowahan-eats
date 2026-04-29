@@ -33,6 +33,9 @@ dependencies {
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 	implementation 'org.mindrot:jbcrypt:0.4'
 
+	implementation platform('org.springframework.ai:spring-ai-bom:1.0.0')
+	implementation 'org.springframework.ai:spring-ai-starter-model-ollama'
+
 	// GeoHash
 	implementation 'ch.hsr:geohash:1.4.0'
 
