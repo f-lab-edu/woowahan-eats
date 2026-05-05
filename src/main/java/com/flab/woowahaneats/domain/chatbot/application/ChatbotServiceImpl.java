@@ -31,7 +31,7 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         RetrievalResult result = findRetriever(query).retrieve(query);
         String answer = answerSynthesisService.synthesize(message, result.data());
-        return ChatResponse.of(answer, result.source());
+        return ChatResponse.of(answer);
     }
 
     @Override

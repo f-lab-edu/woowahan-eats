@@ -34,8 +34,7 @@ public class StructuredDataRetriever implements DataRetriever {
         List<Map<String, Object>> rows = queryExecutor.execute(
                 query.intent(), templateName, query.restaurantId(), params);
 
-        String data = formatRows(rows);
-        return RetrievalResult.of(data, templateName);
+        return RetrievalResult.of(formatRows(rows));
     }
 
     private String formatRows(List<Map<String, Object>> rows) {

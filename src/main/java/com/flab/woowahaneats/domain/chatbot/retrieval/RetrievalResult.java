@@ -1,10 +1,9 @@
 package com.flab.woowahaneats.domain.chatbot.retrieval;
 
 public record RetrievalResult(
-        String data,
-        String source
+        String data
 ) {
-    public static RetrievalResult of(String data, String source) {
-        return new RetrievalResult(data, source);
+    public static RetrievalResult of(String data) {
+        return new RetrievalResult(data);
     }
 }
