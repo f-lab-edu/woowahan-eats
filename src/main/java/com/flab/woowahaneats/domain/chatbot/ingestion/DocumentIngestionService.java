@@ -7,6 +7,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.TextReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,8 @@ public class DocumentIngestionService {
             "policy", "정책 및 수수료",
             "faq", "FAQ"
     );
+
+    private static final FilterExpressionBuilder FILTER = new FilterExpressionBuilder();
 
     private final VectorStore vectorStore;
     private final DocumentIndexMetadataRepository metadataRepository;
@@ -84,7 +87,7 @@ public class DocumentIngestionService {
             }
 
             if (existing.isPresent()) {
-                vectorStore.delete("file_path == '" + filePath + "'");
+                vectorStore.delete(FILTER.eq("file_path", filePath).build());
                 existing.get().updateHash(hash);
             } else {
                 metadataRepository.save(DocumentIndexMetadata.builder()
@@ -137,7 +140,7 @@ public class DocumentIngestionService {
 
         for (DocumentIndexMetadata metadata : indexed) {
             if (!currentFilePaths.contains(metadata.getFilePath())) {
-                vectorStore.delete("file_path == '" + metadata.getFilePath() + "'");
+                vectorStore.delete(FILTER.eq("file_path", metadata.getFilePath()).build());
                 metadataRepository.delete(metadata);
                 deleted++;
                 log.info("삭제된 문서 정리: {}", metadata.getFilePath());
