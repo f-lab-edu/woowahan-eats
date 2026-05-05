@@ -41,3 +41,6 @@ out/
 
 k6/
 monitoring/
+
+CLAUDE.md
+docs/decisions/
