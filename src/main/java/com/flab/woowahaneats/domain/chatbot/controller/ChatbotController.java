@@ -24,7 +24,7 @@ public class ChatbotController {
         return chatbotService.ask(request.message());
     }
 
-    @PostMapping(value = "/ask/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PostMapping(value = "/ask/stream" , produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> askStream(@Valid @RequestBody ChatRequest request) {
         return chatbotService.askStream(request.message());
     }

@@ -1,0 +1,94 @@
+REVENUE:
+  - name: "기간별 매출 합계"
+    sql: >
+      SELECT SUM(uo.total_price) AS total_revenue
+      FROM user_orders uo
+      WHERE uo.restaurant_id = :restaurantId
+      AND uo.status != 'CANCELLED'
+      AND uo.created_at >= :startDate
+      AND uo.created_at < :endDate
+
+  - name: "일별 매출 추이"
+    sql: >
+      SELECT DATE(uo.created_at) AS order_date, SUM(uo.total_price) AS daily_revenue
+      FROM user_orders uo
+      WHERE uo.restaurant_id = :restaurantId
+      AND uo.status != 'CANCELLED'
+      AND uo.created_at >= :startDate
+      AND uo.created_at < :endDate
+      GROUP BY DATE(uo.created_at)
+      ORDER BY order_date
+
+ORDER:
+  - name: "기간별 주문 건수"
+    sql: >
+      SELECT COUNT(*) AS order_count
+      FROM user_orders uo
+      WHERE uo.restaurant_id = :restaurantId
+      AND uo.created_at >= :startDate
+      AND uo.created_at < :endDate
+
+  - name: "상태별 주문 건수"
+    sql: >
+      SELECT uo.status, COUNT(*) AS count
+      FROM user_orders uo
+      WHERE uo.restaurant_id = :restaurantId
+      AND uo.created_at >= :startDate
+      AND uo.created_at < :endDate
+      GROUP BY uo.status
+
+  - name: "취소 주문 건수"
+    sql: >
+      SELECT COUNT(*) AS cancelled_count
+      FROM user_orders uo
+      WHERE uo.restaurant_id = :restaurantId
+      AND uo.status = 'CANCELLED'
+      AND uo.created_at >= :startDate
+      AND uo.created_at < :endDate
+
+MENU:
+  - name: "인기 메뉴 순위"
+    sql: >
+      SELECT uom.menu_name, SUM(uom.quantity) AS total_qty, SUM(uom.price * uom.quantity) AS total_sales
+      FROM user_order_menus uom
+      JOIN user_orders uo ON uom.user_order_id = uo.user_order_id
+      WHERE uo.restaurant_id = :restaurantId
+      AND uo.status != 'CANCELLED'
+      AND uo.created_at >= :startDate
+      AND uo.created_at < :endDate
+      GROUP BY uom.menu_name
+      ORDER BY total_qty DESC
+      LIMIT 10
+
+  - name: "특정 메뉴 판매량"
+    sql: >
+      SELECT uom.menu_name, SUM(uom.quantity) AS total_qty, SUM(uom.price * uom.quantity) AS total_sales
+      FROM user_order_menus uom
+      JOIN user_orders uo ON uom.user_order_id = uo.user_order_id
+      WHERE uo.restaurant_id = :restaurantId
+      AND uo.status != 'CANCELLED'
+      AND uom.menu_name LIKE :menuKeyword
+      AND uo.created_at >= :startDate
+      AND uo.created_at < :endDate
+      GROUP BY uom.menu_name
+
+DELIVERY:
+  - name: "배달 현황"
+    sql: >
+      SELECT uo.status, COUNT(*) AS count
+      FROM user_orders uo
+      WHERE uo.restaurant_id = :restaurantId
+      AND uo.status IN ('DELIVERING', 'READY', 'COOKING', 'ACCEPTED')
+      AND uo.created_at >= :startDate
+      AND uo.created_at < :endDate
+      GROUP BY uo.status
+
+  - name: "평균 배달 시간"
+    sql: >
+      SELECT AVG(EXTRACT(EPOCH FROM (uo.completed_at - uo.created_at)) / 60) AS avg_delivery_minutes
+      FROM user_orders uo
+      WHERE uo.restaurant_id = :restaurantId
+      AND uo.status = 'COMPLETED'
+      AND uo.completed_at IS NOT NULL
+      AND uo.created_at >= :startDate
+      AND uo.created_at < :endDate
