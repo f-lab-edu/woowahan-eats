@@ -2,6 +2,8 @@ package com.flab.woowahaneats.domain.chatbot.ingestion;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -53,8 +55,8 @@ public class DocumentIngestionRunner implements ApplicationRunner {
 
     private boolean isAlreadyIndexed() {
         try {
-            var results = vectorStore.similaritySearch(
-                    org.springframework.ai.vectorstore.SearchRequest.builder()
+            List<Document> results = vectorStore.similaritySearch(
+                    SearchRequest.builder()
                             .query("test")
                             .topK(1)
                             .build()

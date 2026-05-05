@@ -40,7 +40,7 @@ public class YamlPromptProvider implements PromptProvider {
             return ChatOptions.builder().build();
         }
 
-        var builder = ChatOptions.builder();
+        ChatOptions.Builder builder = ChatOptions.builder();
         if (options.containsKey("temperature")) {
             builder.temperature(((Number) options.get("temperature")).doubleValue());
         }

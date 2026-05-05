@@ -29,7 +29,12 @@ public class StructuredDataRetriever implements DataRetriever {
         QueryParameters params = parameterExtractor.extract(query.originalMessage(), query.intent());
         log.info("추출된 파라미터: {}", params);
 
-        String templateName = params.templateName() != null ? params.templateName() : "";
+        String templateName;
+        if (params.templateName() != null) {
+            templateName = params.templateName();
+        } else {
+            templateName = "";
+        }
 
         List<Map<String, Object>> rows = queryExecutor.execute(
                 query.intent(), templateName, query.restaurantId(), params);
