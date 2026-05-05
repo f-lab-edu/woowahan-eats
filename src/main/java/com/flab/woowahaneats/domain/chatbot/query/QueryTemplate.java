@@ -1,20 +1,24 @@
 package com.flab.woowahaneats.domain.chatbot.query;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public record QueryTemplate(String name, String sql) {
 
-    public String bind(Long restaurantId, QueryParameters params) {
-        String bound = sql.replace(":restaurantId", restaurantId.toString());
+    public Map<String, Object> buildParams(Long restaurantId, QueryParameters params) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("restaurantId", restaurantId);
 
         if (params.startDate() != null) {
-            bound = bound.replace(":startDate", "'" + params.startDate() + "'");
+            paramMap.put("startDate", params.startDate());
         }
         if (params.endDate() != null) {
-            bound = bound.replace(":endDate", "'" + params.endDate() + "'");
+            paramMap.put("endDate", params.endDate());
         }
         if (params.menuKeyword() != null) {
-            bound = bound.replace(":menuKeyword", "'" + params.menuKeyword() + "'");
+            paramMap.put("menuKeyword", params.menuKeyword());
         }
 
-        return bound;
+        return paramMap;
     }
 }

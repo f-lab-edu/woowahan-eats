@@ -22,9 +22,9 @@ public class TemplateQueryExecutor implements QueryExecutor {
         QueryTemplate template = templateRegistry.findTemplate(intent, templateName);
         log.info("선택된 템플릿: {}", template.name());
 
-        String sql = template.bind(restaurantId, params);
-        log.info("바인딩된 SQL: {}", sql);
+        Map<String, Object> paramMap = template.buildParams(restaurantId, params);
+        log.info("바인딩 파라미터: {}", paramMap);
 
-        return sqlExecutor.execute(sql);
+        return sqlExecutor.execute(template.sql(), paramMap);
     }
 }
