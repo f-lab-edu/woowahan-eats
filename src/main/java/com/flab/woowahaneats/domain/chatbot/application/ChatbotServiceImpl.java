@@ -3,7 +3,7 @@ package com.flab.woowahaneats.domain.chatbot.application;
 import com.flab.woowahaneats.domain.chatbot.controller.dto.ChatResponse;
 import com.flab.woowahaneats.domain.chatbot.retrieval.DataQuery;
 import com.flab.woowahaneats.domain.chatbot.retrieval.DataRetriever;
-import com.flab.woowahaneats.domain.chatbot.retrieval.Intent;
+import com.flab.woowahaneats.domain.chatbot.retrieval.IntentClassifier;
 import com.flab.woowahaneats.domain.chatbot.retrieval.RetrievalResult;
 import com.flab.woowahaneats.domain.restaurant.owner.service.OwnerRestaurantService;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,14 @@ import java.util.List;
 public class ChatbotServiceImpl implements ChatbotService {
 
     private final OwnerRestaurantService ownerRestaurantService;
+    private final IntentClassifier intentClassifier;
     private final List<DataRetriever> dataRetrievers;
     private final AnswerSynthesisService answerSynthesisService;
 
     @Override
     public ChatResponse ask(String message) {
         Long restaurantId = ownerRestaurantService.getMyRestaurantId();
-        DataQuery query = new DataQuery(Intent.REVENUE, message, restaurantId);
+        DataQuery query = new DataQuery(intentClassifier.classify(message), message, restaurantId);
 
         RetrievalResult result = findRetriever(query).retrieve(query);
         String answer = answerSynthesisService.synthesize(message, result.data());
@@ -36,7 +37,7 @@ public class ChatbotServiceImpl implements ChatbotService {
     @Override
     public Flux<String> askStream(String message) {
         Long restaurantId = ownerRestaurantService.getMyRestaurantId();
-        DataQuery query = new DataQuery(Intent.REVENUE, message, restaurantId);
+        DataQuery query = new DataQuery(intentClassifier.classify(message), message, restaurantId);
 
         return Flux.defer(() -> {
             RetrievalResult result = findRetriever(query).retrieve(query);
