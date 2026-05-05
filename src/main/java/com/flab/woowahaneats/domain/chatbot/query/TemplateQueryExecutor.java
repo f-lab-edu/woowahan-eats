@@ -1,0 +1,30 @@
+package com.flab.woowahaneats.domain.chatbot.query;
+
+import com.flab.woowahaneats.domain.chatbot.retrieval.Intent;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class TemplateQueryExecutor implements QueryExecutor {
+
+    private final QueryTemplateRegistry templateRegistry;
+    private final SqlExecutor sqlExecutor;
+
+    @Override
+    public List<Map<String, Object>> execute(Intent intent, String templateName,
+                                              Long restaurantId, QueryParameters params) {
+        QueryTemplate template = templateRegistry.findTemplate(intent, templateName);
+        log.info("선택된 템플릿: {}", template.name());
+
+        String sql = template.bind(restaurantId, params);
+        log.info("바인딩된 SQL: {}", sql);
+
+        return sqlExecutor.execute(sql);
+    }
+}

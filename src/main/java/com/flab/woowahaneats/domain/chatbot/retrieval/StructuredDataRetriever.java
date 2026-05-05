@@ -1,9 +1,8 @@
 package com.flab.woowahaneats.domain.chatbot.retrieval;
 
-import com.flab.woowahaneats.domain.chatbot.domain.ChatQuestion;
-import com.flab.woowahaneats.domain.chatbot.application.SqlGenerationService;
-import com.flab.woowahaneats.domain.chatbot.query.SqlExecutor;
-import com.flab.woowahaneats.domain.chatbot.query.SqlValidator;
+import com.flab.woowahaneats.domain.chatbot.query.ParameterExtractor;
+import com.flab.woowahaneats.domain.chatbot.query.QueryExecutor;
+import com.flab.woowahaneats.domain.chatbot.query.QueryParameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,9 +16,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StructuredDataRetriever implements DataRetriever {
 
-    private final SqlGenerationService sqlGenerationService;
-    private final SqlValidator sqlValidator;
-    private final SqlExecutor sqlExecutor;
+    private final ParameterExtractor parameterExtractor;
+    private final QueryExecutor queryExecutor;
 
     @Override
     public boolean supports(DataQuery query) {
@@ -28,18 +26,16 @@ public class StructuredDataRetriever implements DataRetriever {
 
     @Override
     public RetrievalResult retrieve(DataQuery query) {
-        ChatQuestion question = new ChatQuestion(query.restaurantId(), query.originalMessage());
+        QueryParameters params = parameterExtractor.extract(query.originalMessage(), query.intent());
+        log.info("추출된 파라미터: {}", params);
 
-        String sql = sqlGenerationService.generateSql(question);
-        log.info("생성된 SQL: {}", sql);
+        String templateName = params.templateName() != null ? params.templateName() : "";
 
-        sql = sqlValidator.validate(sql, query.restaurantId());
-        log.info("검증 후 SQL: {}", sql);
-
-        List<Map<String, Object>> rows = sqlExecutor.execute(sql);
+        List<Map<String, Object>> rows = queryExecutor.execute(
+                query.intent(), templateName, query.restaurantId(), params);
 
         String data = formatRows(rows);
-        return RetrievalResult.of(data, sql);
+        return RetrievalResult.of(data, templateName);
     }
 
     private String formatRows(List<Map<String, Object>> rows) {
