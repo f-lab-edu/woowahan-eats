@@ -1,44 +1,33 @@
 package com.flab.woowahaneats.domain.chatbot.retrieval;
 
 import com.flab.woowahaneats.domain.chatbot.exception.LlmCallException;
+import com.flab.woowahaneats.domain.chatbot.prompt.PromptProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class IntentClassifier {
 
+    private static final String PROMPT_ID = "intent-classifier";
+
     private final ChatClient chatClient;
-
-    private static final ChatOptions OPTIONS = ChatOptions.builder()
-            .temperature(0.0)
-            .maxTokens(20)
-            .build();
-
-    private static final String SYSTEM_PROMPT = """
-            You are an intent classifier for a food delivery platform's owner chatbot.
-            Classify the owner's question into exactly ONE of these intents:
-
-            - REVENUE: 매출, 수익, 매출 분석, 총 매출, 수입 관련
-            - ORDER: ���문 수, 주문 현황, 주문 건수, 취소 주문 관련
-            - MENU: 메뉴별 판매량, 인기 메뉴, 메뉴 분석 관련
-            - DELIVERY: 배달 현황, 배달 시간, 라이더, 배달 상태 관련
-            - FAQ_POLICY: 입점 절차, 정산, 수수료, 서비스 이용 방법, 정책, 가이드, 계정 관련
-
-            Output ONLY the intent name (e.g., REVENUE). No explanation.
-            """;
+    private final PromptProvider promptProvider;
 
     public Intent classify(String message) {
         try {
+            String systemPrompt = promptProvider.getSystemPrompt(PROMPT_ID, Map.of());
+
             String result = chatClient
                     .prompt()
-                    .system(SYSTEM_PROMPT)
+                    .system(systemPrompt)
                     .user(message)
-                    .options(OPTIONS)
+                    .options(promptProvider.getOptions(PROMPT_ID))
                     .call()
                     .content();
 
