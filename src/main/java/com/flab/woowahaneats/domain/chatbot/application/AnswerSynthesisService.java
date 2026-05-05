@@ -8,9 +8,12 @@ import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+/**
+ * SQL 실행 결과를 자연어 답변으로 합성하는 서비스.
+ * 두 가지 입력을 지원:
+ * - String: 이미 포맷팅된 결과 텍스트 (DataRetriever에서 전달)
+ * - List<Map<String, Object>>: raw SQL 결과 (레거시 호환)
+ */
 
 @Slf4j
 @Service
@@ -47,10 +50,8 @@ public class AnswerSynthesisService {
             {result}
             """;
 
-    public String synthesize(String question, List<Map<String, Object>> rows) {
+    public String synthesize(String question, String resultText) {
         try {
-            String resultText = formatResult(rows);
-
             return chatClient
                     .prompt()
                     .system(SYSTEM_PROMPT)
@@ -67,9 +68,7 @@ public class AnswerSynthesisService {
         }
     }
 
-    public Flux<String> synthesizeStream(String question, List<Map<String, Object>> rows) {
-        String resultText = formatResult(rows);
-
+    public Flux<String> synthesizeStream(String question, String resultText) {
         return chatClient
                 .prompt()
                 .system(SYSTEM_PROMPT)
@@ -87,13 +86,4 @@ public class AnswerSynthesisService {
                 });
     }
 
-    private String formatResult(List<Map<String, Object>> rows) {
-        if (rows == null || rows.isEmpty()) {
-            return "(결과 없음)";
-        }
-
-        return rows.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining("\n"));
-    }
 }

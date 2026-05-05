@@ -1,9 +1,10 @@
 package com.flab.woowahaneats.domain.chatbot.application;
 
 import com.flab.woowahaneats.domain.chatbot.controller.dto.ChatResponse;
-import com.flab.woowahaneats.domain.chatbot.domain.ChatQuestion;
-import com.flab.woowahaneats.domain.chatbot.query.SqlExecutor;
-import com.flab.woowahaneats.domain.chatbot.query.SqlValidator;
+import com.flab.woowahaneats.domain.chatbot.retrieval.DataQuery;
+import com.flab.woowahaneats.domain.chatbot.retrieval.DataRetriever;
+import com.flab.woowahaneats.domain.chatbot.retrieval.Intent;
+import com.flab.woowahaneats.domain.chatbot.retrieval.RetrievalResult;
 import com.flab.woowahaneats.domain.restaurant.owner.service.OwnerRestaurantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -20,41 +20,35 @@ import java.util.Map;
 public class ChatbotServiceImpl implements ChatbotService {
 
     private final OwnerRestaurantService ownerRestaurantService;
-    private final SqlGenerationService sqlGenerationService;
-    private final SqlValidator sqlValidator;
-    private final SqlExecutor sqlExecutor;
+    private final List<DataRetriever> dataRetrievers;
     private final AnswerSynthesisService answerSynthesisService;
 
     @Override
     public ChatResponse ask(String message) {
         Long restaurantId = ownerRestaurantService.getMyRestaurantId();
-        PipelineResult result = runPipeline(restaurantId, message);
-        String answer = answerSynthesisService.synthesize(message, result.rows());
-        return ChatResponse.of(answer, result.sql());
+        DataQuery query = new DataQuery(Intent.REVENUE, message, restaurantId);
+
+        RetrievalResult result = findRetriever(query).retrieve(query);
+        String answer = answerSynthesisService.synthesize(message, result.data());
+        return ChatResponse.of(answer, result.source());
     }
 
     @Override
     public Flux<String> askStream(String message) {
         Long restaurantId = ownerRestaurantService.getMyRestaurantId();
+        DataQuery query = new DataQuery(Intent.REVENUE, message, restaurantId);
 
         return Flux.defer(() -> {
-            PipelineResult result = runPipeline(restaurantId, message);
-            return answerSynthesisService.synthesizeStream(message, result.rows());
+            RetrievalResult result = findRetriever(query).retrieve(query);
+            return answerSynthesisService.synthesizeStream(message, result.data());
         }).subscribeOn(Schedulers.boundedElastic());
     }
 
-    private PipelineResult runPipeline(Long restaurantId, String message) {
-        ChatQuestion question = new ChatQuestion(restaurantId, message);
-
-        String sql = sqlGenerationService.generateSql(question);
-        log.info("생성된 SQL: {}", sql);
-
-        sql = sqlValidator.validate(sql, restaurantId);
-        log.info("검증 후 SQL: {}", sql);
-
-        List<Map<String, Object>> rows = sqlExecutor.execute(sql);
-        return new PipelineResult(sql, rows);
+    private DataRetriever findRetriever(DataQuery query) {
+        return dataRetrievers.stream()
+                .filter(r -> r.supports(query))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "지원하는 DataRetriever가 없습니다: " + query.intent()));
     }
-
-    private record PipelineResult(String sql, List<Map<String, Object>> rows) {}
 }
