@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.chatbot.ingestion;
 
-import com.flab.woowahaneats.domain.chatbot.config.ChatbotProperties;
+import com.flab.woowahaneats.domain.chatbot.config.IngestionProperties;
 import com.flab.woowahaneats.domain.chatbot.exception.InvalidCategoryException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class DocumentIngestionService {
     private final VectorStore vectorStore;
     private final DocumentIndexMetadataRepository metadataRepository;
     private final TransactionTemplate transactionTemplate;
-    private final ChatbotProperties chatbotProperties;
+    private final IngestionProperties ingestionProperties;
 
     public IngestResult ingestAll() {
         int updated = 0;
@@ -131,9 +131,8 @@ public class DocumentIngestionService {
             reader.getCustomMetadata().put("file_path", target.filePath());
             List<Document> documents = reader.read();
 
-            ChatbotProperties.Ingestion ingestion = chatbotProperties.getIngestion();
             TokenTextSplitter splitter = new TokenTextSplitter(
-                    ingestion.getChunkSize(), ingestion.getChunkOverlap(), 5, 10000, true);
+                    ingestionProperties.chunkSize(), ingestionProperties.chunkOverlap(), 5, 10000, true);
             List<Document> chunks = splitter.split(documents);
 
             chunks.forEach(chunk ->

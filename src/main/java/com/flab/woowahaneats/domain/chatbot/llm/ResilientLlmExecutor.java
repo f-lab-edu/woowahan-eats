@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.chatbot.llm;
 
-import com.flab.woowahaneats.domain.chatbot.config.ChatbotProperties;
+import com.flab.woowahaneats.domain.chatbot.config.LlmProperties;
 import com.flab.woowahaneats.domain.chatbot.exception.LlmCallException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,20 +15,18 @@ import reactor.core.publisher.Flux;
 public class ResilientLlmExecutor implements LlmExecutor {
 
     private final ChatClient chatClient;
-    private final ChatbotProperties chatbotProperties;
+    private final LlmProperties llmProperties;
 
     @Override
     public String call(String systemPrompt, String userPrompt, ChatOptions options) {
         Exception lastException = null;
 
-        ChatbotProperties.Llm llm = chatbotProperties.getLlm();
-
-        for (int attempt = 0; attempt <= llm.getMaxRetries(); attempt++) {
+        for (int attempt = 0; attempt <= llmProperties.maxRetries(); attempt++) {
             try {
                 if (attempt > 0) {
                     long delay = isRateLimitError(lastException)
-                            ? llm.getRateLimitDelayMs()
-                            : llm.getBaseDelayMs() * (1L << (attempt - 1));
+                            ? llmProperties.rateLimitDelayMs()
+                            : llmProperties.baseDelayMs() * (1L << (attempt - 1));
                     log.info("LLM 호출 재시도 ({}회차), {}ms 대기", attempt, delay);
                     Thread.sleep(delay);
                 }
