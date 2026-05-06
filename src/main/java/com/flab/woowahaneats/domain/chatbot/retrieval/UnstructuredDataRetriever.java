@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.chatbot.retrieval;
 
+import com.flab.woowahaneats.domain.chatbot.config.ChatbotProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -15,10 +16,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UnstructuredDataRetriever implements DataRetriever {
 
-    private static final int TOP_K = 3;
-    private static final double SIMILARITY_THRESHOLD = 0.5;
-
     private final VectorStore vectorStore;
+    private final ChatbotProperties chatbotProperties;
 
     @Override
     public boolean supports(DataQuery query) {
@@ -30,8 +29,8 @@ public class UnstructuredDataRetriever implements DataRetriever {
         List<Document> documents = vectorStore.similaritySearch(
                 SearchRequest.builder()
                         .query(query.originalMessage())
-                        .topK(TOP_K)
-                        .similarityThreshold(SIMILARITY_THRESHOLD)
+                        .topK(chatbotProperties.getRetrieval().getTopK())
+                        .similarityThreshold(chatbotProperties.getRetrieval().getSimilarityThreshold())
                         .build()
         );
 

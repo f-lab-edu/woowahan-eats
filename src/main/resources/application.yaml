@@ -59,6 +59,21 @@ server:
     mbeanregistry:
       enabled: true
 
+# ──────────────────────────────────────────────
+# 챗봇 튜닝 파라미터
+# ──────────────────────────────────────────────
+chatbot:
+  retrieval:
+    top-k: 3
+    similarity-threshold: 0.5
+  llm:
+    max-retries: 2
+    base-delay-ms: 1000
+    rate-limit-delay-ms: 5000
+  ingestion:
+    chunk-size: 400
+    chunk-overlap: 50
+
 toss:
   payments:
     client-key: ${TOSS_CLIENT_KEY}

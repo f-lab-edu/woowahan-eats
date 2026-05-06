@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.chatbot.ingestion;
 
+import com.flab.woowahaneats.domain.chatbot.config.ChatbotProperties;
 import com.flab.woowahaneats.domain.chatbot.exception.InvalidCategoryException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +33,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DocumentIngestionService {
 
-    private static final int CHUNK_SIZE = 400;
-    private static final int CHUNK_OVERLAP = 50;
     private static final Map<String, String> CATEGORY_MAP = Map.of(
             "guide", "서비스 이용 가이드",
             "policy", "정책 및 수수료",
@@ -45,6 +44,7 @@ public class DocumentIngestionService {
     private final VectorStore vectorStore;
     private final DocumentIndexMetadataRepository metadataRepository;
     private final TransactionTemplate transactionTemplate;
+    private final ChatbotProperties chatbotProperties;
 
     public IngestResult ingestAll() {
         int updated = 0;
@@ -131,8 +131,9 @@ public class DocumentIngestionService {
             reader.getCustomMetadata().put("file_path", target.filePath());
             List<Document> documents = reader.read();
 
+            ChatbotProperties.Ingestion ingestion = chatbotProperties.getIngestion();
             TokenTextSplitter splitter = new TokenTextSplitter(
-                    CHUNK_SIZE, CHUNK_OVERLAP, 5, 10000, true);
+                    ingestion.getChunkSize(), ingestion.getChunkOverlap(), 5, 10000, true);
             List<Document> chunks = splitter.split(documents);
 
             chunks.forEach(chunk ->
