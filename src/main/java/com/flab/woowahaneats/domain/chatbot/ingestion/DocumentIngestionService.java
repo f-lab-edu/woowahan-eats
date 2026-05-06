@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DocumentIngestionService {
 
+    private static final String METADATA_FILE_PATH = "file_path";
     private static final Map<String, String> CATEGORY_MAP = Map.of(
             "guide", "서비스 이용 가이드",
             "policy", "정책 및 수수료",
@@ -128,7 +129,7 @@ public class DocumentIngestionService {
         for (IngestTarget target : targets) {
             TextReader reader = new TextReader(target.resource());
             reader.getCustomMetadata().put("category", category);
-            reader.getCustomMetadata().put("file_path", target.filePath());
+            reader.getCustomMetadata().put(METADATA_FILE_PATH, target.filePath());
             List<Document> documents = reader.read();
 
             TokenTextSplitter splitter = new TokenTextSplitter(
@@ -136,7 +137,7 @@ public class DocumentIngestionService {
             List<Document> chunks = splitter.split(documents);
 
             chunks.forEach(chunk ->
-                    chunk.getMetadata().putAll(Map.of("category", category, "file_path", target.filePath()))
+                    chunk.getMetadata().putAll(Map.of("category", category, METADATA_FILE_PATH, target.filePath()))
             );
 
             prepared.add(new PreparedDocument(target, chunks));
@@ -156,7 +157,7 @@ public class DocumentIngestionService {
                 IngestTarget target = doc.target();
 
                 if (target.existingMetadata() != null) {
-                    vectorStore.delete(FILTER.eq("file_path", target.filePath()).build());
+                    vectorStore.delete(FILTER.eq(METADATA_FILE_PATH, target.filePath()).build());
                     target.existingMetadata().updateHash(target.hash());
                 } else {
                     metadataRepository.save(DocumentIndexMetadata.builder()
@@ -186,7 +187,7 @@ public class DocumentIngestionService {
 
             for (DocumentIndexMetadata metadata : indexed) {
                 if (!currentFilePaths.contains(metadata.getFilePath())) {
-                    vectorStore.delete(FILTER.eq("file_path", metadata.getFilePath()).build());
+                    vectorStore.delete(FILTER.eq(METADATA_FILE_PATH, metadata.getFilePath()).build());
                     metadataRepository.delete(metadata);
                     count++;
                     log.info("삭제된 문서 정리: {}", metadata.getFilePath());
