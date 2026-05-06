@@ -11,14 +11,14 @@ import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.List;
@@ -44,6 +44,7 @@ public class DocumentIngestionService {
 
     private final VectorStore vectorStore;
     private final DocumentIndexMetadataRepository metadataRepository;
+    private final TransactionTemplate transactionTemplate;
 
     public IngestResult ingestAll() {
         int updated = 0;
@@ -51,16 +52,19 @@ public class DocumentIngestionService {
         int deleted = 0;
 
         for (Map.Entry<String, String> entry : CATEGORY_MAP.entrySet()) {
-            IngestResult result = ingestCategory(entry.getKey(), entry.getValue());
-            updated += result.updated();
-            skipped += result.skipped();
-            deleted += result.deleted();
+            try {
+                IngestResult result = ingestCategory(entry.getKey(), entry.getValue());
+                updated += result.updated();
+                skipped += result.skipped();
+                deleted += result.deleted();
+            } catch (Exception e) {
+                log.error("카테고리 색인 실패: {}", entry.getValue(), e);
+            }
         }
 
         return new IngestResult(updated, skipped, deleted);
     }
 
-    @Transactional
     public IngestResult ingestCategory(String folder, String category) {
         List<Resource> resources = loadResources(folder);
         if (resources.isEmpty()) {
@@ -68,41 +72,23 @@ public class DocumentIngestionService {
             return new IngestResult(0, 0, 0);
         }
 
-        int updated = 0;
-        int skipped = 0;
-
         Set<String> currentFilePaths = resources.stream()
                 .map(r -> folder + "/" + r.getFilename())
                 .collect(Collectors.toSet());
 
-        for (Resource resource : resources) {
-            String filePath = folder + "/" + resource.getFilename();
-            String hash = computeHash(resource);
+        // 1단계: 변경 감지 (트랜잭션 불필요)
+        List<IngestTarget> targets = detectChanges(resources, folder);
 
-            Optional<DocumentIndexMetadata> existing = metadataRepository.findByFilePath(filePath);
+        // 2단계: 임베딩용 청크 생성 (트랜잭션 밖 — 문서 파싱/분할만, 임베딩은 add 시점에 수행)
+        List<PreparedDocument> prepared = prepareDocuments(targets, category);
 
-            if (existing.isPresent() && existing.get().getContentHash().equals(hash)) {
-                skipped++;
-                continue;
-            }
+        // 3단계: DB + VectorStore 저장 (짧은 트랜잭션)
+        int updated = persist(prepared, category);
 
-            if (existing.isPresent()) {
-                vectorStore.delete(FILTER.eq("file_path", filePath).build());
-                existing.get().updateHash(hash);
-            } else {
-                metadataRepository.save(DocumentIndexMetadata.builder()
-                        .filePath(filePath)
-                        .category(category)
-                        .contentHash(hash)
-                        .indexedAt(LocalDateTime.now())
-                        .build());
-            }
-
-            indexDocument(resource, category, filePath);
-            updated++;
-        }
-
+        // 4단계: 삭제된 파일 정리 (짧은 트랜잭션)
         int deleted = removeDeletedFiles(category, currentFilePaths);
+
+        int skipped = resources.size() - targets.size();
 
         log.info("색인 완료: category={}, updated={}, skipped={}, deleted={}",
                 category, updated, skipped, deleted);
@@ -117,37 +103,100 @@ public class DocumentIngestionService {
         return category;
     }
 
-    private void indexDocument(Resource resource, String category, String filePath) {
-        TextReader reader = new TextReader(resource);
-        reader.getCustomMetadata().put("category", category);
-        reader.getCustomMetadata().put("file_path", filePath);
-        List<Document> documents = reader.read();
+    private List<IngestTarget> detectChanges(List<Resource> resources, String folder) {
+        List<IngestTarget> targets = new ArrayList<>();
 
-        TokenTextSplitter splitter = new TokenTextSplitter(
-                CHUNK_SIZE, CHUNK_OVERLAP, 5, 10000, true);
-        List<Document> chunks = splitter.split(documents);
+        for (Resource resource : resources) {
+            String filePath = folder + "/" + resource.getFilename();
+            String hash = computeHash(resource);
 
-        chunks.forEach(chunk ->
-                chunk.getMetadata().putAll(Map.of("category", category, "file_path", filePath))
-        );
+            Optional<DocumentIndexMetadata> existing = metadataRepository.findByFilePath(filePath);
 
-        vectorStore.add(chunks);
+            if (existing.isPresent() && existing.get().getContentHash().equals(hash)) {
+                continue;
+            }
+
+            targets.add(new IngestTarget(resource, filePath, hash, existing.orElse(null)));
+        }
+
+        return targets;
+    }
+
+    private List<PreparedDocument> prepareDocuments(List<IngestTarget> targets, String category) {
+        List<PreparedDocument> prepared = new ArrayList<>();
+
+        for (IngestTarget target : targets) {
+            TextReader reader = new TextReader(target.resource());
+            reader.getCustomMetadata().put("category", category);
+            reader.getCustomMetadata().put("file_path", target.filePath());
+            List<Document> documents = reader.read();
+
+            TokenTextSplitter splitter = new TokenTextSplitter(
+                    CHUNK_SIZE, CHUNK_OVERLAP, 5, 10000, true);
+            List<Document> chunks = splitter.split(documents);
+
+            chunks.forEach(chunk ->
+                    chunk.getMetadata().putAll(Map.of("category", category, "file_path", target.filePath()))
+            );
+
+            prepared.add(new PreparedDocument(target, chunks));
+        }
+
+        return prepared;
+    }
+
+    private int persist(List<PreparedDocument> prepared, String category) {
+        if (prepared.isEmpty()) {
+            return 0;
+        }
+
+        // 1) DB 메타데이터 저장 + 기존 벡터 삭제 (짧은 트랜잭션)
+        transactionTemplate.executeWithoutResult(status -> {
+            for (PreparedDocument doc : prepared) {
+                IngestTarget target = doc.target();
+
+                if (target.existingMetadata() != null) {
+                    vectorStore.delete(FILTER.eq("file_path", target.filePath()).build());
+                    target.existingMetadata().updateHash(target.hash());
+                } else {
+                    metadataRepository.save(DocumentIndexMetadata.builder()
+                            .filePath(target.filePath())
+                            .category(category)
+                            .contentHash(target.hash())
+                            .indexedAt(LocalDateTime.now())
+                            .build());
+                }
+            }
+        });
+
+        // 2) VectorStore 임베딩 + 저장 (트랜잭션 밖 — 임베딩 HTTP 호출 포함)
+        int count = 0;
+        for (PreparedDocument doc : prepared) {
+            vectorStore.add(doc.chunks());
+            count++;
+        }
+
+        return count;
     }
 
     private int removeDeletedFiles(String category, Set<String> currentFilePaths) {
-        List<DocumentIndexMetadata> indexed = metadataRepository.findAllByCategory(category);
-        int deleted = 0;
+        Integer deleted = transactionTemplate.execute(status -> {
+            List<DocumentIndexMetadata> indexed = metadataRepository.findAllByCategory(category);
+            int count = 0;
 
-        for (DocumentIndexMetadata metadata : indexed) {
-            if (!currentFilePaths.contains(metadata.getFilePath())) {
-                vectorStore.delete(FILTER.eq("file_path", metadata.getFilePath()).build());
-                metadataRepository.delete(metadata);
-                deleted++;
-                log.info("삭제된 문서 정리: {}", metadata.getFilePath());
+            for (DocumentIndexMetadata metadata : indexed) {
+                if (!currentFilePaths.contains(metadata.getFilePath())) {
+                    vectorStore.delete(FILTER.eq("file_path", metadata.getFilePath()).build());
+                    metadataRepository.delete(metadata);
+                    count++;
+                    log.info("삭제된 문서 정리: {}", metadata.getFilePath());
+                }
             }
-        }
 
-        return deleted;
+            return count;
+        });
+
+        return deleted != null ? deleted : 0;
     }
 
     private List<Resource> loadResources(String folder) {
@@ -172,5 +221,19 @@ public class DocumentIngestionService {
     }
 
     public record IngestResult(int updated, int skipped, int deleted) {
+    }
+
+    private record IngestTarget(
+            Resource resource,
+            String filePath,
+            String hash,
+            DocumentIndexMetadata existingMetadata
+    ) {
+    }
+
+    private record PreparedDocument(
+            IngestTarget target,
+            List<Document> chunks
+    ) {
     }
 }
