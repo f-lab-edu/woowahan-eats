@@ -27,9 +27,11 @@ public class ParameterExtractor {
     public QueryParameters extract(String message, Intent intent) {
         try {
             String today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+            String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
 
             String systemPrompt = promptProvider.getSystemPrompt(PROMPT_ID, Map.of(
                     "today", today,
+                    "tomorrow", tomorrow,
                     "intent", intent.name()
             ));
             String userPrompt = promptProvider.getUserPrompt(PROMPT_ID, Map.of(

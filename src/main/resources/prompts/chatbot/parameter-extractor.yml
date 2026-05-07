@@ -3,6 +3,7 @@ system: |
   Given the owner's question, extract parameters as JSON.
 
   Today's date: {today}
+  Tomorrow's date: {tomorrow}
 
   Extract these parameters:
   - templateName: Choose the most appropriate query template name from the list below
@@ -30,31 +31,28 @@ system: |
   - "배달 시간" / "평균" keyword with DELIVERY intent → "평균 배달 시간"
 
   DATE RULES:
-  - "이번 달" → startDate = first day of current month, endDate = tomorrow
+  - "이번 달" → startDate = first day of current month, endDate = {tomorrow}
   - "지난 달" → startDate = first day of last month, endDate = first day of current month
-  - "오늘" → startDate = today, endDate = tomorrow
-  - "이번 주" → startDate = Monday of this week, endDate = tomorrow
+  - "오늘" → startDate = {today}, endDate = {tomorrow}
+  - "이번 주" → startDate = Monday of this week, endDate = {tomorrow}
   - "4월" → startDate = 2026-04-01, endDate = 2026-05-01
-  - If no time period specified → use all time: startDate = "2020-01-01", endDate = tomorrow
-  - "총" / "전체" / "지금까지" → use all time: startDate = "2020-01-01", endDate = tomorrow
+  - If no time period specified → use all time: startDate = "2020-01-01", endDate = {tomorrow}
+  - "총" / "전체" / "지금까지" → use all time: startDate = "2020-01-01", endDate = {tomorrow}
 
   Output ONLY valid JSON. No explanation.
 
-  EXAMPLES:
+  EXAMPLES (today={today}, tomorrow={tomorrow}):
   Q: "이번 달 매출 얼마야?" (intent: REVENUE)
-  A: {"templateName":"기간별 매출 합계","startDate":"2026-05-01","endDate":"2026-05-06","menuKeyword":null}
+  A: {"templateName":"기간별 매출 합계","startDate":"2026-05-01","endDate":"{tomorrow}","menuKeyword":null}
 
   Q: "지금까지 총 주문 건수는?" (intent: ORDER)
-  A: {"templateName":"기간별 주문 건수","startDate":"2020-01-01","endDate":"2026-05-06","menuKeyword":null}
+  A: {"templateName":"기간별 주문 건수","startDate":"2020-01-01","endDate":"{tomorrow}","menuKeyword":null}
 
   Q: "취소된 주문 몇 건?" (intent: ORDER)
-  A: {"templateName":"취소 주문 건수","startDate":"2020-01-01","endDate":"2026-05-06","menuKeyword":null}
-
-  Q: "가장 많이 팔린 메뉴?" (intent: MENU)
-  A: {"templateName":"인기 메뉴 순위","startDate":"2020-01-01","endDate":"2026-05-06","menuKeyword":null}
+  A: {"templateName":"취소 주문 건수","startDate":"2020-01-01","endDate":"{tomorrow}","menuKeyword":null}
 
   Q: "치킨 얼마나 팔렸어?" (intent: MENU)
-  A: {"templateName":"특정 메뉴 판매량","startDate":"2020-01-01","endDate":"2026-05-06","menuKeyword":"%치킨%"}
+  A: {"templateName":"특정 메뉴 판매량","startDate":"2020-01-01","endDate":"{tomorrow}","menuKeyword":"%치킨%"}
 
   Q: "4월 일별 매출 추이" (intent: REVENUE)
   A: {"templateName":"일별 매출 추이","startDate":"2026-04-01","endDate":"2026-05-01","menuKeyword":null}
