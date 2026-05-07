@@ -22,7 +22,7 @@ public class ChatClientConfig {
         return restClientBuilder -> {
             SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
             factory.setConnectTimeout(Duration.ofSeconds(10));
-            factory.setReadTimeout(Duration.ofSeconds(120));
+            factory.setReadTimeout(Duration.ofSeconds(30));
             restClientBuilder.requestFactory(factory);
         };
     }

@@ -14,27 +14,25 @@ spring:
       port: ${REDIS_PORT}
 
   # ──────────────────────────────────────────────
-  # Spring AI - Ollama (로컬 LLM) 설정
+  # Spring AI - OpenAI 설정
   # ──────────────────────────────────────────────
   ai:
-    ollama:
-      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
-      init:
-        timeout: 120s
-        pull-model-strategy: when_missing
+    openai:
+      api-key: ${OPENAI_API_KEY}
       chat:
         options:
-          model: llama3.2:3b
+          model: gpt-4o-mini
           temperature: 0.0
-          num-predict: 1024
+          max-tokens: 1024
       embedding:
-        model: mxbai-embed-large
+        options:
+          model: text-embedding-3-small
     vectorstore:
       pgvector:
         initialize-schema: true
         index-type: hnsw
         distance-type: cosine_distance
-        dimensions: 1024
+        dimensions: 1536
 
   jpa:
     hibernate:
