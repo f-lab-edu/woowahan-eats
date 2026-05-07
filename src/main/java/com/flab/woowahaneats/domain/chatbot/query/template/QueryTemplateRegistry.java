@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.chatbot.query;
+package com.flab.woowahaneats.domain.chatbot.query.template;
 
 import com.flab.woowahaneats.domain.chatbot.intent.Intent;
 import lombok.extern.slf4j.Slf4j;

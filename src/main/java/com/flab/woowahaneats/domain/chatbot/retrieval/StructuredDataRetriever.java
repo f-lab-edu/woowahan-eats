@@ -1,15 +1,15 @@
 package com.flab.woowahaneats.domain.chatbot.retrieval;
 
 import com.flab.woowahaneats.domain.chatbot.intent.Intent;
-import com.flab.woowahaneats.domain.chatbot.query.DynamicSqlGenerator;
-import com.flab.woowahaneats.domain.chatbot.query.DynamicSqlGenerator.DynamicSqlResult;
-import com.flab.woowahaneats.domain.chatbot.query.ParameterExtractor;
 import com.flab.woowahaneats.domain.chatbot.query.QueryExecutor;
-import com.flab.woowahaneats.domain.chatbot.query.QueryParameterValidator;
 import com.flab.woowahaneats.domain.chatbot.query.QueryParameters;
-import com.flab.woowahaneats.domain.chatbot.query.SqlExecutor;
-import com.flab.woowahaneats.domain.chatbot.query.SqlValidator;
-import com.flab.woowahaneats.domain.chatbot.query.SqlValidator.ValidationResult;
+import com.flab.woowahaneats.domain.chatbot.query.execution.SqlExecutor;
+import com.flab.woowahaneats.domain.chatbot.query.generation.DynamicSqlGenerator;
+import com.flab.woowahaneats.domain.chatbot.query.generation.DynamicSqlGenerator.DynamicSqlResult;
+import com.flab.woowahaneats.domain.chatbot.query.generation.ParameterExtractor;
+import com.flab.woowahaneats.domain.chatbot.query.validation.QueryParameterValidator;
+import com.flab.woowahaneats.domain.chatbot.query.validation.SqlValidator;
+import com.flab.woowahaneats.domain.chatbot.query.validation.SqlValidator.ValidationResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,9 @@
 package com.flab.woowahaneats.domain.chatbot.query;
 
 import com.flab.woowahaneats.domain.chatbot.intent.Intent;
+import com.flab.woowahaneats.domain.chatbot.query.execution.SqlExecutor;
+import com.flab.woowahaneats.domain.chatbot.query.template.QueryTemplate;
+import com.flab.woowahaneats.domain.chatbot.query.template.QueryTemplateRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

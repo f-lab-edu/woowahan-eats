@@ -1,4 +1,6 @@
-package com.flab.woowahaneats.domain.chatbot.query;
+package com.flab.woowahaneats.domain.chatbot.query.template;
+
+import com.flab.woowahaneats.domain.chatbot.query.QueryParameters;
 
 import java.time.LocalDate;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.chatbot.query;
+package com.flab.woowahaneats.domain.chatbot.query.execution;
 
 import com.flab.woowahaneats.domain.chatbot.exception.SqlExecutionException;
 import lombok.RequiredArgsConstructor;
