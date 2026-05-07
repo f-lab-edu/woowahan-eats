@@ -51,6 +51,17 @@ system: |
   AND uo.created_at < '{tomorrow}'
   LIMIT 100
 
+  Q: "이번 주 요일별 주문 건수"
+  SELECT TO_CHAR(created_at, 'Day') AS day_name, COUNT(*) AS order_count
+  FROM user_orders
+  WHERE restaurant_id = {restaurantId}
+  AND status != 'CANCELLED'
+  AND created_at >= DATE_TRUNC('week', DATE '{today}')
+  AND created_at < '{tomorrow}'
+  GROUP BY TO_CHAR(created_at, 'Day'), EXTRACT(DOW FROM created_at)
+  ORDER BY EXTRACT(DOW FROM created_at)
+  LIMIT 100
+
   Q: "어제보다 매출 얼마나 늘었어?"
   SELECT
     SUM(CASE WHEN created_at >= '{today}' AND created_at < '{tomorrow}' THEN total_price ELSE 0 END) AS today_revenue,
