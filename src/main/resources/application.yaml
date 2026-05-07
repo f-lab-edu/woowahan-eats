@@ -27,6 +27,13 @@ spring:
       embedding:
         options:
           model: text-embedding-3-small
+    retry:
+      max-attempts: 3
+      backoff:
+        initial-interval: 1000
+        multiplier: 2
+        max-interval: 10000
+      on-http-codes: 429
     vectorstore:
       pgvector:
         initialize-schema: true
@@ -64,10 +71,6 @@ chatbot:
   retrieval:
     top-k: 3
     similarity-threshold: 0.3
-  llm:
-    max-retries: 2
-    base-delay-ms: 1000
-    rate-limit-delay-ms: 5000
   ingestion:
     chunk-size: 400
     chunk-overlap: 50
