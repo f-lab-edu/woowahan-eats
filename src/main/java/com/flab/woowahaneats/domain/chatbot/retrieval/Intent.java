@@ -5,5 +5,6 @@ public enum Intent {
     ORDER,
     MENU,
     DELIVERY,
-    FAQ_POLICY
+    FAQ_POLICY,
+    UNSUPPORTED
 }

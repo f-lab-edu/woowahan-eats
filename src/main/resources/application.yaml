@@ -63,7 +63,7 @@ server:
 chatbot:
   retrieval:
     top-k: 3
-    similarity-threshold: 0.5
+    similarity-threshold: 0.3
   llm:
     max-retries: 2
     base-delay-ms: 1000
