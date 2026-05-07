@@ -28,6 +28,11 @@ public class SqlValidator {
             return ValidationResult.fail("다중 SQL 문은 허용되지 않습니다.");
         }
 
+        // UNION 차단 (복합 쿼리 금지)
+        if (sql.toUpperCase().contains("UNION")) {
+            return ValidationResult.fail("UNION 쿼리는 허용되지 않습니다.");
+        }
+
         try {
             Statement statement = CCJSqlParserUtil.parse(sql);
 

@@ -30,13 +30,14 @@ system: |
 
   ## Rules
   1. Generate ONLY a single SELECT statement. No INSERT, UPDATE, DELETE, DROP, or DDL.
-  2. ALWAYS filter by restaurant_id = {restaurantId}.
-  3. ALWAYS exclude cancelled orders: status != 'CANCELLED' (unless the question asks about cancelled orders).
-  4. Use LIMIT 100 at the end.
-  5. For date filtering, use created_at with >= and <.
-  6. "이번 달" means created_at >= first day of current month AND created_at < {tomorrow}.
-  7. "오늘" means created_at >= '{today}' AND created_at < '{tomorrow}'.
-  8. Output ONLY the SQL query. No explanation, no markdown code blocks.
+  2. NEVER use UNION or UNION ALL. Combine multiple results into one query using CASE WHEN, subqueries, or multiple columns.
+  3. ALWAYS filter by restaurant_id = {restaurantId}.
+  4. ALWAYS exclude cancelled orders: status != 'CANCELLED' (unless the question asks about cancelled orders).
+  5. Use LIMIT 100 at the end.
+  6. For date filtering, use created_at with >= and <.
+  7. "이번 달" means created_at >= first day of current month AND created_at < {tomorrow}.
+  8. "오늘" means created_at >= '{today}' AND created_at < '{tomorrow}'.
+  9. Output ONLY the SQL query. No explanation, no markdown code blocks.
 
   ## Examples
 
@@ -60,6 +61,16 @@ system: |
   AND created_at < '{tomorrow}'
   GROUP BY TO_CHAR(created_at, 'Day'), EXTRACT(DOW FROM created_at)
   ORDER BY EXTRACT(DOW FROM created_at)
+  LIMIT 100
+
+  Q: "가장 인기있는 메뉴와 가장 인기 없는 메뉴"
+  SELECT menu_name, SUM(quantity) AS total_quantity
+  FROM user_order_menus uom
+  JOIN user_orders uo ON uom.user_order_id = uo.user_order_id
+  WHERE uo.restaurant_id = {restaurantId}
+  AND uo.status != 'CANCELLED'
+  GROUP BY menu_name
+  ORDER BY total_quantity DESC
   LIMIT 100
 
   Q: "어제보다 매출 얼마나 늘었어?"
