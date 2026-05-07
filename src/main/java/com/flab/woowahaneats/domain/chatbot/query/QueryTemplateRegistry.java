@@ -24,6 +24,14 @@ public class QueryTemplateRegistry {
         this.templates = loadTemplates();
     }
 
+    public boolean hasTemplate(Intent intent, String templateName) {
+        List<QueryTemplate> intentTemplates = templates.get(intent);
+        if (intentTemplates == null) {
+            return false;
+        }
+        return intentTemplates.stream().anyMatch(t -> t.name().equals(templateName));
+    }
+
     public QueryTemplate findTemplate(Intent intent, String templateName) {
         List<QueryTemplate> intentTemplates = templates.get(intent);
         if (intentTemplates == null) {
