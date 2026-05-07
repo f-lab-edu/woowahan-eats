@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.chatbot.retrieval;
+package com.flab.woowahaneats.domain.chatbot.intent;
 
 import com.flab.woowahaneats.domain.chatbot.llm.LlmExecutor;
 import com.flab.woowahaneats.domain.chatbot.prompt.PromptProvider;

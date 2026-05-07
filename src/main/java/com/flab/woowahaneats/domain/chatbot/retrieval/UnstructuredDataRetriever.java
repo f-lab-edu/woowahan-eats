@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.chatbot.retrieval;
 
+import com.flab.woowahaneats.domain.chatbot.intent.Intent;
 import com.flab.woowahaneats.domain.chatbot.config.RetrievalProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

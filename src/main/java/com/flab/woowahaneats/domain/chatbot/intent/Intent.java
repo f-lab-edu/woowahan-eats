@@ -1,4 +1,4 @@
-package com.flab.woowahaneats.domain.chatbot.retrieval;
+package com.flab.woowahaneats.domain.chatbot.intent;
 
 public enum Intent {
     REVENUE,

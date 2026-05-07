@@ -1,6 +1,6 @@
 package com.flab.woowahaneats.domain.chatbot.query;
 
-import com.flab.woowahaneats.domain.chatbot.retrieval.Intent;
+import com.flab.woowahaneats.domain.chatbot.intent.Intent;
 
 import java.util.List;
 import java.util.Map;

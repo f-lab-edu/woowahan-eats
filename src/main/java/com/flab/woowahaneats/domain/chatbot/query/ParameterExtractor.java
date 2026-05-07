@@ -2,7 +2,7 @@ package com.flab.woowahaneats.domain.chatbot.query;
 
 import com.flab.woowahaneats.domain.chatbot.llm.LlmExecutor;
 import com.flab.woowahaneats.domain.chatbot.prompt.PromptProvider;
-import com.flab.woowahaneats.domain.chatbot.retrieval.Intent;
+import com.flab.woowahaneats.domain.chatbot.intent.Intent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

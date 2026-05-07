@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.chatbot.retrieval;
 
+import com.flab.woowahaneats.domain.chatbot.intent.Intent;
 import com.flab.woowahaneats.domain.chatbot.query.DynamicSqlGenerator;
 import com.flab.woowahaneats.domain.chatbot.query.DynamicSqlGenerator.DynamicSqlResult;
 import com.flab.woowahaneats.domain.chatbot.query.ParameterExtractor;
