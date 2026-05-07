@@ -4,8 +4,8 @@ import com.flab.woowahaneats.domain.chatbot.query.DynamicSqlGenerator;
 import com.flab.woowahaneats.domain.chatbot.query.DynamicSqlGenerator.DynamicSqlResult;
 import com.flab.woowahaneats.domain.chatbot.query.ParameterExtractor;
 import com.flab.woowahaneats.domain.chatbot.query.QueryExecutor;
+import com.flab.woowahaneats.domain.chatbot.query.QueryParameterValidator;
 import com.flab.woowahaneats.domain.chatbot.query.QueryParameters;
-import com.flab.woowahaneats.domain.chatbot.query.QueryTemplateRegistry;
 import com.flab.woowahaneats.domain.chatbot.query.SqlExecutor;
 import com.flab.woowahaneats.domain.chatbot.query.SqlValidator;
 import com.flab.woowahaneats.domain.chatbot.query.SqlValidator.ValidationResult;
@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,9 +22,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StructuredDataRetriever implements DataRetriever {
 
+    private static final String EMPTY_RESULT = "(결과 없음)";
+
     private final ParameterExtractor parameterExtractor;
+    private final QueryParameterValidator parameterValidator;
     private final QueryExecutor queryExecutor;
-    private final QueryTemplateRegistry templateRegistry;
     private final DynamicSqlGenerator dynamicSqlGenerator;
     private final SqlValidator sqlValidator;
     private final SqlExecutor sqlExecutor;
@@ -47,7 +47,7 @@ public class StructuredDataRetriever implements DataRetriever {
             return dynamicSqlFallback(query);
         }
 
-        QueryParameters validated = validateAndFix(params, query.intent());
+        QueryParameters validated = parameterValidator.validateAndFix(params, query.intent());
         if (!params.equals(validated)) {
             log.info("파라미터 보정됨: {}", validated);
         }
@@ -72,13 +72,13 @@ public class StructuredDataRetriever implements DataRetriever {
 
         if (!sqlResult.success()) {
             log.warn("동적 SQL 생성 실패: {}", sqlResult.errorMessage());
-            return RetrievalResult.of("(결과 없음)");
+            return RetrievalResult.of(EMPTY_RESULT);
         }
 
         ValidationResult validation = sqlValidator.validate(sqlResult.sql());
         if (!validation.valid()) {
             log.warn("동적 SQL 검증 실패: {}", validation.errorMessage());
-            return RetrievalResult.of("(결과 없음)");
+            return RetrievalResult.of(EMPTY_RESULT);
         }
 
         try {
@@ -87,51 +87,13 @@ public class StructuredDataRetriever implements DataRetriever {
             return RetrievalResult.of(formatRows(rows));
         } catch (Exception e) {
             log.warn("동적 SQL 실행 실패: {}", e.getMessage());
-            return RetrievalResult.of("(결과 없음)");
-        }
-    }
-
-    private QueryParameters validateAndFix(QueryParameters params, Intent intent) {
-        String templateName = params.templateName();
-        String startDate = params.startDate();
-        String endDate = params.endDate();
-        String menuKeyword = params.menuKeyword();
-
-        if (templateName != null && !templateRegistry.hasTemplate(intent, templateName)) {
-            log.warn("템플릿 '{}' 은 intent {} 에 없음, 기본 템플릿으로 보정", templateName, intent);
-            templateName = null;
-        }
-
-        startDate = validateDate(startDate, LocalDate.now().withDayOfMonth(1));
-        endDate = validateDate(endDate, LocalDate.now().plusDays(1));
-
-        LocalDate start = LocalDate.parse(startDate);
-        LocalDate end = LocalDate.parse(endDate);
-        if (start.isAfter(end) || start.isEqual(end)) {
-            log.warn("날짜 범위 비정상: {} ~ {}, 이번 달로 보정", startDate, endDate);
-            startDate = LocalDate.now().withDayOfMonth(1).toString();
-            endDate = LocalDate.now().plusDays(1).toString();
-        }
-
-        return new QueryParameters(templateName, startDate, endDate, menuKeyword);
-    }
-
-    private String validateDate(String date, LocalDate fallback) {
-        if (date == null || date.isBlank()) {
-            return fallback.toString();
-        }
-        try {
-            LocalDate.parse(date);
-            return date;
-        } catch (DateTimeParseException e) {
-            log.warn("날짜 파싱 실패: '{}', 기본값 {} 사용", date, fallback);
-            return fallback.toString();
+            return RetrievalResult.of(EMPTY_RESULT);
         }
     }
 
     private String formatRows(List<Map<String, Object>> rows) {
         if (rows == null || rows.isEmpty()) {
-            return "(결과 없음)";
+            return EMPTY_RESULT;
         }
         return rows.stream()
                 .map(Object::toString)
