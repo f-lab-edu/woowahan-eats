@@ -69,6 +69,42 @@ public class ResilientLlmExecutor implements LlmExecutor {
     }
 
     @Override
+    public <T> T call(String systemPrompt, String userPrompt, ChatOptions options, Class<T> responseType) {
+        Exception lastException = null;
+
+        for (int attempt = 0; attempt <= llmProperties.maxRetries(); attempt++) {
+            try {
+                if (attempt > 0) {
+                    long delay = isRateLimitError(lastException)
+                            ? llmProperties.rateLimitDelayMs()
+                            : llmProperties.baseDelayMs() * (1L << (attempt - 1));
+                    log.info("LLM 호출 재시도 ({}회차), {}ms 대기", attempt, delay);
+                    Thread.sleep(delay);
+                }
+
+                return chatClient
+                        .prompt()
+                        .system(systemPrompt)
+                        .user(userPrompt)
+                        .options(options)
+                        .call()
+                        .entity(responseType);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new LlmCallException("LLM 호출이 중단되었습니다.");
+            } catch (LlmCallException e) {
+                throw e;
+            } catch (Exception e) {
+                lastException = e;
+                log.warn("LLM 호출 실패 ({}회차): {}", attempt + 1, e.getMessage());
+            }
+        }
+
+        log.error("LLM 호출 최대 재시도 횟수 초과", lastException);
+        throw new LlmCallException("LLM 호출에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    }
+
+    @Override
     public Flux<String> stream(String systemPrompt, String userPrompt, ChatOptions options) {
         return chatClient
                 .prompt()

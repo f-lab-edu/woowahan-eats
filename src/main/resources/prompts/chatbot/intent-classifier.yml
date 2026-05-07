@@ -8,8 +8,6 @@ system: |
   - DELIVERY: 배달 현황, 배달 시간, 라이더, 배달 상태 관련
   - FAQ_POLICY: 입점 절차, 정산, 수수료, 서비스 이용 방법, 정책, 가이드, 계정 관련
 
-  Output ONLY the intent name (e.g., REVENUE). No explanation.
-
 options:
   temperature: 0.0
   maxTokens: 20

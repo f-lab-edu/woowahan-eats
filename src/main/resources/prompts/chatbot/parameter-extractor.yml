@@ -39,8 +39,6 @@ system: |
   - If no time period specified → use all time: startDate = "2020-01-01", endDate = {tomorrow}
   - "총" / "전체" / "지금까지" → use all time: startDate = "2020-01-01", endDate = {tomorrow}
 
-  Output ONLY valid JSON. No explanation.
-
   EXAMPLES (today={today}, tomorrow={tomorrow}):
   Q: "이번 달 매출 얼마야?" (intent: REVENUE)
   A: {"templateName":"기간별 매출 합계","startDate":"2026-05-01","endDate":"{tomorrow}","menuKeyword":null}

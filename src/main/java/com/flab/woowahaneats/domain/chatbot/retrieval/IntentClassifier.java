@@ -22,18 +22,17 @@ public class IntentClassifier {
         try {
             String systemPrompt = promptProvider.getSystemPrompt(PROMPT_ID, Map.of());
 
-            String result = llmExecutor.call(
-                    systemPrompt, message, promptProvider.getOptions(PROMPT_ID));
+            IntentResponse response = llmExecutor.call(
+                    systemPrompt, message, promptProvider.getOptions(PROMPT_ID), IntentResponse.class);
 
-            return parseIntent(result.trim());
-        } catch (IllegalArgumentException e) {
+            log.info("Intent 분류 결과: {}", response.intent());
+            return response.intent();
+        } catch (Exception e) {
             log.warn("Intent 분류 실패, 기본값 REVENUE 사용: {}", e.getMessage());
             return Intent.REVENUE;
         }
     }
 
-    private Intent parseIntent(String result) {
-        String cleaned = result.toUpperCase().replaceAll("[^A-Z_]", "");
-        return Intent.valueOf(cleaned);
+    public record IntentResponse(Intent intent) {
     }
 }
