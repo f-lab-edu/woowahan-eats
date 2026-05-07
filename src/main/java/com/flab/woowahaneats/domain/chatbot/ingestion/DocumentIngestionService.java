@@ -132,8 +132,10 @@ public class DocumentIngestionService {
             reader.getCustomMetadata().put(METADATA_FILE_PATH, target.filePath());
             List<Document> documents = reader.read();
 
-            TokenTextSplitter splitter = new TokenTextSplitter(
-                    ingestionProperties.chunkSize(), ingestionProperties.chunkOverlap(), 5, 10000, true);
+            TokenTextSplitter splitter = TokenTextSplitter.builder()
+                    .withChunkSize(ingestionProperties.chunkSize())
+                    .withMinChunkSizeChars(ingestionProperties.minChunkSizeChars())
+                    .build();
             List<Document> chunks = splitter.split(documents);
 
             chunks.forEach(chunk ->

@@ -5,6 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "chatbot.ingestion")
 public record IngestionProperties(
         int chunkSize,
-        int chunkOverlap
+        int minChunkSizeChars
 ) {
 }

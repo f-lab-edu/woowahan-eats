@@ -73,7 +73,7 @@ chatbot:
     similarity-threshold: 0.3
   ingestion:
     chunk-size: 400
-    chunk-overlap: 50
+    min-chunk-size-chars: 50
 
 toss:
   payments:
