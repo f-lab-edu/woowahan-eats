@@ -37,6 +37,9 @@ dependencies {
 	implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 	implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
 
+	// SQL 파싱 및 검증
+	implementation 'com.github.jsqlparser:jsqlparser:5.3'
+
 	// GeoHash
 	implementation 'ch.hsr:geohash:1.4.0'
 

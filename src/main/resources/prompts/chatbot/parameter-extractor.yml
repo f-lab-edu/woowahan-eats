@@ -30,6 +30,10 @@ system: |
   - "특정 메뉴명" mentioned (e.g., "치킨", "피자") → "특정 메뉴 판매량"
   - "배달 시간" / "평균" keyword with DELIVERY intent → "평균 배달 시간"
 
+  IMPORTANT: If the question requires logic that NONE of the above templates can handle
+  (e.g., "~외", "~제외", "비교", "어제보다", "가장 적게", "평균 주문 금액"),
+  set templateName to null. These will be handled by a different system.
+
   DATE RULES:
   - "이번 달" → startDate = first day of current month, endDate = {tomorrow}
   - "지난 달" → startDate = first day of last month, endDate = first day of current month
