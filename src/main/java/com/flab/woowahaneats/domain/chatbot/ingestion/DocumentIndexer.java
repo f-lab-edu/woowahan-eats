@@ -28,11 +28,13 @@ public class DocumentIndexer {
             return 0;
         }
 
-        // 1) DB 메타데이터 저장 + 기존 벡터 삭제 (짧은 트랜잭션)
-        transactionTemplate.executeWithoutResult(status -> {
-            for (PreparedDocument doc : prepared) {
-                IngestTarget target = doc.target();
+        int count = 0;
+        for (PreparedDocument doc : prepared) {
+            IngestTarget target = doc.target();
 
+            vectorStore.add(doc.chunks());
+
+            transactionTemplate.executeWithoutResult(status -> {
                 if (target.existingMetadata() != null) {
                     vectorStore.delete(FILTER.eq(METADATA_FILE_PATH, target.filePath()).build());
                     target.existingMetadata().updateHash(target.hash());
@@ -44,13 +46,8 @@ public class DocumentIndexer {
                             .indexedAt(LocalDateTime.now())
                             .build());
                 }
-            }
-        });
+            });
 
-        // 2) VectorStore 임베딩 + 저장 (트랜잭션 밖 — 임베딩 HTTP 호출 포함)
-        int count = 0;
-        for (PreparedDocument doc : prepared) {
-            vectorStore.add(doc.chunks());
             count++;
         }
 
