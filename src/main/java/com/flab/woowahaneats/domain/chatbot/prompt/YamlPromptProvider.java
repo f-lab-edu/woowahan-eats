@@ -8,7 +8,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,13 +21,13 @@ public class YamlPromptProvider implements PromptProvider {
     @Override
     public String getSystemPrompt(String promptId, Map<String, Object> variables) {
         String template = getField(promptId, "system");
-        return resolveVariables(template, variables);
+        return resolveVariables(promptId, template, variables);
     }
 
     @Override
     public String getUserPrompt(String promptId, Map<String, Object> variables) {
         String template = getField(promptId, "user");
-        return resolveVariables(template, variables);
+        return resolveVariables(promptId, template, variables);
     }
 
     @Override
@@ -78,13 +77,16 @@ public class YamlPromptProvider implements PromptProvider {
         }
     }
 
-    private String resolveVariables(String template, Map<String, Object> variables) {
+    private String resolveVariables(String promptId, String template, Map<String, Object> variables) {
         if (variables == null || variables.isEmpty()) {
             return template;
         }
         String result = template;
         for (Map.Entry<String, Object> entry : variables.entrySet()) {
             result = result.replace("{" + entry.getKey() + "}", String.valueOf(entry.getValue()));
+        }
+        if (result.matches(".*\\{[a-zA-Z]+}.*")) {
+            log.warn("미치환 변수가 남아있습니다: promptId={}, result={}", promptId, result);
         }
         return result;
     }
