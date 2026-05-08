@@ -3,6 +3,7 @@ package com.flab.woowahaneats.domain.chatbot.query.generation;
 import com.flab.woowahaneats.domain.chatbot.llm.LlmExecutor;
 import com.flab.woowahaneats.domain.chatbot.prompt.PromptProvider;
 import com.flab.woowahaneats.domain.chatbot.intent.Intent;
+import com.flab.woowahaneats.domain.chatbot.query.ParameterExtractor;
 import com.flab.woowahaneats.domain.chatbot.query.QueryParameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,13 +16,14 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ParameterExtractor {
+public class LlmParameterExtractor implements ParameterExtractor {
 
     private static final String PROMPT_ID = "parameter-extractor";
 
     private final PromptProvider promptProvider;
     private final LlmExecutor llmExecutor;
 
+    @Override
     public QueryParameters extract(String message, Intent intent) {
         try {
             String today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);

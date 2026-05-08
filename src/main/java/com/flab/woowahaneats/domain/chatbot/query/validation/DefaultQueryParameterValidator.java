@@ -1,6 +1,7 @@
 package com.flab.woowahaneats.domain.chatbot.query.validation;
 
 import com.flab.woowahaneats.domain.chatbot.intent.Intent;
+import com.flab.woowahaneats.domain.chatbot.query.QueryParameterValidator;
 import com.flab.woowahaneats.domain.chatbot.query.QueryParameters;
 import com.flab.woowahaneats.domain.chatbot.query.template.QueryTemplateRegistry;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,11 @@ import java.time.format.DateTimeParseException;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class QueryParameterValidator {
+public class DefaultQueryParameterValidator implements QueryParameterValidator {
 
     private final QueryTemplateRegistry templateRegistry;
 
+    @Override
     public QueryParameters validateAndFix(QueryParameters params, Intent intent) {
         String templateName = params.templateName();
         String startDate = params.startDate();
