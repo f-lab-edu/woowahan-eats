@@ -52,13 +52,7 @@ public class StructuredDataRetriever implements DataRetriever {
         List<Map<String, Object>> rows = queryExecutor.execute(
                 query.intent(), templateName, query.restaurantId(), validated);
 
-        if (!rows.isEmpty()) {
-            return RetrievalResult.of(formatRows(rows));
-        }
-
-        // 템플릿 결과가 비어있어도 동적 SQL fallback
-        log.info("템플릿 결과 없음, 동적 SQL fallback 시도: {}", query.originalMessage());
-        return dynamicSqlFallback(query);
+        return RetrievalResult.of(formatRows(rows));
     }
 
     private RetrievalResult dynamicSqlFallback(DataQuery query) {
