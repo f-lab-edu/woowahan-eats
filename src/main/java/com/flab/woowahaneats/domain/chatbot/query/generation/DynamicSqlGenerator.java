@@ -36,7 +36,7 @@ public class DynamicSqlGenerator {
             String sql = llmExecutor.call(systemPrompt, userPrompt, promptProvider.getOptions(PROMPT_ID));
             String cleaned = cleanSql(sql);
 
-            log.info("동적 SQL 생성: {}", cleaned);
+            log.debug("동적 SQL 생성: {}", cleaned);
             return new DynamicSqlResult(cleaned, true, null);
         } catch (Exception e) {
             log.warn("동적 SQL 생성 실패: {}", e.getMessage());
