@@ -9,7 +9,6 @@ import net.sf.jsqlparser.statement.select.SetOperationList;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -30,7 +29,7 @@ public class SqlValidator {
         }
 
         try {
-            String parsableSql = sql.replaceAll(":([a-zA-Z_][a-zA-Z0-9_]*)", "0");
+            String parsableSql = sql.replaceAll(":(\\w+)", "0");
 
             // AST 기반 다중 statement 차단
             Statements statements = CCJSqlParserUtil.parseStatements(parsableSql);
@@ -51,8 +50,8 @@ public class SqlValidator {
             }
 
             // 테이블 화이트리스트 검증
-            TablesNamesFinder finder = new TablesNamesFinder();
-            List<String> tables = finder.getTableList(statement);
+            TablesNamesFinder<Void> finder = new TablesNamesFinder<>();
+            Set<String> tables = finder.getTables(statement);
             for (String table : tables) {
                 if (!ALLOWED_TABLES.contains(table.toLowerCase())) {
                     return ValidationResult.fail("허용되지 않은 테이블: " + table);
