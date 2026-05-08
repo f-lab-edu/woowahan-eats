@@ -40,7 +40,7 @@ public class DefaultDynamicQueryExecutor implements DynamicQueryExecutor {
         }
 
         try {
-            List<Map<String, Object>> rows = sqlExecutor.execute(sqlResult.sql(), Map.of());
+            List<Map<String, Object>> rows = sqlExecutor.execute(sqlResult.sql(), Map.of("restaurantId", restaurantId));
             log.info("동적 SQL 실행 결과: {}건", rows.size());
             return RetrievalResult.of(formatRows(rows));
         } catch (Exception e) {

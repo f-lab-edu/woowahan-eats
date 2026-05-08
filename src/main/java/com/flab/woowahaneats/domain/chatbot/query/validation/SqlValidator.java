@@ -33,8 +33,13 @@ public class SqlValidator {
             return ValidationResult.fail("UNION 쿼리는 허용되지 않습니다.");
         }
 
+        if (!sql.contains("restaurant_id")) {
+            return ValidationResult.fail("restaurant_id 필터가 누락되었습니다.");
+        }
+
         try {
-            Statement statement = CCJSqlParserUtil.parse(sql);
+            String parsableSql = sql.replaceAll(":([a-zA-Z_][a-zA-Z0-9_]*)", "0");
+            Statement statement = CCJSqlParserUtil.parse(parsableSql);
 
             // SELECT만 허용
             if (!(statement instanceof Select)) {

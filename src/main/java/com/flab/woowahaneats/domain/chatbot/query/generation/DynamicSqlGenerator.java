@@ -27,8 +27,7 @@ public class DynamicSqlGenerator {
 
             String systemPrompt = promptProvider.getSystemPrompt(PROMPT_ID, Map.of(
                     "today", today,
-                    "tomorrow", tomorrow,
-                    "restaurantId", restaurantId.toString()
+                    "tomorrow", tomorrow
             ));
             String userPrompt = promptProvider.getUserPrompt(PROMPT_ID, Map.of(
                     "question", question
