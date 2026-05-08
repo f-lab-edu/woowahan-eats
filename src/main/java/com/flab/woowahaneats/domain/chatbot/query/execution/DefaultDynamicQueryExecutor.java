@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.chatbot.query.execution;
 
+import com.flab.woowahaneats.domain.chatbot.application.ChatbotMessages;
 import com.flab.woowahaneats.domain.chatbot.query.DynamicQueryExecutor;
 import com.flab.woowahaneats.domain.chatbot.query.generation.DynamicSqlGenerator;
 import com.flab.woowahaneats.domain.chatbot.query.generation.DynamicSqlGenerator.DynamicSqlResult;
@@ -19,8 +20,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DefaultDynamicQueryExecutor implements DynamicQueryExecutor {
 
-    private static final String EMPTY_RESULT = "(결과 없음)";
-
     private final DynamicSqlGenerator dynamicSqlGenerator;
     private final SqlValidator sqlValidator;
     private final SqlExecutor sqlExecutor;
@@ -31,13 +30,13 @@ public class DefaultDynamicQueryExecutor implements DynamicQueryExecutor {
 
         if (!sqlResult.success()) {
             log.warn("동적 SQL 생성 실패: {}", sqlResult.errorMessage());
-            return RetrievalResult.of(EMPTY_RESULT);
+            return RetrievalResult.of(ChatbotMessages.EMPTY_RESULT);
         }
 
         ValidationResult validation = sqlValidator.validate(sqlResult.sql());
         if (!validation.valid()) {
             log.warn("동적 SQL 검증 실패: {}", validation.errorMessage());
-            return RetrievalResult.of(EMPTY_RESULT);
+            return RetrievalResult.of(ChatbotMessages.EMPTY_RESULT);
         }
 
         try {
@@ -46,13 +45,13 @@ public class DefaultDynamicQueryExecutor implements DynamicQueryExecutor {
             return RetrievalResult.of(formatRows(rows));
         } catch (Exception e) {
             log.warn("동적 SQL 실행 실패: {}", e.getMessage());
-            return RetrievalResult.of(EMPTY_RESULT);
+            return RetrievalResult.of(ChatbotMessages.EMPTY_RESULT);
         }
     }
 
     private String formatRows(List<Map<String, Object>> rows) {
         if (rows == null || rows.isEmpty()) {
-            return EMPTY_RESULT;
+            return ChatbotMessages.EMPTY_RESULT;
         }
         return rows.stream()
                 .map(Object::toString)

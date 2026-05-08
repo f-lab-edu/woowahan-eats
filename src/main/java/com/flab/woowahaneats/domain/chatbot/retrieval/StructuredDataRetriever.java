@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.chatbot.retrieval;
 
+import com.flab.woowahaneats.domain.chatbot.application.ChatbotMessages;
 import com.flab.woowahaneats.domain.chatbot.intent.Intent;
 import com.flab.woowahaneats.domain.chatbot.query.DynamicQueryExecutor;
 import com.flab.woowahaneats.domain.chatbot.query.QueryExecutor;
@@ -19,7 +20,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StructuredDataRetriever implements DataRetriever {
 
-    private static final String EMPTY_RESULT = "(결과 없음)";
 
     private final ParameterExtractor parameterExtractor;
     private final QueryParameterValidator parameterValidator;
@@ -67,7 +67,7 @@ public class StructuredDataRetriever implements DataRetriever {
 
     private String formatRows(List<Map<String, Object>> rows) {
         if (rows == null || rows.isEmpty()) {
-            return EMPTY_RESULT;
+            return ChatbotMessages.EMPTY_RESULT;
         }
         return rows.stream()
                 .map(Object::toString)
