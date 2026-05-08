@@ -1,7 +1,8 @@
-package com.flab.woowahaneats.domain.chatbot.query;
+package com.flab.woowahaneats.domain.chatbot.query.execution;
 
 import com.flab.woowahaneats.domain.chatbot.intent.Intent;
-import com.flab.woowahaneats.domain.chatbot.query.execution.SqlExecutor;
+import com.flab.woowahaneats.domain.chatbot.query.QueryExecutor;
+import com.flab.woowahaneats.domain.chatbot.query.QueryParameters;
 import com.flab.woowahaneats.domain.chatbot.query.template.QueryTemplate;
 import com.flab.woowahaneats.domain.chatbot.query.template.QueryTemplateRegistry;
 import lombok.RequiredArgsConstructor;

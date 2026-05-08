@@ -1,6 +1,6 @@
-package com.flab.woowahaneats.domain.chatbot.query;
+package com.flab.woowahaneats.domain.chatbot.query.execution;
 
-import com.flab.woowahaneats.domain.chatbot.query.execution.SqlExecutor;
+import com.flab.woowahaneats.domain.chatbot.query.DynamicQueryExecutor;
 import com.flab.woowahaneats.domain.chatbot.query.generation.DynamicSqlGenerator;
 import com.flab.woowahaneats.domain.chatbot.query.generation.DynamicSqlGenerator.DynamicSqlResult;
 import com.flab.woowahaneats.domain.chatbot.query.validation.SqlValidator;
