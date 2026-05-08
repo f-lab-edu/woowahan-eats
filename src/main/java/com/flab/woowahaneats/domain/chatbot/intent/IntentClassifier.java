@@ -28,8 +28,8 @@ public class IntentClassifier {
             log.info("Intent 분류 결과: {}", response.intent());
             return response.intent();
         } catch (Exception e) {
-            log.warn("Intent 분류 실패, 기본값 REVENUE 사용: {}", e.getMessage());
-            return Intent.REVENUE;
+            log.warn("Intent 분류 실패: {}", e.getMessage());
+            return Intent.UNSUPPORTED;
         }
     }
 
