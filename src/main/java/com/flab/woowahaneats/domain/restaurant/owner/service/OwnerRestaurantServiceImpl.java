@@ -57,6 +57,17 @@ public class OwnerRestaurantServiceImpl implements OwnerRestaurantService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Long getMyRestaurantId() {
+        Owner owner = AuthContextHolder.getContext().getOwner();
+
+        Restaurant restaurant = restaurantRepository.findFirstByOwnerId(owner.getId())
+                .orElseThrow(RestaurantNotFoundException::new);
+
+        return restaurant.getId();
+    }
+
+    @Override
     @Transactional
     public void openRestaurant(Long restaurantId) {
         Owner owner = AuthContextHolder.getContext().getOwner();

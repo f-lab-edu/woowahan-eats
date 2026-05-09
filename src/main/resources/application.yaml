@@ -13,6 +13,34 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
 
+  # ──────────────────────────────────────────────
+  # Spring AI - OpenAI 설정
+  # ──────────────────────────────────────────────
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.0
+          max-tokens: 1024
+      embedding:
+        options:
+          model: text-embedding-3-small
+    retry:
+      max-attempts: 3
+      backoff:
+        initial-interval: 1000
+        multiplier: 2
+        max-interval: 10000
+      on-http-codes: 429
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        index-type: hnsw
+        distance-type: cosine_distance
+        dimensions: 1536
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -35,6 +63,17 @@ server:
   tomcat:
     mbeanregistry:
       enabled: true
+
+# ──────────────────────────────────────────────
+# 챗봇 튜닝 파라미터
+# ──────────────────────────────────────────────
+chatbot:
+  retrieval:
+    top-k: 3
+    similarity-threshold: 0.3
+  ingestion:
+    chunk-size: 400
+    min-chunk-size-chars: 50
 
 toss:
   payments:

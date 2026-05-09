@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.restaurant.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.common.vo.Location;
 import com.flab.woowahaneats.domain.owner.domain.Owner;
@@ -21,6 +22,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 
 @Entity
 @Table(name = "restaurants")
@@ -51,6 +56,10 @@ public class Restaurant {
     @Embedded
     private Location location;
 
+    @JsonIgnore
+    @Column(columnDefinition = "geography(Point, 4326)")
+    private Point point;
+
     @Column(nullable = false)
     private double avgRating;
 
@@ -62,6 +71,9 @@ public class Restaurant {
     @Column(nullable = false)
     private RestaurantCategory category;
 
+    private static final GeometryFactory GEOMETRY_FACTORY =
+            new GeometryFactory(new PrecisionModel(), 4326);
+
     public static Restaurant create(
             Owner owner,
             String name,
@@ -70,12 +82,16 @@ public class Restaurant {
             Location location,
             RestaurantCategory category
     ) {
+        Point point = GEOMETRY_FACTORY.createPoint(
+                new Coordinate(location.longitude(), location.latitude()));
+
         return Restaurant.builder()
                 .owner(owner)
                 .name(name)
                 .description(description)
                 .address(address)
                 .location(location)
+                .point(point)
                 .avgRating(0.0)
                 .approvalStatus(RestaurantApprovalStatus.PENDING)
                 .category(category)
