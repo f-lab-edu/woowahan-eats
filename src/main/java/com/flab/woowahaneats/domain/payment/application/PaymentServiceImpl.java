@@ -1,5 +1,7 @@
 package com.flab.woowahaneats.domain.payment.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
 import com.flab.woowahaneats.domain.payment.domain.Payment;
@@ -11,10 +13,11 @@ import com.flab.woowahaneats.domain.payment.exception.PaymentNotFoundException;
 import com.flab.woowahaneats.domain.payment.gateway.PaymentApprovalResult;
 import com.flab.woowahaneats.domain.payment.gateway.PaymentGateway;
 import com.flab.woowahaneats.domain.payment.gateway.PaymentGatewayResolver;
+import com.flab.woowahaneats.domain.payment.outbox.OutboxEvent;
+import com.flab.woowahaneats.domain.payment.outbox.OutboxEventRepository;
 import com.flab.woowahaneats.domain.payment.repository.PaymentRepository;
 import com.flab.woowahaneats.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +27,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final PaymentGatewayResolver gatewayRegistry;
-    private final ApplicationEventPublisher eventPublisher;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ObjectMapper objectMapper;
     private final PaymentFailureRecorder failureRecorder;
 
     @Override
@@ -56,7 +60,7 @@ public class PaymentServiceImpl implements PaymentService {
             approvePayment(payment, paymentKey, gatewayOrderId, amount);
             paymentRepository.save(payment);
 
-            eventPublisher.publishEvent(new PaymentCompletedEvent(
+            PaymentCompletedEvent event = new PaymentCompletedEvent(
                     order.getId(),
                     order.getUser().getId(),
                     order.getRestaurant().getId(),
@@ -65,11 +69,16 @@ public class PaymentServiceImpl implements PaymentService {
                     order.getOrderPrice(),
                     order.getDeliveryAddress(),
                     order.getCreatedAt()
-            ));
+            );
+            outboxEventRepository.save(OutboxEvent.create("PaymentCompletedEvent", serialize(event)));
         } catch (Exception e) {
             failureRecorder.recordFailure(payment, e.getMessage());
             throw new PaymentApprovalFailedException("결제 승인 실패: " + e.getMessage());
         }
+    }
+
+    private String serialize(Object event) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(event);
     }
 
     private void approvePayment(Payment payment, String paymentKey, String gatewayOrderId, int amount) {
