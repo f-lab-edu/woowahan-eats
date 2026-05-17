@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.order.owner.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.woowahaneats.domain.common.vo.Address;
 import com.flab.woowahaneats.domain.order.common.OrderMenu;
 import com.flab.woowahaneats.domain.order.common.OrderPrice;
@@ -13,8 +14,9 @@ import com.flab.woowahaneats.domain.order.owner.event.OwnerOrderCookingStartedEv
 import com.flab.woowahaneats.domain.order.owner.repository.OwnerOrderRepository;
 import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
 import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
+import com.flab.woowahaneats.domain.payment.outbox.OutboxEvent;
+import com.flab.woowahaneats.domain.payment.outbox.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +29,8 @@ public class OwnerOrderServiceImpl implements OwnerOrderService {
 
     private final OwnerOrderRepository ownerOrderRepository;
     private final UserOrderRepository userOrderRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
@@ -65,7 +68,7 @@ public class OwnerOrderServiceImpl implements OwnerOrderService {
         ownerOrder.approve();
         ownerOrderRepository.save(ownerOrder);
 
-        eventPublisher.publishEvent(new OwnerOrderAcceptedEvent(userOrderId));
+        outboxEventRepository.save(OutboxEvent.create("OwnerOrderAcceptedEvent", serialize(new OwnerOrderAcceptedEvent(userOrderId))));
     }
 
     @Override
@@ -77,7 +80,7 @@ public class OwnerOrderServiceImpl implements OwnerOrderService {
         ownerOrder.startCooking();
         ownerOrderRepository.save(ownerOrder);
 
-        eventPublisher.publishEvent(new OwnerOrderCookingStartedEvent(userOrderId));
+        outboxEventRepository.save(OutboxEvent.create("OwnerOrderCookingStartedEvent", serialize(new OwnerOrderCookingStartedEvent(userOrderId))));
     }
 
     @Override
@@ -89,7 +92,15 @@ public class OwnerOrderServiceImpl implements OwnerOrderService {
         ownerOrder.completeCooking();
         ownerOrderRepository.save(ownerOrder);
 
-        eventPublisher.publishEvent(new OwnerOrderCookingCompletedEvent(userOrderId));
+        outboxEventRepository.save(OutboxEvent.create("OwnerOrderCookingCompletedEvent", serialize(new OwnerOrderCookingCompletedEvent(userOrderId))));
+    }
+
+    private String serialize(Object event) {
+        try {
+            return objectMapper.writeValueAsString(event);
+        } catch (Exception e) {
+            throw new RuntimeException("이벤트 직렬화 실패: " + event.getClass().getSimpleName(), e);
+        }
     }
 
     @Override

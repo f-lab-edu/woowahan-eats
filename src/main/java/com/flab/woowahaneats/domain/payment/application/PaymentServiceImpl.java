@@ -1,6 +1,5 @@
 package com.flab.woowahaneats.domain.payment.application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.order.user.domain.UserOrder;
@@ -77,8 +76,12 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private String serialize(Object event) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(event);
+    private String serialize(Object event) {
+        try {
+            return objectMapper.writeValueAsString(event);
+        } catch (Exception e) {
+            throw new RuntimeException("이벤트 직렬화 실패: " + event.getClass().getSimpleName(), e);
+        }
     }
 
     private void approvePayment(Payment payment, String paymentKey, String gatewayOrderId, int amount) {
