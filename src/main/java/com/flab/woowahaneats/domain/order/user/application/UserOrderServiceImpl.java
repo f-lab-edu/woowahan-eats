@@ -1,5 +1,6 @@
 package com.flab.woowahaneats.domain.order.user.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.woowahaneats.domain.auth.AuthContextHolder;
 import com.flab.woowahaneats.domain.cart.domain.Cart;
 import com.flab.woowahaneats.domain.cart.domain.CartMenu;
@@ -24,6 +25,8 @@ import com.flab.woowahaneats.domain.order.user.event.UserOrderCancelledEvent;
 import com.flab.woowahaneats.domain.order.user.repository.UserOrderRepository;
 import com.flab.woowahaneats.domain.payment.application.PaymentService;
 import com.flab.woowahaneats.domain.payment.domain.Payment;
+import com.flab.woowahaneats.domain.payment.outbox.OutboxEvent;
+import com.flab.woowahaneats.domain.payment.outbox.OutboxEventRepository;
 import com.flab.woowahaneats.domain.restaurant.domain.RestaurantOperationInfo;
 import com.flab.woowahaneats.domain.restaurant.repository.RestaurantOperationInfoRepository;
 import com.flab.woowahaneats.domain.user.domain.User;
@@ -44,6 +47,8 @@ public class UserOrderServiceImpl implements UserOrderService {
     private final RestaurantOperationInfoRepository restaurantOperationInfoRepository;
     private final PaymentService paymentService;
     private final ApplicationEventPublisher eventPublisher;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
@@ -112,7 +117,7 @@ public class UserOrderServiceImpl implements UserOrderService {
 
         paymentService.refundPayment(orderId, "사용자 주문 취소");
 
-        eventPublisher.publishEvent(new UserOrderCancelledEvent(orderId));
+        outboxEventRepository.save(OutboxEvent.create("UserOrderCancelledEvent", serialize(new UserOrderCancelledEvent(orderId))));
     }
 
     @Override
@@ -184,6 +189,14 @@ public class UserOrderServiceImpl implements UserOrderService {
         return orders.stream()
                 .map(OrderResponse::from)
                 .toList();
+    }
+
+    private String serialize(Object event) {
+        try {
+            return objectMapper.writeValueAsString(event);
+        } catch (Exception e) {
+            throw new RuntimeException("이벤트 직렬화 실패: " + event.getClass().getSimpleName(), e);
+        }
     }
 
     private List<OrderMenu> convertToOrderMenus(Cart cart) {
