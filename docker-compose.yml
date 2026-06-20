@@ -1,6 +1,6 @@
 services:
   app:
-    build: .
+    image: ghcr.io/f-lab-edu/woowahan-eats:latest
     container_name: woowahan-eats-app
     env_file:
       - .env
@@ -9,14 +9,15 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
       SPRING_DATA_REDIS_HOST: redis
+      JAVA_TOOL_OPTIONS: "-Xms256m -Xmx400m"
     deploy:
       resources:
         limits:
           cpus: '2.0'
-          memory: 1024M
+          memory: 512M
         reservations:
-          cpus: '2.0'
-          memory: 1024M
+          cpus: '0.5'
+          memory: 256M
     depends_on:
       postgres:
         condition: service_healthy
@@ -52,10 +53,10 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 512M
+          memory: 256M
         reservations:
-          cpus: '1.0'
-          memory: 512M
+          cpus: '0.5'
+          memory: 128M
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
